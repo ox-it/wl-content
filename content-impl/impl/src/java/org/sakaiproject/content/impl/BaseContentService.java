@@ -5786,8 +5786,8 @@ public abstract class BaseContentService implements ContentHostingService, Cache
 	{
 		// escape just the is part, not the access point
 		// return getAccessPoint(false) + Validator.escapeUrl(id);
-		return m_serverConfigurationService.getAccessUrl() + getAlternateReferenceRoot(id, rootProperty) + m_relativeAccessPoint
-				+ Validator.escapeUrl(convertIdToUserEid(id));
+		return m_serverConfigurationService.getAccessUrl() + Validator.escapeUrl(getAlternateReferenceRoot(id, rootProperty) + m_relativeAccessPoint
+				+ convertIdToUserEid(id));
 
 	} // getUrl
 
@@ -11096,8 +11096,8 @@ public abstract class BaseContentService implements ContentHostingService, Cache
 		public String getUrl(boolean relative, String rootProperty)
 		{
 			return (relative ? m_serverConfigurationService.getAccessPath() : m_serverConfigurationService.getAccessUrl()) 
-					+ getAlternateReferenceRoot(rootProperty) + m_relativeAccessPoint
-					+ convertIdToUserEid(m_id);
+					+ Validator.escapeUrl(getAlternateReferenceRoot(rootProperty) + m_relativeAccessPoint
+					+ convertIdToUserEid(m_id));
 		}
 
 		/**
