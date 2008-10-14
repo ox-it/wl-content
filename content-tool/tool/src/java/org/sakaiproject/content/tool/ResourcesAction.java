@@ -5100,7 +5100,10 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		}
 		context.put("maintainer", Boolean.toString(maintainer));
 
-		context.put("server_url", ServerConfigurationService.getServerUrl());
+		// Note: We want to ensure the WebDAV URL begins with https:// :-
+		String serverUrl = ServerConfigurationService.getServerUrl();
+		serverUrl = serverUrl.startsWith( "http:" ) ? "https" + serverUrl.substring( 4, serverUrl.length() ) : serverUrl;
+		context.put("server_url", serverUrl);
 		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		context.put("site_title", state.getAttribute(STATE_SITE_TITLE));
 		context.put("user_id", UserDirectoryService.getCurrentUser().getEid());
