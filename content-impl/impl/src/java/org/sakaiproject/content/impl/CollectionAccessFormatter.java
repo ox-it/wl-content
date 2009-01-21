@@ -4,17 +4,17 @@
  ***********************************************************************************
  *
  * Copyright (c) 2006 The Sakai Foundation.
- * 
- * Licensed under the Educational Community License, Version 1.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
+ *
+ * Licensed under the Educational Community License, Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.opensource.org/licenses/ecl1.php
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  *
  **********************************************************************************/
@@ -55,20 +55,20 @@ public class CollectionAccessFormatter
 	public static void format(ContentCollection x, Reference ref, HttpServletRequest req, HttpServletResponse res,
 			String accessPointTrue, String accessPointFalse)
 	{
-		// do not allow directory listings for /attachments and its subfolders  
+		// do not allow directory listings for /attachments and its subfolders
 		if(ContentHostingService.isAttachmentResource(x.getId()))
 		{
 			try
 			{
 				res.sendError(HttpServletResponse.SC_NOT_FOUND);
 				return;
-			} 
-			catch ( java.io.IOException e ) 
+			}
+			catch ( java.io.IOException e )
 			{
 				return;
 			}
 		}
-		
+
 		PrintWriter out = null;
 		// don't set the writer until we verify that
 		// getallresources is going to work.
@@ -155,15 +155,15 @@ public class CollectionAccessFormatter
 				{
 					out.println("<script type=\"text/javascript\">");
 					out.println("function seturl(url) {");
-					out.println("window.opener.document.forms[0]." + field + ".value = url;  window.close();");
+					out.println("window.opener.document.forms[0]." + Validator.escapeJavascript(field) + ".value = url;  window.close();");
 					out.println("}");
 					out.println("</script>");
 				}
 
-				out.println("</head><body>");
-				
-				out.println("<script type=\"text/javascript\">$(document).ready(function(){resizeFrame();function resizeFrame(){if (window.name != \"\") {var frame = parent.document.getElementById(window.name);if (frame) {var clientH = document.body.clientHeight + 10;$(frame).height(clientH);}}}jQuery.fn.fadeToggle = function(speed, easing, callback){return this.animate({opacity: \'toggle\'}, speed, easing, callback);};if ($(\'.textPanel\').size() < 1){$(\'a#toggler\').hide();}$(\'a#toggler\').click(function(){$(\'.textPanel\').fadeToggle(\'1000\', \'\', \'resizeFrame\');});});</script>");
-				
+				out.println("</head><body class=\"specialLink\">")	;
+
+				out.println("<script type=\"text/javascript\">$(document).ready(function(){resizeFrame();function resizeFrame(){if (window.name != \"\") {var frame = parent.document.getElementById(window.name);if (frame) {var clientH = document.body.clientHeight + 10;$(frame).height(clientH);}}}jQuery.fn.fadeToggle = function(speed, easing, callback){return this.animate({opacity: \'toggle\'}, speed, easing, callback);};if ($(\'.textPanel\').size() < 1){$(\'a#toggler\').hide();}$(\'a#toggler\').click(function(){$(\'.textPanel\').fadeToggle(\'1000\', \'\', \'resizeFrame\');});\n$(\'.file a\').each(function (i){\n$(this).addClass(getFileExtension($(this).attr(\'href\')));\n})\nfunction getFileExtension(filename)\n{\nvar ext = /^.+\\.([^.]+)$/.exec(filename);\nreturn ext == null ? \"\" : ext[1].toLowerCase();\n}\n});</script>");
+
 				out.println("<div class=\"directoryIndex\">");
 				// for content listing it's best to use a real title
 				if (basedir != null)
@@ -178,6 +178,8 @@ public class CollectionAccessFormatter
 					out.println("<table>");
 				else
 					out.println("<ul>");
+					out.println("<li style=\"display:none\">");
+					out.println("</li>");
 				printedHeader = true;
 				printedDiv = true;
 			}
@@ -300,7 +302,7 @@ public class CollectionAccessFormatter
 									desc = "";
 							else
 								desc = "<div class=\"textPanel\">" +  Validator.escapeHtml(desc) + "</div>";
-							out.println("<li class=\"folder\"><a href=\"" + Validator.escapeUrl(xs) + baseparam + "\"><img src=\"/library/image/silk/folder.png\" />"
+							out.println("<li class=\"folder\"><a href=\"" + Validator.escapeUrl(xs) + baseparam + "\">"
 									+ Validator.escapeHtml(properties.getProperty(ResourceProperties.PROP_DISPLAY_NAME))
 									+ "</a>" + desc + "</li>");
 						}
@@ -366,7 +368,7 @@ public class CollectionAccessFormatter
 			if (sferyx)
 				out.println("<table>");
 			else
-				out.println("<ul>");
+				out.println("</ul>");
 			if (printedDiv) out.println("</div>");
 				out.println("</body></html>");
 		}
@@ -400,7 +402,7 @@ public class CollectionAccessFormatter
 			{
 			}
 		}
-		
+
 		return null;
 	}
 }
