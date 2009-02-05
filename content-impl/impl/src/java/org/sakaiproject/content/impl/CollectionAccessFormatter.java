@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentCollection;
+import org.sakaiproject.content.api.ContentEntity;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.entity.api.Entity;
@@ -121,7 +122,7 @@ public class CollectionAccessFormatter
 
 			// System.out.println("after sort have " + members.size());
 
-			// xi Will all be ContentResources
+			// xi Will all be ContentEntity
 			Iterator xi = members.iterator();
 
 			res.setContentType("text/html; charset=UTF-8");
@@ -260,14 +261,23 @@ public class CollectionAccessFormatter
 
 			while (xi.hasNext())
 			{
-				ContentResource content = (ContentResource)xi.next();
-				// Don't display ones that aren't available.
-				if (!ContentHostingService.isAvailable(content.getId()))
-					continue;
+				ContentEntity content = (ContentEntity)xi.next();
 
 				ResourceProperties properties = content.getProperties();
 				boolean isCollection = content.isCollection();
 				String xs = content.getId();
+
+				// These both perform the same check in the implementation but we should observe the API.
+				// This also checks to see if a resource is hidden or time limited.
+				if ( isCollection) {
+					if (!ContentHostingService.allowGetCollection(xs)) {
+						continue;
+					}
+				} else {
+					if (!ContentHostingService.allowGetResource(xs)) {
+						continue;
+					}
+				}
 
 				if (isCollection)
 				{
@@ -310,11 +320,12 @@ public class CollectionAccessFormatter
 					}
 					else
 					{
-						long filesize = ((content.getContentLength() - 1) / 1024) + 1;
+						ContentResource contentResource = (ContentResource)content;
+						long filesize = ((contentResource.getContentLength() - 1) / 1024) + 1;
 						String createdBy = getUserProperty(properties, ResourceProperties.PROP_CREATOR).getDisplayName();
 						Time modTime = properties.getTimeProperty(ResourceProperties.PROP_MODIFIED_DATE);
 						String modifiedTime = modTime.toStringLocalShortDate() + " " + modTime.toStringLocalShort();
-						String filetype = content.getContentType();
+						String filetype = contentResource.getContentType();
 
 						if (sferyx)
 							out
@@ -361,8 +372,7 @@ public class CollectionAccessFormatter
 
 		}
 		catch (Throwable ignore)
-		{
-		}
+		{}
 
 		if (out != null && printedHeader)
 		{
