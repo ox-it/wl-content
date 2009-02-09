@@ -2123,4 +2123,41 @@ public class ContentHostingMultiplexService implements ContentHostingService
 		}
 	}
 
+	public List getAllDeletedResources(String id) {
+		try
+		{
+			return getService().getAllDeletedResources(id);
+		}
+		finally
+		{
+			popThreadBoundService();
+		}
+	}
+
+	public void restoreResource(String id) throws PermissionException,
+			IdUsedException, IdUnusedException, IdInvalidException,
+			InconsistentException, OverQuotaException, ServerOverloadException,
+			TypeException, InUseException {
+		try
+		{
+			getService().restoreResource(id);
+		}
+		finally
+		{
+			popThreadBoundService();
+		}
+	}
+
+	public void removeDeletedResource(String id) throws PermissionException, IdUnusedException, TypeException, InUseException {
+		try
+		{
+			getService().removeDeletedResource(id);
+		}
+		finally
+		{
+			popThreadBoundService();
+		}
+	}
+
+
 }

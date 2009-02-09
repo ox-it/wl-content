@@ -556,6 +556,10 @@ public class JCRStorage implements Storage
 
 	public ContentResource getResource(String id) throws TypeException
 	{
+		return getResourceFromStorage(id, m_resourceStore);
+	}
+	
+	private ContentResource getResourceFromStorage(String id, BaseJCRStorage resourceStore) {
 //		Exception ex = new Exception("GET GRESOURCE TRACEBACK");
 //		log.info("Trace back ",ex);
 		
@@ -579,7 +583,7 @@ public class JCRStorage implements Storage
 			}
 			else
 			{
-				Entity ce =  m_resourceStore.getResource(id);
+				Entity ce =  resourceStore.getResource(id);
 				if ( ce != null ) {
 					if ( ! (ce instanceof ContentResource) ) {
 						log.error("=================RESORUCE is not a RESOURCE ");
@@ -597,7 +601,19 @@ public class JCRStorage implements Storage
 		}
 	}
 
+	public List getDeletedResources(ContentCollection collection)
+	{
+		return getResources(collection, m_resourceDeleteStore, null);
+	}
+	
+
 	public List getResources(ContentCollection collection)
+	{
+		return getResources(collection, m_resourceStore, resolver);
+	}
+	
+	private List getResources(ContentCollection collection, BaseJCRStorage resourceStore, 
+			ContentHostingHandlerResolver resolver)
 	{
 		boolean goin = in();
 		try
@@ -627,7 +643,7 @@ public class JCRStorage implements Storage
 				// database
 				// select
 				// those in this collection
-				return m_resourceStore.getAllResourcesWhere("IN_COLLECTION", target);
+				return resourceStore.getAllResourcesWhere("IN_COLLECTION", target);
 			}
 		}
 		finally
@@ -684,7 +700,16 @@ public class JCRStorage implements Storage
 		}
 	}
 
-	public ContentResourceEdit editResource(String id)
+	public ContentResourceEdit editResource(String id) {
+		return editResource(id, m_resourceStore, resolver);
+	}
+	
+	public ContentResourceEdit editDeletedResource(String id) {
+		return editResource(id, m_resourceDeleteStore, null);
+	}
+	
+	private ContentResourceEdit editResource(String id, BaseJCRStorage resourceStore, 
+			ContentHostingHandlerResolver resolver) 
 	{
 		if (id == null || id.trim().length() == 0)
 		{
@@ -707,7 +732,7 @@ public class JCRStorage implements Storage
 			}
 			else
 			{
-				return (ContentResourceEdit) resourceCache.put(id, m_resourceStore.editResource(id));
+				return (ContentResourceEdit) resourceCache.put(id, resourceStore.editResource(id));
 			}
 		}
 		finally
@@ -783,8 +808,9 @@ public class JCRStorage implements Storage
 	/**
 	 * update xml and store the body of file TODO storing of body content is not
 	 * used now.
+	 * @throws ServerOverloadException 
 	 */
-	public void commitDeleteResource(ContentResourceEdit edit, String uuid)
+	public void commitDeletedResource(ContentResourceEdit edit, String uuid) throws ServerOverloadException
 	{
 		resourceCache.remove(edit.getId());
 		boolean goin = in();
@@ -792,12 +818,42 @@ public class JCRStorage implements Storage
 		{
 			if (resolver != null && goin)
 			{
-				resolver.commitDeleteResource(edit, uuid);
+				resolver.commitDeletedResource(edit, uuid);
 			}
 			else
 			{
 				m_resourceDeleteStore.commitDeleteResource(edit, uuid);
 			}
+		}
+		finally
+		{
+			out();
+		}
+
+	}
+
+	/**
+	 * 
+	 * 
+	 */
+	public void removeDeletedResource(ContentResourceEdit edit)
+	{
+		// delete the body
+		boolean goin = in();
+		try
+		{
+			if (resolver != null && goin)
+			{
+				resolver.removeResource(edit);
+			}
+			else
+			{
+
+				m_resourceDeleteStore.removeResource(edit);
+
+			}
+			resourceCache.remove(edit.getId());
+
 		}
 		finally
 		{
@@ -863,6 +919,22 @@ public class JCRStorage implements Storage
 			out();
 		}
 
+	}
+
+	// the body is already in the resource for this version of
+	// storage
+	public InputStream streamDeletedResourceBody(ContentResource resource)
+			throws ServerOverloadException
+	{
+		boolean goin = in();
+		try
+		{
+			return resource.streamContent();
+		}
+		finally
+		{
+			out();
+		}
 	}
 
 	// the body is already in the resource for this version of
