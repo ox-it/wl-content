@@ -20,7 +20,7 @@
 			<p class="shorttext">
 				<span class="reqStar">*</span>
 				<label for="name${DOT}$i">
-					$tlang.getString("title.name") 
+					$tlang.getString("name.file") 
 				</label>
 				<input type="text" size="40" id="displayName${DOT}$i" name="displayName${DOT}$i" value="$validator.escapeHtml("$!item.name")" />
 			</p>
