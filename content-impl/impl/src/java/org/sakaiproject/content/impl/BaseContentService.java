@@ -10170,7 +10170,7 @@ public abstract class BaseContentService implements ContentHostingService, Cache
          */
         public String getUrl(boolean relative)
         {
-        	return getAccessPoint(relative) + convertIdToUserEid(m_id);
+        	return  Validator.escapeUrl(getAccessPoint(relative) + convertIdToUserEid(m_id));
         }
 
 		/**
