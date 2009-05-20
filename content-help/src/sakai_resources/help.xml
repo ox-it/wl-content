@@ -48,7 +48,7 @@
 
    <bean id="usingCitation" class="org.sakaiproject.component.app.help.model.ResourceBean">
       <property name="docId"><value>avcd</value></property>
-      <property name="name"><value>Working with citation lists</value></property>
+      <property name="name"><value>Working with reading lists</value></property>
       <property name="location"><value>/sakai_resources/avcd.html</value></property>
    </bean>
 
