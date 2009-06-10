@@ -45,6 +45,7 @@ import org.sakaiproject.content.api.ResourceType;
 import org.sakaiproject.content.api.ServiceLevelAction;
 import org.sakaiproject.content.api.ResourceToolAction.ActionType;
 import org.sakaiproject.content.impl.util.ZipContentUtil;
+import org.sakaiproject.content.util.BaseInteractionAction;
 import org.sakaiproject.content.util.BaseResourceType;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
@@ -719,7 +720,7 @@ public class FolderType extends BaseResourceType implements ExpandableResourceTy
 
 		public String initializeAction(Reference reference) 
 		{
-			return null;
+			return BaseInteractionAction.getInitializationId(reference.getReference(), this.getTypeId(), this.getId());
 		}
 
 	}
@@ -1229,7 +1230,7 @@ public class FolderType extends BaseResourceType implements ExpandableResourceTy
 
 		public String initializeAction(Reference reference) 
 		{
-			return null;
+			return BaseInteractionAction.getInitializationId(reference.getReference(), this.getTypeId(), this.getId());
 		}
 
 	}
@@ -1246,7 +1247,7 @@ public class FolderType extends BaseResourceType implements ExpandableResourceTy
 
 		public String initializeAction(Reference reference) 
 		{
-			return null;
+			return BaseInteractionAction.getInitializationId(reference.getReference(), this.getTypeId(), this.getId());
 		}
 
 		public void cancelAction(Reference reference, String initializationId) 

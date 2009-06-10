@@ -3237,7 +3237,6 @@ public class DbContentService extends BaseContentService
 				}
 			}
 
-			M_log.info("DB Connection passes UTF-8 tests");
 
 		}
 		finally
