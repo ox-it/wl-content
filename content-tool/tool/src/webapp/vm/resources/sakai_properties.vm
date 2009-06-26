@@ -618,7 +618,7 @@
 						</span>
 						#end
 					</div>
-					<textarea id="fileURLHolder" rows="3" cols="50" style="overflow:auto">$model.accessUrl</textarea>						
+					<textarea id="fileURLHolder" rows="3" cols="50" style="overflow:auto" readonly="true">$model.accessUrl</textarea>						
 
 				</td>
 			</tr>
