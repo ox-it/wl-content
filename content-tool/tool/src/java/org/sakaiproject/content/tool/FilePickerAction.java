@@ -547,6 +547,11 @@ public class FilePickerAction extends PagedResourceHelperAction
 			context.put("list_has_changed", Boolean.TRUE.toString());
 		}
 
+		Boolean showURL = (Boolean) toolSession.getAttribute(FilePickerHelper.FILE_PICKER_SHOW_URL);
+		showURL = showURL == null ? Boolean.TRUE : showURL;
+		context.put("show_url", showURL);
+		toolSession.setAttribute(FilePickerHelper.FILE_PICKER_SHOW_URL, showURL);
+
 		boolean inMyWorkspace = SiteService.isUserSite(ToolManager.getCurrentPlacement().getContext());
 		// context.put("inMyWorkspace", Boolean.toString(inMyWorkspace));
 
@@ -1014,6 +1019,7 @@ public class FilePickerAction extends PagedResourceHelperAction
 		{
 			state.removeAttribute(FilePickerHelper.FILE_PICKER_MAX_ATTACHMENTS);
 			state.removeAttribute(FilePickerHelper.FILE_PICKER_RESOURCE_FILTER);
+			state.removeAttribute(FilePickerHelper.FILE_PICKER_SHOW_URL);
 			state.removeAttribute(FilePickerHelper.DEFAULT_COLLECTION_ID);
 			state.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACH_LINKS);
 		}
