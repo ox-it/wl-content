@@ -806,6 +806,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		CONTENT_DELETE_ACTIONS.add(ActionType.DELETE);
 		
 		SITE_UPDATE_ACTIONS.add(ActionType.REVISE_PERMISSIONS);
+		SITE_UPDATE_ACTIONS.add(ActionType.MAKE_SITE_PAGE);
 
 		CREATION_ACTIONS.add(ActionType.NEW_UPLOAD);
 		CREATION_ACTIONS.add(ActionType.NEW_FOLDER);
