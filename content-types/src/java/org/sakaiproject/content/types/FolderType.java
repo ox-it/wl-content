@@ -103,8 +103,7 @@ public class FolderType extends BaseResourceType implements ExpandableResourceTy
 		actions.put(RESTORE, new FolderRestoreAction(RESTORE, ActionType.RESTORE, typeId, false, localizer("restore.item")));
 		actions.put(COLLAPSE, new BaseServiceLevelAction(COLLAPSE, ActionType.COLLAPSE_FOLDER, typeId, false, localizer("collapse.item")));
 		actions.put(COMPRESS_ZIP_FOLDER, new FolderCompressAction(COMPRESS_ZIP_FOLDER, ActionType.COMPRESS_ZIP_FOLDER, typeId, false, localizer("action.compresszipfolder")));
-		actions.put(MAKE_SITE_PAGE, new MakeSitePageAction(MAKE_SITE_PAGE, ActionType.MAKE_SITE_PAGE, typeId, helperId, localizer("action.makesitepage")));
-		
+		actions.put(MAKE_SITE_PAGE, new MakeSitePageAction(MAKE_SITE_PAGE, ActionType.MAKE_SITE_PAGE, typeId));
 		// initialize actionMap with an empty List for each ActionType
 		for(ActionType type : ActionType.values())
 		{
