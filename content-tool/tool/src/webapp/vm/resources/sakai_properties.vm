@@ -142,7 +142,6 @@
 						#if($model.copyrightStatus == $copyright.getType() || $model.copyrightStatus == $copyright.getText())
 							#set ($noOneSelected=false)
 						#end
-					#end
 					#if ($noOneSelected && $!model.copyrightStatus)
 						<option value="$model.copyrightStatus" selected="selected">${model.copyrightStatus}</option>
 					#end
