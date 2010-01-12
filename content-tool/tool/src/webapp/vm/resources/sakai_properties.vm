@@ -103,9 +103,14 @@
 					$tlang.getString("cright.status")
 				</label>	
 				<select name="copyright${DOT}$i" id ="copyright${DOT}$i">
+					#set ($copyrightMissing = true)
 					#foreach ($copyright in $copyrightTypes)
-						<option value="$copyright"#if($model.copyrightStatus == $copyright) selected="selected"#end>$copyright</option>
+						<option value="$copyright"#if($model.copyrightStatus == $copyright) selected="selected" #set ($copyrightMissing = false)#end>$copyright</option>
 					#end
+					#if ($copyrightMissing)
+						<option value="$model.copyrightStatus" selected="selected">$model.copyrightStatus</option>
+					#end
+					
 				</select>
 				#if ($!fairuseurl)
 					(<a href="$fairuseurl" target="_blank" title="[$tlang.getString('cright.newwin')]"><span class="skip"> [$tlang.getString('cright.newwin')]</span>$tlang.getString("cright.fairuse")</a>)
