@@ -22,8 +22,19 @@
     <div id="tradUploadWrapper" class="fallback">
         #if($instr_uploads)
 		<p class="instruction">
-			$instr_uploads #if($dragAndDrop)<strong><a href="#" id="dndUploadSwitcher">$tlang.getString("link.switch.to.dnd")</a></strong>#end
+			$instr_uploads
 		</p>
+         #end
+
+         #if ($additionalInstructions)
+         <p class="instruction">
+             $additionalInstructions
+         </p>
+         #end
+         #if($dragAndDrop)
+         <p class="instruction">
+             <strong><a href="#" id="dndUploadSwitcher">$tlang.getString("link.switch.to.dnd")</a></strong>
+         </p>
          #end
 
 	<form name="addContentForm" id="addContentForm" method="post" action="#toolForm("ResourcesHelperAction")"  enctype="multipart/form-data">
