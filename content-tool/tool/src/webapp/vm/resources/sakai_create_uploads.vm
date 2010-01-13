@@ -13,6 +13,13 @@
 		</p>
          #end
 
+
+	#if ($additionalInstructions)
+	<p class="instruction">
+		$additionalInstructions
+	</p>
+	#end
+	
 	<div class="breadCrumb">
 	<h4>
 		$tlang.getString("gen.location")
