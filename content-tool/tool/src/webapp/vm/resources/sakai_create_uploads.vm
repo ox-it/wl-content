@@ -10,6 +10,12 @@
 	<p class="instruction">
 		$tlang.getString("instr.uploads")
 	</p>
+	#if ($additionalInstructions)
+	<p class="instruction">
+		$additionalInstructions
+	</p>
+	#end
+	
 	<div class="breadCrumb">
 	<h4>
 		$tlang.getString("gen.location")
