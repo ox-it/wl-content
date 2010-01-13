@@ -107,7 +107,7 @@
 					#foreach ($copyright in $copyrightTypes)
 						<option value="$copyright"#if($model.copyrightStatus == $copyright) selected="selected" #set ($copyrightMissing = false)#end>$copyright</option>
 					#end
-					#if ($copyrightMissing)
+					#if ($copyrightMissing && $model.copyrightStatus)
 						<option value="$model.copyrightStatus" selected="selected">$model.copyrightStatus</option>
 					#end
 					
