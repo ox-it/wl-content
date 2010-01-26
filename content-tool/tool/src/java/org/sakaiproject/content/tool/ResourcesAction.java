@@ -542,6 +542,8 @@ public class ResourcesAction
 	/************** the more context *****************************************/
 
 	private static final String MODE_DAV = "webdav";
+	
+	private static final String MODE_QUOTA = "quota";
 
 	/************** the edit context *****************************************/
 
@@ -802,6 +804,8 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	
 	/** vm files for each mode. */
 	private static final String TEMPLATE_DAV = "content/chef_resources_webdav";
+	
+	private static final String TEMPLATE_QUOTA = "resources/sakai_quota";
 
 	private static final String TEMPLATE_DELETE_CONFIRM = "content/chef_resources_deleteConfirm";
 
@@ -4333,7 +4337,8 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 			catch (PermissionException e) {}
 		}
 		
-		if(!dropboxMode && atHome && SiteService.allowUpdateSite(ToolManager.getCurrentPlacement().getContext()))
+		boolean allowUpdateSite = SiteService.allowUpdateSite(ToolManager.getCurrentPlacement().getContext());
+		if(!dropboxMode && atHome && allowUpdateSite)
 		{
 			if(!inMyWorkspace )
 			{
@@ -4351,6 +4356,8 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 			}
 
 		}
+		
+		context.put("showQuota", Boolean.valueOf(!dropboxMode && allowUpdateSite));
 		
 		context.put("atHome", Boolean.toString(atHome));
 
@@ -4778,7 +4785,11 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		}
 		else if(mode.equals(MODE_DAV))
 		{
-			template = buildWebdavContext (portlet, context, data, state);
+			template =  buildWebdavContext(portlet, context, data, state);
+		}
+		else if(mode.equals(MODE_QUOTA))
+		{
+			template = buildQuotaContext (portlet, context, data, state);
 		}
 		else if(mode.equals(MODE_REVISE_METADATA))
 		{
@@ -5272,7 +5283,58 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		return TEMPLATE_DAV;
 
 	}	// buildWebdavContext
+	
+	/**
+	* Build the context for add display
+	*/
+	public String buildQuotaContext(	VelocityPortlet portlet,
+										Context context,
+										RunData data,
+										SessionState state)
+	{
+		logger.debug(this + ".buildQuotaContext()");
+		context.put("tlang",rb);
+		// find the ContentTypeImage service
+		
+		String siteCollectionId = ContentHostingService.getSiteCollection(ToolManager.getCurrentPlacement().getContext());
+		try
+		{
+			ContentCollection collection = ContentHostingService.getCollection(siteCollectionId);
+			long quota = ContentHostingService.getQuota(collection);
+			long usage = collection.getBodySizeK();
+			context.put("usage", ListItem.formatSize(usage * 1024));
+			if (quota > 0)
+			{
+				long usagePrecent = usage * 100 / quota;
+				context.put("usagePercent", usagePrecent);
+				context.put("quota", ListItem.formatSize(quota * 1024));
+			}
+			else
+			{
+				context.put("quota", rb.get("quota.unlimited"));
+			}
+		}
+		catch (IdUnusedException e)
+		{
+			logger.warn("Can't find collection for site: "+ siteCollectionId, e);
+		}
+		catch(TypeException e){
+			logger.warn("Site collection is of wrong type.", e);
+		}
+		catch(PermissionException e){
+			logger.warn("User doesn't have permission to access site collection", e);
+		}
 
+		boolean dropboxMode = RESOURCES_MODE_DROPBOX.equalsIgnoreCase((String) state.getAttribute(STATE_MODE_RESOURCES));
+		context.put("dropboxMode", Boolean.toString(dropboxMode));
+		
+		boolean maintainer = SiteService.allowUpdateSite(siteCollectionId);
+		context.put("maintainer", Boolean.toString(maintainer));
+
+		return TEMPLATE_QUOTA;
+
+	}	// buildWebdavContext
+	
 
 	/**
 	 * Iterate over attributes in ToolSession and remove all attributes starting with a particular prefix.
@@ -7153,7 +7215,19 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 
 	}	// doShow_webdav
 
-			
+	/**
+	* Show information about WebDAV
+	*/
+	public void doShowQuota ( RunData data )
+	{
+		logger.debug(this + ".doShowQuota()");
+		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
+
+		state.setAttribute(STATE_LIST_SELECTIONS, new TreeSet());
+
+		state.setAttribute (STATE_MODE, MODE_QUOTA);
+
+	}	// doShowQuota		
 
 
 	public void doShowMembers(RunData data)
