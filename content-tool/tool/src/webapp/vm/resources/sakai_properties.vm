@@ -465,6 +465,21 @@
 					</td>
 				</tr>
 			#end
+			#if (${item.html})
+				<tr>
+					<th>
+						$tlang.getString("props.html_filter")
+					</th>
+					<td>
+						<select name="html_filter${DOT}$i" size="1">
+							<option value="auto"#if($item.htmlFilter == "auto")selected="yes"#end>Automatic</option>
+							<option value="yes" #if($item.htmlFilter == "yes")selected="yes"#end>Always</option>
+							<option value="no" #if($item.htmlFilter == "no")selected="yes"#end>Never</option>
+						</select>
+					</td>
+				</tr>
+			#end
+			
 			#if ($showMountPointProperty)
 				<tr>
 					<th>$tlang.getString("props.mountpoint")</th>

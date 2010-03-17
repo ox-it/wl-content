@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
@@ -90,6 +91,14 @@ import org.sakaiproject.util.Validator;
 
 /**
  * ListItem
+ * 
+ * This class is for displaying a {@link ContentEntity} in the user interface.
+ * The typical lifecycle of the object is to:
+ * <ul>
+ * <li>Create a new instance of from a {@link ContentEntity} using {@link #ListItem(ContentEntity)}.</li>
+ * <li>Update the newly created object, probably from a HTTP request {@link #captureProperties(ParameterParser, String)}.</li>
+ * <li>Push the changes back to a {@link ContentEntity} using {@link #updateContentResourceEdit(ContentResourceEdit)} so it can be saved.</li>
+ * </ul>
  *
  */
 public class ListItem
@@ -413,6 +422,8 @@ public class ListItem
 	protected boolean nameIsMissing = false;
 
 	private String expandIconLocation;
+	
+	protected String htmlFilter;
 
 	protected int notification = NotificationService.NOTI_NONE;
 
@@ -759,6 +770,11 @@ public class ListItem
 			this.retractDate = retractDate;
 		}
 		this.isAvailable = entity.isAvailable();
+		this.htmlFilter = entity.getProperties().getProperty(ResourceProperties.PROP_ADD_HTML);
+		if (this.htmlFilter == null)
+		{
+			this.htmlFilter = "auto";
+		}
     }
 
 	private void initAllowedAddGroups() 
@@ -1421,10 +1437,24 @@ public class ListItem
 		{
 			captureMimetypeChange(params, index);
 		}
+		if (isHtml())
+		{
+			captureHtmlChange(params, index);
+		}
 		if(this.metadataGroups != null && ! this.metadataGroups.isEmpty())
 		{
 			this.captureOptionalPropertyValues(params, index);
 		}
+	}
+
+	protected void captureHtmlChange(ParameterParser params, String index) 
+	{
+		String htmlFilter = params.getString("html_filter" + index);
+		if(htmlFilter != null)
+		{
+			this.htmlFilter = htmlFilter;
+		}
+		
 	}
 
 	protected void captureMimetypeChange(ParameterParser params, String index) 
@@ -2189,6 +2219,11 @@ public class ListItem
     	return hidden;
     }
     
+    public boolean isHtml()
+    {
+    	return "text/html".equals(mimetype);
+    }
+    
     /**
      * @param group
      * @return
@@ -2908,6 +2943,7 @@ public class ListItem
 		setDisplayNameOnEntity(props);
 		setDescriptionOnEntity(props);
 		setCopyrightOnEntity(props);
+		setHtmlFilterOnEntity(props);
 		setAccessOnEntity(edit);
 		setAvailabilityOnEntity(edit);
 		if(! isUrl() && ! isCollection() && this.mimetype != null)
@@ -2920,6 +2956,18 @@ public class ListItem
 		}
 	}
 
+	protected void setHtmlFilterOnEntity(ResourcePropertiesEdit props) {
+		if (isHtml())
+		{
+			props.addProperty(ResourceProperties.PROP_ADD_HTML, this.htmlFilter);
+		}
+		else
+		{
+			props.removeProperty(ResourceProperties.PROP_ADD_HTML);
+		}
+	}
+
+	
 	protected void setMimetypeOnEntity(ContentResourceEdit edit, ResourcePropertiesEdit props) 
 	{
 		if(this.mimetype != null)
@@ -3741,6 +3789,10 @@ public class ListItem
 			size = rb.getFormattedMessage("size.bytes", args);
 		}
 		return size;
+	}
+
+	public String getHtmlFilter() {
+		return htmlFilter;
 	}
 	
 }
