@@ -472,9 +472,9 @@
 					</th>
 					<td>
 						<select name="html_filter${DOT}$i" size="1">
-							<option value="auto"#if($item.htmlFilter == "auto")selected="yes"#end>Automatic</option>
-							<option value="yes" #if($item.htmlFilter == "yes")selected="yes"#end>Always</option>
-							<option value="no" #if($item.htmlFilter == "no")selected="yes"#end>Never</option>
+							<option value="auto"#if($item.htmlFilter == "auto")selected="yes"#end>$tlang.getString("props.automatic")</option>
+							<option value="yes" #if($item.htmlFilter == "yes")selected="yes"#end>$tlang.getString("props.always")</option>
+							<option value="no" #if($item.htmlFilter == "no")selected="yes"#end>$tlang.getString("props.never")</option>
 						</select>
 					</td>
 				</tr>
