@@ -126,6 +126,9 @@
 	#end
 	<![endif]-->
 	</div>
+
+	<div class="alertMessage">$tlang.getString("dav.copyrt")
+	</div>
 </div>
 	<iframe src="$webdav_instructions"
 		width="100%"
