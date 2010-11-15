@@ -132,6 +132,9 @@ ${server_url}${dav_group}$site_id
 	<![endif]-->
 	</div>
         <p><strong>$tlang.getString("dav.graf12") - </strong> $tlang.getString("dav.graf13")</p>
+
+	<div class="alertMessage">$tlang.getString("dav.copyrt")
+	</div>
 </div>
 	<iframe src="$webdav_instructions"
 		width="100%"
