@@ -24,12 +24,15 @@ package org.sakaiproject.content.tool;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.Format;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -364,86 +367,6 @@ public class ResourcesAction
 			this.parent = parent;
 		}
 
-	}
-	
-	/**
-	 *
-	 * inner class encapsulates information about groups of metadata tags (such as DC, LOM, etc.)
-	 *
-	 */
-	public static class MetadataGroup
-		extends ArrayList
-	{
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = -821054142728929236L;
-		protected boolean m_isShowing;
-		protected String m_name;
-
-		/**
-		 * @param name
-		 */
-		public MetadataGroup(String name)
-		{
-			super();
-			m_name = name;
-			m_isShowing = false;
-		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 * needed to determine List.contains()
-		 */
-		public boolean equals(Object obj)
-		{
-			MetadataGroup mg = (MetadataGroup) obj;
-			boolean rv = (obj != null) && (m_name.equals(mg));
-			return rv;
-		}
-
-		/**
-		 * @return
-		 */
-		public String getName()
-		{
-			return m_name;
-		}
-
-
-		/**
-		 * @return
-		 */
-		public boolean isShowing()
-		{
-			return m_isShowing;
-		}
-
-		/**
-		 * @param name
-		 */
-		public void setName(String name)
-		{
-			m_name = name;
-		}
-
-		/**
-		 * @param isShowing
-		 */
-		public void setShowing(boolean isShowing)
-		{
-			m_isShowing = isShowing;
-		}
-
-		public String getShowLabel()
-		{
-			return trb.getFormattedMessage("metadata.show", new String[]{this.m_name});
-		}
-		
-		public String getHideLabel()
-		{
-			return trb.getFormattedMessage("metadata.hide", new String[]{this.m_name});
-		}
 	}
 	
 	/** Resource bundle using current language locale */
@@ -5137,9 +5060,13 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		item.metadataGroupsIntoContext(context);
 		context.put("item", item);
 		
-		String chhbeanname = item.entity.getProperties().getProperty(
-				ContentHostingHandlerResolver.CHH_BEAN_NAME);
-		if (chhbeanname == null || chhbeanname.equals("")) chhbeanname = "";
+		String chhbeanname = "";
+		if (item.entity != null && item.entity.getProperties() != null)
+		{
+			chhbeanname = item.entity.getProperties().getProperty(
+					ContentHostingHandlerResolver.CHH_BEAN_NAME);
+			if (chhbeanname == null) chhbeanname = "";
+		}
 		context.put("CHHmountpoint", chhbeanname);
 		
 
@@ -5266,6 +5193,18 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		}
 
 		String webdav_instructions = ServerConfigurationService.getString("webdav.instructions.url");
+		int extIndex = webdav_instructions.indexOf(".html");
+		String webdav_doc = webdav_instructions.substring(0,extIndex).trim();
+		String locale = new ResourceLoader().getLocale().getLanguage();
+
+		if (locale.equalsIgnoreCase("en") || (locale == null) || (locale.trim().length()==0)){
+			webdav_instructions = ServerConfigurationService.getString("webdav.instructions.url");
+		}else{
+			webdav_instructions = webdav_doc + "_" + locale + ".html";
+		}
+
+
+
 		context.put("webdav_instructions" ,webdav_instructions);
 
 		// TODO: Consider whether we should return a trivial session
@@ -5625,24 +5564,28 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 					if(reference != null)
 					{
 						ContentEntity entity = (ContentEntity) reference.getEntity();
-						String typeId = entity.getResourceType();
-						ResourceTypeRegistry registry = (ResourceTypeRegistry) state.getAttribute(STATE_RESOURCES_TYPE_REGISTRY);
-						if(typeId != null && registry != null)
+						//its possible that the contentEntity is null
+						if (entity != null)
 						{
-							ResourceType typeDef = registry.getType(typeId);
-							if(typeDef != null && typeDef.isExpandable())
+							String typeId = entity.getResourceType();
+							ResourceTypeRegistry registry = (ResourceTypeRegistry) state.getAttribute(STATE_RESOURCES_TYPE_REGISTRY);
+							if(typeId != null && registry != null)
 							{
-								ServiceLevelAction collapseAction = ((ExpandableResourceType) typeDef).getCollapseAction();
-								if(collapseAction != null && collapseAction.available(entity))
+								ResourceType typeDef = registry.getType(typeId);
+								if(typeDef != null && typeDef.isExpandable())
 								{
-									collapseAction.initializeAction(reference);
-									
-									collapseAction.finalizeAction(reference);
-									
-									folderSortMap.remove(id);
+									ServiceLevelAction collapseAction = ((ExpandableResourceType) typeDef).getCollapseAction();
+									if(collapseAction != null && collapseAction.available(entity))
+									{
+										collapseAction.initializeAction(reference);
 
-									// add this folder id into the set to be event-observed
-									addObservingPattern(id, state);
+										collapseAction.finalizeAction(reference);
+
+										folderSortMap.remove(id);
+
+										// add this folder id into the set to be event-observed
+										addObservingPattern(id, state);
+									}
 								}
 							}
 						}
@@ -6386,8 +6329,11 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	public void doFinalizeDelete( RunData data)
 	{
 		logger.debug(this + ".doFinalizeDelete()");
+		
 		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
 
+		String oldCollectionId = (String) state.getAttribute(STATE_COLLECTION_ID);
+		
 		// cancel copy if there is one in progress
 		if(! Boolean.FALSE.toString().equals(state.getAttribute (STATE_COPY_FLAG)))
 		{
@@ -6447,6 +6393,10 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 				{
 					if (item.isCollection())
 					{
+						if (oldCollectionId.equals(item.getId())) {
+							state.setAttribute(STATE_COLLECTION_ID, item.getParent().getId());
+							logger.debug("set current collection to parent: " + item.getParent().getId());
+						}
 						ContentHostingService.removeCollection(item.getId());
 					}
 					else
@@ -6460,6 +6410,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 				}
 				catch (IdUnusedException e)
 				{
+					
 					addAlert(state,rb.getString("notexist1"));
 				}
 				catch (TypeException e)
@@ -8510,7 +8461,10 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 				continue;
 			}
 			String basename = name.trim();
-			String extension = "";
+            // SAK-11816 - allow much longer URLs by correcting a long basename, make sure no URL resource id exceeds 36 chars
+            String extension = ".URL";
+            /* removed this old method which produced really long ids (mostly because of a really long extension)
+            String extension = "";
 			if(name.contains("."))
 			{
 				String[] parts = name.split("\\.");
@@ -8526,7 +8480,23 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 					// extension = parts[i + 1];
 				}
 			}
-			try
+			*/
+            if (basename != null && basename.length() > 32) {
+			    // lose the http first
+                if (basename.startsWith("http:")) {
+                    basename = basename.substring(7);
+                }
+                if (basename.length() > 32) {
+                    // max of 18 chars from the URL itself
+                    basename = basename.substring(0, 18);
+                    // add a timestamp to differentiate it (+14 chars)
+                    Format f= new SimpleDateFormat("yyyyMMddHHmmss");
+                    basename += f.format(new Date());
+                    // total new length of 32 chars
+                }
+            }
+            // SAK-11816 - END
+            try
 			{
 				ContentResourceEdit resource = ContentHostingService.addResource(collectionId,Validator.escapeResourceName(basename),Validator.escapeResourceName(extension),MAXIMUM_ATTEMPTS_FOR_UNIQUENESS);
 				

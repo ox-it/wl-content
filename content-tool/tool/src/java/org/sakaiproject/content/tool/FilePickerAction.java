@@ -958,7 +958,7 @@ public class FilePickerAction extends PagedResourceHelperAction
     protected void disableSecurityAdvisors()
     {
     	// remove all security advisors
-    	SecurityService.clearAdvisors();
+    	SecurityService.popAdvisor();
     }
 
     /**
@@ -2019,6 +2019,14 @@ public class FilePickerAction extends PagedResourceHelperAction
 	{
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
 		SessionState state = getState(req);
+		
+		Tool tool = ToolManager.getCurrentTool();
+		String url = (String) SessionManager.getCurrentToolSession().getAttribute(tool.getId() + Tool.HELPER_DONE_URL);
+		if (url == null)
+		{
+			cleanup(state);
+			return;
+		}
 
 		if (MODE_ATTACHMENT_DONE.equals(toolSession.getAttribute(STATE_FILEPICKER_MODE)))
 		{
@@ -2043,9 +2051,9 @@ public class FilePickerAction extends PagedResourceHelperAction
 
 			cleanup(state);
 
-			Tool tool = ToolManager.getCurrentTool();
+			//Tool tool = ToolManager.getCurrentTool();
 
-			String url = (String) SessionManager.getCurrentToolSession().getAttribute(tool.getId() + Tool.HELPER_DONE_URL);
+			//String url = (String) SessionManager.getCurrentToolSession().getAttribute(tool.getId() + Tool.HELPER_DONE_URL);
 
 			SessionManager.getCurrentToolSession().removeAttribute(tool.getId() + Tool.HELPER_DONE_URL);
 
