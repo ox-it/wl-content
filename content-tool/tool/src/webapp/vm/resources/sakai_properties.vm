@@ -125,14 +125,14 @@
 					<textarea name="newcopyright${DOT}$i" id="newcopyright${DOT}$i" rows="2" cols="40" wrap="virtual" >$validator.escapeHtmlTextarea("$!model.copyrightInfo")</textarea>
 				</p>	
 			</div>
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table border="0">
 				<tr>
-					<td style="padding:.25em 0;padding-left:1em;vertical-align:top">
-						<label for="copyrightAlert${DOT}$i" style="width:15.5em;display:block">
+					<td style="width:180px;padding-left:1em;vertical-align:top">
+						<label for="copyrightAlert${DOT}$i">
 							$tlang.getString("cright.alert")
 						</label>
 					</td>
-					<td style="vertical-align:top;padding:.25em 0;">
+					<td style="vertical-align:top">
 						<input type="checkbox" name="copyrightAlert${DOT}$i" id ="copyrightAlert${DOT}$i" value="true" #if($model.hasCopyrightAlert())checked="checked"#end style="border:none" />
 						$tlang.getString("cright.display") 
 						(<a href="#" onclick="javascript:openSampleCopyrightWindow();" title="[$tlang.getString('cright.newwin')]"><span class="skip">[$tlang.getString('cright.newwin')]</span>$tlang.getString("cright.show")</a>)
@@ -240,7 +240,7 @@
 							</td>
 							<td headers="groupname${DOT}$i" style="padding-bottom:0;" class="checkbox">
 								<label for="access_groups_${group.Id}${DOT}$i">
-									$validator.escapeHtml($group.title)
+									$group.title
 								</label>	
 							</td>
 							<td headers="groupdescription${DOT}$i" width="100%"> ##mozilla does not resize table children dynamically , so set here
@@ -248,7 +248,7 @@
 								#if($group.description)
 									#set($description = $group.Description)
 								#end
-								$validator.escapeHtml($!description)
+								$!description
 							</td>
 						</tr>
 					#end
@@ -436,8 +436,7 @@
 						<a class="textPanelFooter" href="javascript:document.getElementById('fileURLHolder').focus();document.getElementById('fileURLHolder').select();">$tlang.getString("props.select")</a>
 						| <a class="textPanelFooter" href="$model.accessUrl" target ="_blank">$tlang.getString("props.open")</a>
 					</div>
-					<textarea id="fileURLHolder" rows="3" cols="50" style="overflow:auto">$model.accessUrl</textarea>						
-
+					<textarea id="fileURLHolder" rows="1" cols="50" readonly="true" wrap="off">$model.accessUrl</textarea>
 				</td>
 			</tr>
 			#if(! $item.isCollection())

@@ -21,7 +21,7 @@
 		$tlang.getString("gen.location")
 		##<img src = "#imageLink($contentTypeImageService.getContentTypeImage("folder"))" border="0"  alt="$tlang.getString("gen.folder")" />
 		#foreach ($folder in $model.collectionPath)
-			$validator.escapeHtml($folder.name) /
+			$folder.name /
 		#end
 		</h4>
 	</div>
