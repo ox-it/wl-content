@@ -8,6 +8,8 @@ public class StringMetadataType extends MetadataType<String>
 	private int minLength;
 	private int maxLength;
 	private String regularExpression;
+	//Renders textareas instead of textboxes
+	private boolean longText;
 
 	protected static MetadataConverter<String> metadataConverter = new StringMetadataConverter();
 
