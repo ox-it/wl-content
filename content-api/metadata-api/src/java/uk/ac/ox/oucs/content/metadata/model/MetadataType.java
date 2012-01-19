@@ -8,6 +8,7 @@ import java.util.List;
  */
 public abstract class MetadataType<T> implements Serializable
 {
+	private String uuid;
 	private String name;
 	private String description;
 	private T defaultValue;
@@ -16,6 +17,16 @@ public abstract class MetadataType<T> implements Serializable
 
 	private String xmlElement;
 	private String xmlType;
+
+	public String getUuid()
+	{
+		return uuid;
+	}
+
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
+	}
 
 	public String getName()
 	{
