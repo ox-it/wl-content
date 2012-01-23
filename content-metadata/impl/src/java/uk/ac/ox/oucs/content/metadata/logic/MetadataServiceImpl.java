@@ -1,7 +1,9 @@
 package uk.ac.ox.oucs.content.metadata.logic;
 
+import uk.ac.ox.oucs.content.metadata.model.GroupMetadataType;
 import uk.ac.ox.oucs.content.metadata.model.MetadataType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,11 +17,16 @@ public class MetadataServiceImpl implements MetadataService
 {
 	public List<MetadataType> getMetadataAvailable()
 	{
-		return null;	//To change body of implemented methods use File | Settings | File Templates.
+		List<MetadataType> returnedValue = new ArrayList<MetadataType>();
+		GroupMetadataType dcMetadata = new GroupMetadataType();
+		dcMetadata.setName("Dublin core");
+		returnedValue.add(dcMetadata);
+
+		return returnedValue;
 	}
 
 	public List<MetadataType> getMetadataAvailable(String resourceType)
 	{
-		return null;	//To change body of implemented methods use File | Settings | File Templates.
+		return getMetadataAvailable();
 	}
 }
