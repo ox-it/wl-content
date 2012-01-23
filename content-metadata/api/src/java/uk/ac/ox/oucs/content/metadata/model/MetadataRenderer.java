@@ -5,4 +5,8 @@ package uk.ac.ox.oucs.content.metadata.model;
  */
 public interface MetadataRenderer
 {
+	String getMetadataTypeEditTemplate();
+	String getMetadataTypePrintTemplate();
+	String getMetadataValueEditTemplate();
+	String getMetadataValuePrintTemplate();
 }
