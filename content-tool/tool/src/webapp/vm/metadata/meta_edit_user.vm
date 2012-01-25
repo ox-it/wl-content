@@ -1,0 +1,7 @@
+<label for="${tag.uuid}${DOT}$i">$tag.name</label>
+
+<select data-placeholder="$tag.description" style="width: 350px" name="$!{tag.uuid}${DOT}${i}" id="$!{tag.uuid}${DOT}${i}" class="chzn-select">
+  #foreach($user in ${tag.getAllowedValues($site_id)})
+    <option value="$user.id" #if(false) selected #end>$user.displayName</option>
+  #end
+</select>
