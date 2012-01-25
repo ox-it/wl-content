@@ -18,10 +18,14 @@
 		<deploy.target/>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.sakaiproject.content</groupId>
-			<artifactId>content-metadata-api</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.sakaiproject.kernel</groupId>
+      <artifactId>sakai-kernel-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.content</groupId>
+      <artifactId>content-metadata-api</artifactId>
+    </dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
