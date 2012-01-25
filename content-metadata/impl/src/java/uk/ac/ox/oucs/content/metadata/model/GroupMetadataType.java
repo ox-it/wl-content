@@ -16,8 +16,16 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 	//TODO : Provide a way to enable ordering ?
 	private List<MetadataType<?>> metadataTypes;
 
-	public String getTest(){return "test";}
-	
+	public List<MetadataType<?>> getMetadataTypes()
+	{
+		return metadataTypes;
+	}
+
+	public void setMetadataTypes(List<MetadataType<?>> metadataTypes)
+	{
+		this.metadataTypes = metadataTypes;
+	}
+
 	@Override
 	public MetadataRenderer getRenderer()
 	{

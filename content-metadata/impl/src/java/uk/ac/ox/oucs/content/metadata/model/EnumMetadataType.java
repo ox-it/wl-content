@@ -9,10 +9,20 @@ public class EnumMetadataType extends MetadataType<String>
 {
 	private Collection<String> allowedValues;
 
+	public Collection<String> getAllowedValues()
+	{
+		return allowedValues;
+	}
+
+	public void setAllowedValues(Collection<String> allowedValues)
+	{
+		this.allowedValues = allowedValues;
+	}
+
 	@Override
 	public MetadataRenderer getRenderer()
 	{
-		return null;	//To change body of implemented methods use File | Settings | File Templates.
+		return new EnumMetadataRenderer();
 	}
 
 	@Override
@@ -36,6 +46,29 @@ public class EnumMetadataType extends MetadataType<String>
 			if (allowedValues != null && allowedValues.contains(value)) return false;
 
 			return true;
+		}
+	}
+
+	private final class EnumMetadataRenderer implements MetadataRenderer
+	{
+		public String getMetadataTypeEditTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataTypePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataValueEditTemplate()
+		{
+			return "vm/metadata/meta_edit_enum.vm";
+		}
+
+		public String getMetadataValuePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
 	}
 
