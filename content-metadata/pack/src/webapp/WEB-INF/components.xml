@@ -5,4 +5,10 @@
   <bean id="uk.ac.ox.oucs.content.metadata.logic.MetadataService"
         class="uk.ac.ox.oucs.content.metadata.logic.MetadataServiceImpl" singleton="true">
   </bean>
+
+  <bean id="uk.ac.ox.oucs.content.metadata.model.UserMetadataType"
+        class="uk.ac.ox.oucs.content.metadata.model.UserMetadataType" singleton="true">
+    <constructor-arg ref="org.sakaiproject.user.api.UserDirectoryService"/>
+    <constructor-arg ref="org.sakaiproject.site.api.SiteService"/>
+  </bean>
 </beans>
