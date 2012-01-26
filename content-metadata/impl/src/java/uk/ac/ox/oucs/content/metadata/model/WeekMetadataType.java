@@ -35,11 +35,15 @@ public class WeekMetadataType extends MetadataType<Integer>
 	{
 		public String toString(Integer object)
 		{
+			if(object == null)
+				return null;
 			return object.toString();
 		}
 
 		public Integer toObject(String string)
 		{
+			if(string == null)
+				return null;
 			return Integer.parseInt(string);
 		}
 	}

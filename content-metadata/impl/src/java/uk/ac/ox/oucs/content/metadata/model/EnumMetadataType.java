@@ -28,7 +28,7 @@ public class EnumMetadataType extends MetadataType<String>
 	@Override
 	public MetadataConverter<String> getConverter()
 	{
-		return StringMetadataType.metadataConverter;
+		return new EnumMetadataConverter();
 	}
 
 	@Override
@@ -42,8 +42,10 @@ public class EnumMetadataType extends MetadataType<String>
 	{
 		public boolean validate(String value)
 		{
-			if (value == null) return isRequired();
-			if (allowedValues != null && allowedValues.contains(value)) return false;
+			if (value == null)
+				return isRequired();
+			if (allowedValues != null && allowedValues.contains(value))
+				return false;
 
 			return true;
 		}
@@ -72,4 +74,16 @@ public class EnumMetadataType extends MetadataType<String>
 		}
 	}
 
+	protected final class EnumMetadataConverter implements MetadataConverter<String>
+	{
+		public String toString(String object)
+		{
+			return object;
+		}
+
+		public String toObject(String string)
+		{
+			return string;
+		}
+	}
 }

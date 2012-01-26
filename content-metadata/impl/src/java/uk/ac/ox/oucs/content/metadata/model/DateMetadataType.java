@@ -38,15 +38,18 @@ public class DateMetadataType extends MetadataType<Date>
 	{
 		public boolean validate(Date object)
 		{
-			if (object == null) return isRequired();
-			if (minimumDateTime != null && object.before(minimumDateTime)) return false;
-			if (maximumDateTime != null && object.after(maximumDateTime)) return false;
+			if (object == null)
+				return isRequired();
+			if (minimumDateTime != null && object.before(minimumDateTime))
+				return false;
+			if (maximumDateTime != null && object.after(maximumDateTime))
+				return false;
 
 			return true;
 		}
 	}
 
-	private static final class DateTimeConverter implements MetadataConverter<Date>
+	private final class DateTimeConverter implements MetadataConverter<Date>
 	{
 		public String toString(Date object)
 		{
@@ -57,6 +60,8 @@ public class DateMetadataType extends MetadataType<Date>
 
 		public Date toObject(String string)
 		{
+			if(string == null)
+				return null;
 			try
 			{
 				return DateFormat.getDateInstance().parse(string);

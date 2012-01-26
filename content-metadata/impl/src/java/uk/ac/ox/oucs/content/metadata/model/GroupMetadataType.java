@@ -29,7 +29,7 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 	@Override
 	public MetadataRenderer getRenderer()
 	{
-		return null;	//To change body of implemented methods use File | Settings | File Templates.
+		return new GroupMetadataRenderer();
 	}
 
 	@Override
@@ -60,19 +60,20 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 		{
 			try
 			{
-				if (metaValues == null || metaValues.isEmpty())
+				if (metaValues == null)
 					return null;
 
 				Map<String, String> stringValues = new HashMap<String, String>(metaValues.size());
 				for (MetadataType metadataType : metadataTypes)
 				{
-					String name = metadataType.getName();
+					String id = metadataType.getUuid();
 					/*
 					 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
 					 * In this case we can't cast to "?" so here goes some unchecked operations.
 					 */
-					String converted = metadataType.getConverter().toString(metaValues.get(name)); //We do it live!
-					stringValues.put(name, converted);
+					String converted = metadataType.getConverter().toString(metaValues.get(id)); //We do it live!
+					if (converted != null)
+						stringValues.put(id, converted);
 				}
 				return new ObjectMapper().writeValueAsString(stringValues);
 			}
@@ -87,21 +88,19 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 			try
 			{
 				if (string == null)
-				{
 					return null;
-				}
-
 				Map<String, String> stringValues = new ObjectMapper().readValue(string, new TypeReference<Map<String, String>>()
 				{
 				});
+
 				Map<String, Object> metaValues = new HashMap<String, Object>(stringValues.size());
 
 				for (MetadataType metadataType : metadataTypes)
 				{
-					String name = metadataType.getName();
-					//TODO: Handle conversion errors ?
-					Object converted = metadataType.getConverter().toObject(stringValues.get(stringValues.get(name)));
-					metaValues.put(name, converted);
+					String uuid = metadataType.getUuid();
+					Object converted = metadataType.getConverter().toObject(stringValues.get(uuid));
+					if (converted != null)
+						metaValues.put(uuid, converted);
 				}
 
 				return metaValues;
@@ -115,10 +114,53 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 
 	private final class GroupMetadataValidator implements MetadataValidator<Map<String, ?>>
 	{
-
+		/**
+		 * {@inheritDoc}
+		 * <p/>
+		 * INFO: For the suppress warning, see the content of the method
+		 *
+		 * @param object {@inheritDoc}
+		 * @return {@inheritDoc}
+		 */
+		@SuppressWarnings("unchecked")
 		public boolean validate(Map<String, ?> object)
 		{
+			for (MetadataType metadataType : metadataTypes)
+			{
+				String uuid = metadataType.getUuid();
+				/*
+				 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
+				 * In this case we can't cast to "?" so here goes some unchecked operations.
+				 */
+				if (!metadataType.getValidator().validate(object.get(uuid)))
+				{
+					return false;
+				}
+			}
+
 			return true;
+		}
+	}
+
+	private class GroupMetadataRenderer implements MetadataRenderer {
+		public String getMetadataTypeEditTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataTypePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataValueEditTemplate()
+		{
+			return "vm/metadata/meta_edit_group.vm";
+		}
+
+		public String getMetadataValuePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
 	}
 }

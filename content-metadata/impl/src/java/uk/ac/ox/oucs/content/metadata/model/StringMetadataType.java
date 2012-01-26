@@ -11,18 +11,16 @@ public class StringMetadataType extends MetadataType<String>
 	//Renders textareas instead of textboxes
 	private boolean longText;
 
-	protected static MetadataConverter<String> metadataConverter = new StringMetadataConverter();
-
 	@Override
 	public MetadataRenderer getRenderer()
 	{
-		return null;	//To change body of implemented methods use File | Settings | File Templates.
+		return new StringMetadataRenderer();
 	}
 
 	@Override
 	public MetadataConverter<String> getConverter()
 	{
-		return metadataConverter;
+		return new StringMetadataConverter();
 	}
 
 	@Override
@@ -35,15 +33,19 @@ public class StringMetadataType extends MetadataType<String>
 	{
 		public boolean validate(String value)
 		{
-			if (value == null || value.isEmpty()) return isRequired();
-			if (minLength > 0 && value.length() < minLength) return false;
-			if (maxLength > 0 && value.length() > maxLength) return false;
-			if (regularExpression != null && !value.matches(regularExpression)) return false;
+			if (value == null || value.isEmpty())
+				return isRequired();
+			if (minLength > 0 && value.length() < minLength)
+				return false;
+			if (maxLength > 0 && value.length() > maxLength)
+				return false;
+			if (regularExpression != null && !value.matches(regularExpression))
+				return false;
 			return true;
 		}
 	}
 
-	private static final class StringMetadataConverter implements MetadataConverter<String>
+	protected final class StringMetadataConverter implements MetadataConverter<String>
 	{
 		public String toString(String object)
 		{
@@ -53,6 +55,30 @@ public class StringMetadataType extends MetadataType<String>
 		public String toObject(String string)
 		{
 			return string;
+		}
+	}
+
+	private final static class StringMetadataRenderer implements MetadataRenderer
+	{
+
+		public String getMetadataTypeEditTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataTypePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataValueEditTemplate()
+		{
+			return "vm/metadata/meta_edit_text.vm";
+		}
+
+		public String getMetadataValuePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
 	}
 }

@@ -34,11 +34,16 @@ public class NumberMetadataType extends MetadataType<Number>
 		public boolean validate(Number value)
 		{
 
-			if (value == null) return isRequired();
-			if (!acceptFloat && value instanceof Float) return false;
-			if (!acceptNegative && value.doubleValue() < 0) return false;
-			if (minimumValue != null && minimumValue.doubleValue() > value.doubleValue()) return false;
-			if (maximumValue != null && maximumValue.doubleValue() < value.doubleValue()) return false;
+			if (value == null)
+				return isRequired();
+			if (!acceptFloat && value instanceof Float)
+				return false;
+			if (!acceptNegative && value.doubleValue() < 0)
+				return false;
+			if (minimumValue != null && minimumValue.doubleValue() > value.doubleValue())
+				return false;
+			if (maximumValue != null && maximumValue.doubleValue() < value.doubleValue())
+				return false;
 
 			return true;
 		}

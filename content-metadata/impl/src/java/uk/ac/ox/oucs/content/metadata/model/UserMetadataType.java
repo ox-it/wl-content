@@ -16,7 +16,8 @@ public class UserMetadataType extends MetadataType<User>
 	private static UserDirectoryService userDirectoryService;
 	private static SiteService siteService;
 
-	public UserMetadataType(UserDirectoryService userDirectoryService, SiteService siteService){
+	public UserMetadataType(UserDirectoryService userDirectoryService, SiteService siteService)
+	{
 		UserMetadataType.userDirectoryService = userDirectoryService;
 		UserMetadataType.siteService = siteService;
 	}
@@ -87,10 +88,13 @@ public class UserMetadataType extends MetadataType<User>
 		}
 	}
 
-	private final class UserMetadataConverter implements MetadataConverter<User>{
+	private final class UserMetadataConverter implements MetadataConverter<User>
+	{
 
 		public String toString(User object)
 		{
+			if(object == null)
+				return null;
 			return object.getId();
 		}
 
@@ -98,6 +102,10 @@ public class UserMetadataType extends MetadataType<User>
 		{
 			try
 			{
+				if(string == null || string.isEmpty()){
+					return null;
+				}
+
 				return userDirectoryService.getUser(string);
 			}
 			catch (UserNotDefinedException e)

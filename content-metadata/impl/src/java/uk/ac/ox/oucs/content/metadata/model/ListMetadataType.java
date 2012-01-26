@@ -20,6 +20,23 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 		this.metadataType = metadataType;
 	}
 
+	public MetadataType<T> getMetadataType()
+	{
+		return metadataType;
+	}
+
+	@Override
+	public String getUuid()
+	{
+		return metadataType.getUuid();
+	}
+
+	@Override
+	public void setUuid(String uuid)
+	{
+		metadataType.setUuid(uuid);
+	}
+
 	public String getName()
 	{
 		return metadataType.getName();
@@ -93,7 +110,7 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 	@Override
 	public MetadataRenderer getRenderer()
 	{
-		return null;	//To change body of implemented methods use File | Settings | File Templates.
+		return new ListMetadataRenderer();
 	}
 
 	@Override
@@ -127,7 +144,7 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 					if (converted != null)
 						values.add(converted);
 				}
-				return new ObjectMapper().writeValueAsString(values);
+				return (!values.isEmpty()) ? new ObjectMapper().writeValueAsString(values) : null;
 			}
 			catch (IOException e)
 			{
@@ -151,7 +168,9 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 
 				for (String value : values)
 				{
-					objects.add(metadataConverter.toObject(value));
+					T converted = metadataConverter.toObject(value);
+					if (converted != null)
+						objects.add(converted);
 				}
 				return objects;
 			}
@@ -170,9 +189,33 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 		{
 			for (T item : objects)
 			{
-				if (!metadataValidator.validate(item)) return false;
+				if (!metadataValidator.validate(item))
+					return false;
 			}
 			return true;
+		}
+	}
+
+	private class ListMetadataRenderer implements MetadataRenderer
+	{
+		public String getMetadataTypeEditTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataTypePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataValueEditTemplate()
+		{
+			return "vm/metadata/meta_edit_list.vm";
+		}
+
+		public String getMetadataValuePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
 	}
 }
