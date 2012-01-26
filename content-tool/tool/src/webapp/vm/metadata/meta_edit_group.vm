@@ -1,28 +1,36 @@
-<div>
-  <p class="discTria" id="metadataShown_$validator.escapeJavascript($group.id)${DOT}${i}"#if ($group.isShowing())
-     style="display:block;"#else style="display:none;"#end>
-    <a id="hideMetadata_$validator.escapeJavascript($group.name)${DOT}${i}" href="#" title="$group.hideLabel">
-      <img id="hideMetadataImage_$validator.escapeJavascript($group.name)${DOT}${i}"
-           src="#imageLink("sakai/collapse.gif")" alt="$group.hideLabel" border="0" width="13" height="13" align="top"/>
-      $validator.escapeHtml($group.name)
-    </a>
-  </p>
+$groupMetadataType.add($groupMetadataLevel, $metadataType)
+$groupMetadataValue.add($groupMetadataLevel, $metadataValue)
 
-  <p class="discTria" id="metadataHidden_$validator.escapeJavascript($group.name)${DOT}${i}"#if ($group.isShowing())
-     style="display:none;"#else style="display:block;"#end>
-    <a id="showMetadata_$validator.escapeJavascript($group.name)${DOT}${i}" href="#" title="$group.showLabel">
-      <img id="showMetadataImage_$validator.escapeJavascript($group.name)${DOT}${i}"
-           src="#imageLink("sakai/expand.gif")" alt="$group.showLabel" border="0" width="13" height="13" align="top"/>
-      $validator.escapeHtml($group.name)
-    </a>
-  </p>
+<p class="discTria" id="metadataShown_${metadataType.uuid}${DOT}${i}" style="display:none;">
+  <a id="hideMetadata_${metadataType.uuid}${DOT}${i}" href="#"
+     title="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)">
+    <img id="hideMetadataImage_${metadataType.uuid}${DOT}${i}" src="#imageLink("sakai/collapse.gif")"
+         alt="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)" border="0" width="13" height="13"
+         align="top"/>
+    $validator.escapeHtml($metadataType.name)
+  </a>
+</p>
+<p class="discTria" id="metadataHidden_${metadataType.uuid}${DOT}${i}" style="display:block;">
+  <a id="showMetadata_${metadataType.uuid}${DOT}${i}" href="#"
+     title="$tlang.getFormattedMessage("metadata.show", $metadataType.name)">
+    <img id="showMetadataImage_${metadataType.uuid}${DOT}${i}" src="#imageLink("sakai/expand.gif")"
+         alt="$tlang.getFormattedMessage("metadata.show", $metadataType.name)" border="0" width="13" height="13"
+         align="top"/>
+    $validator.escapeHtml($metadataType.name)
+  </a>
+</p>
+<div id="metadataDiv_${metadataType.uuid}${DOT}${i}" style="display:none;">
+  #foreach($metadataType in $groupMetadataType.get($groupMetadataLevel).metadataTypes)
+    ## The #set directive is ignored if the value given evaluates to null, to avoid keeping old values
+    ## an empty string is set.
+    #set($metadataValue = "")
+    #set($metadataValue = $groupMetadataValue.get($groupMetadataLevel).get($metadataType.uuid))
+    #set($groupMetadataLevel = $groupMetadataLevel + 1)
 
-  <div id="metadataDiv_$validator.escapeJavascript($group.name)${DOT}${i}"#if ($group.isShowing())
-       style="display:block;"#else style="display:none;"#end>
-    #foreach($tag in $group)
-      <p class="shorttext">
-        <!-- DO THE RENDERING HERE -->
-      </p>
-    #end
-  </div>
+    <p class="shorttext">
+      #parse($metadataType.renderer.metadataValueEditTemplate)
+    </p>
+
+    #set($groupMetadataLevel = $groupMetadataLevel - 1)
+  #end
 </div>

@@ -1,6 +1,6 @@
-<label for="$validator.escapeJavascript("$!{tag.fullname}")${DOT}$i">
-  $tag.label
+<label for="${metadataType.uuid}${DOT}$i">
+  $metadataType.name
 </label>
-<input type="hidden" name="$!{tag.fullname}${DOT}${i}" id="$validator.escapeJavascript("$!{tag.fullname}")${DOT}${i}"
-       value="$!tag.value"/>
-#resources_dateselectionwidget("$!{tag.fullname}" "${i}" $tag.value $dateFormat)
+<input type="hidden" name="$!{metadataType.uuid}${DOT}${i}" id="${metadataType.uuid}${DOT}${i}"
+       value="$!metadataValue"/>
+#resources_dateselectionwidget("${metadataType.uuid}" "${i}" $metadataValue $dateFormat)

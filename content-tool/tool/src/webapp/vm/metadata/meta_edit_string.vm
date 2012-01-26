@@ -1,7 +1,5 @@
-<label for="$validator.escapeJavascript("$!{tag.fullname}")${DOT}$i">
-  $tag.label
+<label for="${metadataType.uuid}${DOT}$i">
+  $metadata.name
 </label>
-<input type="text" size="40"
-       name="$!{tag.fullname}${DOT}$i"
-       id="$validator.escapeJavascript("$!{tag.fullname}")${DOT}$i"
-       value="$!tag.value"/>
+<input type="text" size="40" name="${metadataType.uuid}${DOT}$i" id="${metadataType.uuid}${DOT}$i"
+       value="$metadataValue"/>

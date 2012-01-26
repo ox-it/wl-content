@@ -1,7 +1,9 @@
-<label for="${tag.uuid}${DOT}$i">$tag.name</label>
+<label for="${metadataType.uuid}${DOT}$i">$metadataType.name</label>
 
-<select data-placeholder="$tag.description" style="width: 350px" name="$!{tag.uuid}${DOT}${i}" id="$!{tag.uuid}${DOT}${i}" class="chzn-select">
-  #foreach($user in ${tag.getAllowedValues($site_id)})
-    <option value="$user.id" #if(false) selected #end>$user.displayName</option>
+<select data-placeholder="$metadataType.description" style="width: 350px" name="$!{metadataType.uuid}${DOT}${i}"
+        id="$!{metadataType.uuid}${DOT}${i}" #if($multipleMetadataType.contains($metadataType.uuid)) multiple #end class="chzn-select">
+  <option></option>
+  #foreach($user in ${metadataType.getAllowedValues($site_id)})
+    <option value="$user.id" #if($metadataValue.equals($user) || $metadataValue.contains($user)) selected #end>$user.displayName</option>
   #end
 </select>

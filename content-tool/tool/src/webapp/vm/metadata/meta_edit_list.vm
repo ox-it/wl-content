@@ -1,0 +1,4 @@
+#if($multipleMetadataType.add($metadataType.uuid))
+  #set($metadataType = $metadataType.metadataType)
+  #parse($metadataType.renderer.metadataValueEditTemplate)
+#end
