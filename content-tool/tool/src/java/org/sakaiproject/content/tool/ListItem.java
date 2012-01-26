@@ -93,6 +93,8 @@ import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.Validator;
+import uk.ac.ox.oucs.content.metadata.cover.ContentMetadataService;
+import uk.ac.ox.oucs.content.metadata.model.MetadataType;
 
 /**
  * ListItem
@@ -451,7 +453,8 @@ public class ListItem
 
 	protected int notification = NotificationService.NOTI_NONE;
 
-	protected List<MetadataGroup> metadataGroups;
+	protected List<MetadataType> metadataGroups;
+	protected Map<String, Object> metadataValues;
 
 	private int constructor;
 
@@ -1602,7 +1605,7 @@ public class ListItem
 		{
 			captureHtmlChange(params, index);
 		}
-		if(this.metadataGroups != null && ! this.metadataGroups.isEmpty())
+		if(this.metadataGroups != null && !this.metadataGroups.isEmpty())
 		{
 			this.captureOptionalPropertyValues(params, index);
 		}
@@ -3543,267 +3546,52 @@ public class ListItem
 	 */
 	public void initMetadataGroups()
 	{
-		if(isOptionalPropertiesEnabled() && typeSupportsOptionalProperties())
+		//TODO get only metadata related to the current entity and site
+		metadataGroups = ContentMetadataService.getInstance().getMetadataAvailable();
+		metadataValues = new HashMap<String, Object>(metadataGroups.size());
+		for (MetadataType metadataGroup : metadataGroups)
 		{
-			if(this.metadataGroups == null)
-			{
-				metadataGroups =  new ArrayList<MetadataGroup>();
-			}
-			boolean optionalPropertiesDefined = false;
-			String opt_prop_name = "opt_props";
-			
-			for(MetadataGroup group : this.metadataGroups)
-			{
-				if(group == null)
-				{
-					continue;
-				}
-				if(opt_prop_name.equals(group.getName()))
-				{
-					optionalPropertiesDefined = true;
-					break;
-				}
-			}
-			// define DublinCore
-			if( !optionalPropertiesDefined )
-			{
-				MetadataGroup dc = new MetadataGroup("opt_props");
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_TITLE));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_DESCRIPTION));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_ALTERNATIVE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_CREATOR));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_PUBLISHER));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_SUBJECT));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_CREATED));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_ISSUED));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_MODIFIED));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_TABLEOFCONTENTS));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_ABSTRACT));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_CONTRIBUTOR));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_TYPE));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_FORMAT));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_IDENTIFIER));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_SOURCE));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_LANGUAGE));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_COVERAGE));
-				// dc.add(ResourcesMetadata.PROPERTY_DC_RIGHTS);
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_AUDIENCE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_EDULEVEL));
-				
-				/* Filesystem and file-like mount points */
-				//dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_FSMOUNT_ACTIVE));
-					
-				metadataGroups.add(dc);
-			}
-
-			//Map metadata = new HashMap();
-			if(this.metadataGroups != null && ! this.metadataGroups.isEmpty())
-			{
-				for(MetadataGroup metadata_group : this.metadataGroups)
-				{
-					if(metadata_group == null)
-					{
-						continue;
-					}
-					for(ResourcesMetadata prop : (List<ResourcesMetadata>) metadata_group)
-					{
-						if(prop == null)
-						{
-							continue;
-						}
-						String name = prop.getFullname();
-						String widget = prop.getWidget();
-						if(widget.equals(ResourcesMetadata.WIDGET_DATE) || widget.equals(ResourcesMetadata.WIDGET_DATETIME) || widget.equals(ResourcesMetadata.WIDGET_TIME))
-						{
-							Time time = null;
-							if(properties == null)
-							{
-								// use "now" as default in that case
-								time = TimeService.newTime();
-							}
-							else
-							{
-								try
-								{
-									time = properties.getTimeProperty(name);
-								}
-								catch(Exception e)
-								{
-									// use "now" as default in that case
-									time = TimeService.newTime();
-								}
-							}
-							prop.setValue(name, time);
-						}
-						else
-						{
-							if(properties != null)
-							{
-								String value = properties.getPropertyFormatted(name);
-								try
-								{
-									Time time = properties.getTimeProperty(name);
-									value = time.toStringLocalDate();
-								}
-								catch(Exception ignore)
-								{
-								}
-								prop.setValue(name, value);
-							}
-						}
-					}
-				}
-			}
-			/*
-			// define DublinCore
-			if(!metadataGroups.contains(new MetadataGroup("Test of Datatypes")))
-			{
-				MetadataGroup dc = new MetadataGroup("Test of Datatypes");
-				dc.add(ResourcesMetadata.PROPERTY_DC_TITLE);
-				dc.add(ResourcesMetadata.PROPERTY_DC_DESCRIPTION);
-				dc.add(ResourcesMetadata.PROPERTY_DC_ANYURI);
-				dc.add(ResourcesMetadata.PROPERTY_DC_DOUBLE);
-				dc.add(ResourcesMetadata.PROPERTY_DC_DATETIME);
-				dc.add(ResourcesMetadata.PROPERTY_DC_TIME);
-				dc.add(ResourcesMetadata.PROPERTY_DC_DATE);
-				dc.add(ResourcesMetadata.PROPERTY_DC_BOOLEAN);
-				dc.add(ResourcesMetadata.PROPERTY_DC_INTEGER);
-				metadataGroups.add(dc);
-				state.setAttribute(STATE_METADATA_GROUPS, metadataGroups);
-			}
-			*/
+			String stringValue = this.entity.getProperties().getProperty(metadataGroup.getUuid());
+			Object objectValue = metadataGroup.getConverter().toObject(stringValue);
+			metadataValues.put(metadataGroup.getUuid(), objectValue);
 		}
 	}
 
 	protected void captureOptionalPropertyValues(ParameterParser params, String index)
 	{
-		if(this.metadataGroups == null)
+		metadataValues = new HashMap<String, Object>(metadataGroups.size());
+		for (MetadataType metadataGroup : metadataGroups)
 		{
-			return;
+			Object objectValue = metadataGroup.getConverter().toObject(params.getMultipleProperties(), index);
+			metadataValues.put(metadataGroup.getUuid(), objectValue);
 		}
-		
-		for(MetadataGroup group : this.metadataGroups)
-		{
-			if(group == null)
-			{
-				continue;
-			}
-			
-			Iterator<ResourcesMetadata> it = group.iterator();
-			while(it.hasNext())
-			{
-				ResourcesMetadata prop = it.next();
-				String propname = prop.getFullname() + index;
-	
-				if(ResourcesMetadata.WIDGET_NESTED.equals(prop.getWidget()))
-				{
-					// do nothing
-				}
-				else if(ResourcesMetadata.WIDGET_BOOLEAN.equals(prop.getWidget()))
-				{
-					String value = params.getString(propname);
-					if(value == null || Boolean.FALSE.toString().equals(value))
-					{
-						prop.setValue(0, Boolean.FALSE.toString());
-					}
-					else
-					{
-						prop.setValue(0, Boolean.TRUE.toString());
-					}
-				}
-				else if(ResourcesMetadata.WIDGET_DATE.equals(prop.getWidget()) || ResourcesMetadata.WIDGET_DATETIME.equals(prop.getWidget()) || ResourcesMetadata.WIDGET_TIME.equals(prop.getWidget()))
-				{
-					int year = 0;
-					int month = 0;
-					int day = 0;
-					int hour = 0;
-					int minute = 0;
-					int second = 0;
-					int millisecond = 0;
-					String ampm = "";
-	
-					if(prop.getWidget().equals(ResourcesMetadata.WIDGET_DATE) ||
-						prop.getWidget().equals(ResourcesMetadata.WIDGET_DATETIME))
-					{
-						year = params.getInt(prop.getFullname() + "_year" + index, year);
-						month = params.getInt(prop.getFullname() + "_month" + index, month);
-						day = params.getInt(prop.getFullname() + "_day" + index, day);
-					}
-					if(prop.getWidget().equals(ResourcesMetadata.WIDGET_TIME) ||
-						prop.getWidget().equals(ResourcesMetadata.WIDGET_DATETIME))
-					{
-						hour = params.getInt(prop.getFullname() + "_hour" + index, hour);
-						minute = params.getInt(prop.getFullname() + "_minute" + index, minute);
-						second = params.getInt(prop.getFullname() + "_second" + index, second);
-						millisecond = params.getInt(prop.getFullname() + "_millisecond" + index, millisecond);
-						ampm = params.getString(prop.getFullname() + "_ampm" + index);
-	
-						if("pm".equalsIgnoreCase(ampm))
-						{
-							if(hour < 12)
-							{
-								hour += 12;
-							}
-						}
-						else if(hour == 12)
-						{
-							hour = 0;
-						}
-					}
-					if(hour > 23)
-					{
-						hour = hour % 24;
-						day++;
-					}
-	
-					Time value = TimeService.newTimeLocal(year, month, day, hour, minute, second, millisecond);
-					prop.setValue(0, value);
-				}
-				else if(ResourcesMetadata.WIDGET_ANYURI.equals(prop.getWidget()))
-				{
-					String value = params.getString(propname);
-					if(value != null && ! value.trim().equals(""))
-					{
-						Reference ref = EntityManager.newReference(ContentHostingService.getReference(value));
-						prop.setValue(0, ref);
-					}
-				}
-				else
-				{
-					String value = params.getString(propname);
-					if(value != null)
-					{
-						prop.setValue(0, value);
-					}
-				}
-			}
-		}
+	}
 
-	}	// capturePropertyValues
-	
+	/**
+	 * Add the metadata content in the entity properties
+	 * <p/>
+	 * Converts and validate the user given values before adding then to the entity
+	 * INFO: For the suppress warning, see the content of the method
+	 *
+	 * @param props Entity properties
+	 */
+	@SuppressWarnings("unchecked")
 	protected void setMetadataPropertiesOnEntity(ResourcePropertiesEdit props) 
 	{
-		if(this.metadataGroups == null || this.metadataGroups.isEmpty())
+		if(this.metadataValues == null)
 		{
 			return;
 		}
 		
-		for(MetadataGroup metadataGroup : this.metadataGroups)
+		for(MetadataType metadataType : this.metadataGroups)
 		{
-			if(metadataGroup == null)
-			{
-				continue;
-			}
-
-			for(ResourcesMetadata prop : (List<ResourcesMetadata>) metadataGroup)
-			{
-				if(prop == null || prop.getValue(0) == null)
-				{
-					continue;
-				}
-				
-				props.addProperty(prop.getFullname(), prop.getValue(0).toString());
-			}
+			/*
+			 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
+			 * In this case we can't cast to "?" so here goes some unchecked operations.
+			 */
+			metadataType.getValidator().validate(metadataValues.get(metadataType.getUuid()));
+			String value = metadataType.getConverter().toString(metadataValues.get(metadataType.getUuid()));
+			props.addProperty(metadataType.getUuid(), value);
 		}
 	}
 
@@ -3820,23 +3608,15 @@ public class ListItem
     	return optionalPropertiesEnabled;
     }
 
-	/**
-     * @return the metadataGroups
-     */
-    public List<MetadataGroup> getMetadataGroups()
-    {
-    	if(this.metadataGroups == null && isOptionalPropertiesEnabled() && typeSupportsOptionalProperties())
-    	{
-    		
-    		ResourceProperties properties = null;
-    		if(this.entity != null)
-    		{
-    			properties = this.entity.getProperties();
-    		}
-			this.initMetadataGroups(properties );
-    	}
-    	return metadataGroups;
-    }
+	public List<MetadataType> getMetadataGroups()
+	{
+		return metadataGroups;
+	}
+
+	public Map<String, Object> getMetadataValues()
+	{
+		return metadataValues;
+	}
 
 	private boolean typeSupportsOptionalProperties()
     {
