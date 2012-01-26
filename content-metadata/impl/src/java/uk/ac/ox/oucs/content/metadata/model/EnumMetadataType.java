@@ -1,6 +1,7 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Colin Hebert
@@ -84,6 +85,11 @@ public class EnumMetadataType extends MetadataType<String>
 		public String toObject(String string)
 		{
 			return string;
+		}
+
+		public String toObject(Map properties, String propertySuffix)
+		{
+			return (String) properties.get(getUuid() + propertySuffix);
 		}
 	}
 }

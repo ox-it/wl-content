@@ -4,8 +4,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Colin Hebert
@@ -178,6 +177,30 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 			{
 				throw new RuntimeException(e);
 			}
+		}
+
+		//TODO: Finish the to object from properties
+		public List<T> toObject(Map properties, String propertySuffix)
+		{
+			List<T> list = new ArrayList<T>();
+			String[] stringValues;
+			Object o = properties.get(getUuid() + propertySuffix);
+			if (o == null)
+				return list;
+			else if (o instanceof String)
+				stringValues = new String[]{(String) o};
+			else
+				stringValues = (String[]) o;
+
+			//Workaround to confuse the Metadata making it think that it's getting an properties map
+			Properties fakeProperty = new Properties();
+			for (String value : stringValues)
+			{
+				T converted = metadataType.getConverter().toObject(Collections.<Object, Object>singletonMap(getUuid(), value), "");
+				if (converted != null)
+					list.add(converted);
+			}
+			return list;
 		}
 	}
 

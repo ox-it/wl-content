@@ -7,6 +7,7 @@ import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Colin Hebert
@@ -112,6 +113,11 @@ public class UserMetadataType extends MetadataType<User>
 			{
 				throw new RuntimeException(e);
 			}
+		}
+
+		public User toObject(Map properties, String propertySuffix)
+		{
+			return toObject((String) properties.get(getUuid() + propertySuffix));
 		}
 	}
 }

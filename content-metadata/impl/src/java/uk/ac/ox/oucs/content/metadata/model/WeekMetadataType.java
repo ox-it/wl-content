@@ -1,5 +1,7 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
+import java.util.Map;
+
 /**
  * @author Colin Hebert
  */
@@ -45,6 +47,11 @@ public class WeekMetadataType extends MetadataType<Integer>
 			if(string == null)
 				return null;
 			return Integer.parseInt(string);
+		}
+
+		public Integer toObject(Map properties, String propertySuffix)
+		{
+			return toObject((String) properties.get(getUuid() + propertySuffix));
 		}
 	}
 

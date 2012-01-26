@@ -1,5 +1,7 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
+import java.util.Map;
+
 /**
  * @author Colin Hebert
  */
@@ -67,6 +69,11 @@ public class NumberMetadataType extends MetadataType<Number>
 				return Float.parseFloat(string);
 			else
 				return Integer.parseInt(string);
+		}
+
+		public Number toObject(Map properties, String propertySuffix)
+		{
+			return toObject((String) properties.get(getUuid() + propertySuffix));
 		}
 	}
 }

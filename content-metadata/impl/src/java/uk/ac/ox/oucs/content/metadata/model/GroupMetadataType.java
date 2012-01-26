@@ -110,6 +110,19 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 				throw new RuntimeException(e);
 			}
 		}
+
+		public Map<String, ?> toObject(Map properties, String propertySuffix)
+		{
+			Map<String, Object> metaValues = new HashMap<String, Object>(metadataTypes.size());
+			for (MetadataType metadataType : metadataTypes)
+			{
+				String uuid = metadataType.getUuid();
+				Object converted = metadataType.getConverter().toObject(properties, propertySuffix);
+				if (converted != null)
+					metaValues.put(uuid, converted);
+			}
+			return metaValues;
+		}
 	}
 
 	private final class GroupMetadataValidator implements MetadataValidator<Map<String, ?>>

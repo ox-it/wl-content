@@ -3,6 +3,7 @@ package uk.ac.ox.oucs.content.metadata.model;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Colin Hebert
@@ -70,6 +71,11 @@ public class DateMetadataType extends MetadataType<Date>
 			{
 				throw new RuntimeException(e);
 			}
+		}
+
+		public Date toObject(Map properties, String propertySuffix)
+		{
+			return toObject((String) properties.get(getUuid() + propertySuffix));
 		}
 	}
 }
