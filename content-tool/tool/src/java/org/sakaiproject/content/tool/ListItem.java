@@ -788,11 +788,7 @@ public class ListItem
 			
 			Collections.sort( site_groups, groupComparator );
 		}
-//		if(isOptionalPropertiesEnabled())
-//		{
-//			initMetadataGroups(props);
-//		}
-				
+
 		setSiteGroups(site_groups);
 		
 		this.accessMode = entity.getAccess();
@@ -974,7 +970,6 @@ public class ListItem
 			contentService = (org.sakaiproject.content.api.ContentHostingService) ComponentManager.get(org.sakaiproject.content.api.ContentHostingService.class);
 		}
 		this.entity = null;
-		//this.initMetadataGroups(null);
 		this.containingCollectionId = parent.getId();
 		ResourceTypeRegistry registry = (ResourceTypeRegistry) ComponentManager.get("org.sakaiproject.content.api.ResourceTypeRegistry");
 		this.resourceType = pipe.getAction().getTypeId();
@@ -3546,7 +3541,7 @@ public class ListItem
 	/**
 	 * initialize the metadata context
 	 */
-	public void initMetadataGroups(ResourceProperties properties)
+	public void initMetadataGroups()
 	{
 		if(isOptionalPropertiesEnabled() && typeSupportsOptionalProperties())
 		{
@@ -3679,43 +3674,6 @@ public class ListItem
 			*/
 		}
 	}
-	
-	/**
-	 * Add variables and constants to the velocity context to render an editor
-	 * for inputing and modifying optional metadata properties about a resource.
-	 */
-	protected void metadataGroupsIntoContext(Context context)
-	{
-
-		context.put("STRING", ResourcesMetadata.WIDGET_STRING);
-		context.put("TEXTAREA", ResourcesMetadata.WIDGET_TEXTAREA);
-		context.put("BOOLEAN", ResourcesMetadata.WIDGET_BOOLEAN);
-		context.put("INTEGER", ResourcesMetadata.WIDGET_INTEGER);
-		context.put("DOUBLE", ResourcesMetadata.WIDGET_DOUBLE);
-		context.put("DATE", ResourcesMetadata.WIDGET_DATE);
-		context.put("TIME", ResourcesMetadata.WIDGET_TIME);
-		context.put("DATETIME", ResourcesMetadata.WIDGET_DATETIME);
-		context.put("ANYURI", ResourcesMetadata.WIDGET_ANYURI);
-		context.put("WYSIWYG", ResourcesMetadata.WIDGET_WYSIWYG);
-
-		context.put("today", TimeService.newTime());
-		
-		if(this.metadataGroups == null && isOptionalPropertiesEnabled() && typeSupportsOptionalProperties())
-		{
-			ResourceProperties props = null;
-			if(this.entity != null)
-			{
-				props = this.entity.getProperties();
-			}
-			this.initMetadataGroups(props);
-		}
-		
-//		if(metadataGroups != null && !metadataGroups.isEmpty())
-//		{
-//			context.put("metadataGroups", metadataGroups);
-//		}
-
-	}	// metadataGroupsIntoContext
 
 	protected void captureOptionalPropertyValues(ParameterParser params, String index)
 	{

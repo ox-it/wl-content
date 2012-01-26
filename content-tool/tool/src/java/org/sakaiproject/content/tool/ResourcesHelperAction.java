@@ -369,7 +369,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		ListItem parent = new ListItem(pipe.getContentEntity());
 		parent.setPubviewPossible(! preventPublicDisplay);
 		ListItem model = new ListItem(pipe, parent, defaultRetractDate);
-		model.metadataGroupsIntoContext(context);
+		model.initMetadataGroups();
 		// model.setPubviewPossible(! preventPublicDisplay);
 				
 		context.put("model", model);
@@ -435,7 +435,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		ListItem parent = new ListItem(pipe.getContentEntity());
 		parent.setPubviewPossible(! preventPublicDisplay);
 		ListItem model = new ListItem(pipe, parent, defaultRetractDate);
-		model.metadataGroupsIntoContext(context);
+		model.initMetadataGroups();
 		// model.setPubviewPossible(! preventPublicDisplay);
 		
 		context.put("model", model);
@@ -631,7 +631,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		ListItem parent = new ListItem(pipe.getContentEntity());
 		parent.setPubviewPossible(! preventPublicDisplay);
 		ListItem model = new ListItem(pipe, parent, defaultRetractDate);
-		model.metadataGroupsIntoContext(context);
+		model.initMetadataGroups();
 		// model.setPubviewPossible(! preventPublicDisplay);
 				
 		context.put("model", model);
@@ -922,7 +922,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 			}
 			if(ListItem.isOptionalPropertiesEnabled())
 			{
-				newFolder.initMetadataGroups(null);
+				newFolder.initMetadataGroups();
 			}
 
 			// capture properties
@@ -1184,7 +1184,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 			
 			if(ListItem.isOptionalPropertiesEnabled())
 			{
-				newFile.initMetadataGroups(null);
+				newFile.initMetadataGroups();
 			}
 			
 			// capture properties
@@ -1469,7 +1469,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 
 				if(ListItem.isOptionalPropertiesEnabled())
 				{
-					newFile.initMetadataGroups(null);
+					newFile.initMetadataGroups();
 				}
 
 				// capture properties
