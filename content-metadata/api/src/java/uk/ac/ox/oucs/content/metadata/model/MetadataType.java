@@ -4,17 +4,45 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * Description of a metadata field, specifies its values, constraints and provides tools for validation, rendering and conversion
+ *
  * @author Colin Hebert
  */
 public abstract class MetadataType<T> implements Serializable
 {
+	/**
+	 * Unique name used to identify the Metadata field
+	 */
 	private String uuid;
+
+	/**
+	 * Name used in the view layer
+	 */
 	private String name;
+
+	/**
+	 * Simple description
+	 */
 	private String description;
+
+	/**
+	 * Default value
+	 */
 	private T defaultValue;
+
+	/**
+	 * Optionality of the field
+	 */
 	private boolean required;
+
+	/**
+	 * List of contentTypes using this metadata
+	 */
 	private List<String> contentTypeApplicable;
 
+	/**
+	 * Backward compatibility with DublinCore
+	 */
 	private String xmlElement;
 	private String xmlType;
 
@@ -98,10 +126,25 @@ public abstract class MetadataType<T> implements Serializable
 		this.xmlType = xmlType;
 	}
 
+	/**
+	 * Gets a rendering tool allowing to select a template for this Metadata depending on the current action
+	 *
+	 * @return A {@link MetadataRenderer} customizing the rendering
+	 */
 	public abstract MetadataRenderer getRenderer();
 
+	/**
+	 * Gets a conversion tool describing the basic conversions used by this metadata
+	 *
+	 * @return A {@link MetadataConverter}
+	 */
 	public abstract MetadataConverter<T> getConverter();
 
+	/**
+	 * Gets a validation tool to enforce constraints on the metadata values
+	 *
+	 * @return A {@link MetadataConverter}
+	 */
 	public abstract MetadataValidator<T> getValidator();
 
 }

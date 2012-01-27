@@ -4,6 +4,8 @@ import org.sakaiproject.component.cover.ComponentManager;
 import uk.ac.ox.oucs.content.metadata.logic.MetadataService;
 
 /**
+ * Static cover for MetadataService
+ *
  * @author Colin Hebert
  */
 public final class ContentMetadataService
@@ -12,6 +14,8 @@ public final class ContentMetadataService
 
 	/**
 	 * Access the component instance: special cover only method.
+	 * <p/>
+	 * Automatically caches the instance if required.
 	 *
 	 * @return the component instance.
 	 */
