@@ -1,7 +1,7 @@
-<label for="${metadataType.uuid}${DOT}$i">$metadataType.name</label>
+<label for="${metadataType.uuid}${suffix}">$metadataType.name</label>
 
-<select data-placeholder="$metadataType.description" style="width: 350px" name="$!{metadataType.uuid}${DOT}${i}"
-        id="$!{metadataType.uuid}${DOT}${i}" #if($multipleMetadataType.contains($metadataType.uuid)) multiple #end
+<select data-placeholder="$metadataType.description" style="width: 350px" name="$!{metadataType.uuid}${suffix}"
+        id="$!{metadataType.uuid}${suffix}" #if($multipleMetadataType.contains($metadataType.uuid)) multiple #end
         class="chzn-select">
   #if(!$multipleMetadataType.contains($metadataType.uuid))
     <option></option>

@@ -1,5 +1,6 @@
+#set($suffix = "${DOT}$i")
 ######################## ================ Optional Properties of Item ================ ########################
-<input type="hidden" name="metadataGroup${DOT}$i" id="metadataGroup${DOT}$i" value=""/>
+<input type="hidden" name="metadataGroup${suffix}" id="metadataGroup${suffix}" value=""/>
 #if(!$item && $model)#set($item = $model)#end
 #set($multipleMetadataType = [])
 #set($groupMetadataLevel = 0)

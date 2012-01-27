@@ -1,5 +1,5 @@
-<label for="${metadataType.uuid}${DOT}$i">
+<label for="${metadataType.uuid}${suffix}">
   $metadata.name
 </label>
-<input type="text" size="40" name="${metadataType.uuid}${DOT}$i" id="${metadataType.uuid}${DOT}$i"
+<input type="text" size="40" name="${metadataType.uuid}${suffix}" id="${metadataType.uuid}${suffix}"
        value="$metadataValue"/>

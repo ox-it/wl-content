@@ -1,25 +1,25 @@
 $groupMetadataType.add($groupMetadataLevel, $metadataType)
 $groupMetadataValue.add($groupMetadataLevel, $metadataValue)
 
-<p class="discTria" id="metadataShown_${metadataType.uuid}${DOT}${i}" style="display:none;">
-  <a id="hideMetadata_${metadataType.uuid}${DOT}${i}" href="#"
+<p class="discTria" id="metadataShown_${metadataType.uuid}${suffix}" style="display:none;">
+  <a id="hideMetadata_${metadataType.uuid}${suffix}" href="#"
      title="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)">
-    <img id="hideMetadataImage_${metadataType.uuid}${DOT}${i}" src="#imageLink("sakai/collapse.gif")"
+    <img id="hideMetadataImage_${metadataType.uuid}${suffix}" src="#imageLink("sakai/collapse.gif")"
          alt="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)" border="0" width="13" height="13"
          align="top"/>
     $validator.escapeHtml($metadataType.name)
   </a>
 </p>
-<p class="discTria" id="metadataHidden_${metadataType.uuid}${DOT}${i}" style="display:block;">
-  <a id="showMetadata_${metadataType.uuid}${DOT}${i}" href="#"
+<p class="discTria" id="metadataHidden_${metadataType.uuid}${suffix}" style="display:block;">
+  <a id="showMetadata_${metadataType.uuid}${suffix}" href="#"
      title="$tlang.getFormattedMessage("metadata.show", $metadataType.name)">
-    <img id="showMetadataImage_${metadataType.uuid}${DOT}${i}" src="#imageLink("sakai/expand.gif")"
+    <img id="showMetadataImage_${metadataType.uuid}${suffix}" src="#imageLink("sakai/expand.gif")"
          alt="$tlang.getFormattedMessage("metadata.show", $metadataType.name)" border="0" width="13" height="13"
          align="top"/>
     $validator.escapeHtml($metadataType.name)
   </a>
 </p>
-<div id="metadataDiv_${metadataType.uuid}${DOT}${i}" style="display:none;">
+<div id="metadataDiv_${metadataType.uuid}${suffix}" style="display:none;">
   #foreach($metadataType in $groupMetadataType.get($groupMetadataLevel).metadataTypes)
     ## The #set directive is ignored if the value given evaluates to null, to avoid keeping old values
     ## an empty string is set.
