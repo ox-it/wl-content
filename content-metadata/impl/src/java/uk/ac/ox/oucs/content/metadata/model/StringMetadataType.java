@@ -14,6 +14,46 @@ public class StringMetadataType extends MetadataType<String>
 	//Renders textareas instead of textboxes
 	private boolean longText;
 
+	public int getMinLength()
+	{
+		return minLength;
+	}
+
+	public void setMinLength(int minLength)
+	{
+		this.minLength = minLength;
+	}
+
+	public int getMaxLength()
+	{
+		return maxLength;
+	}
+
+	public void setMaxLength(int maxLength)
+	{
+		this.maxLength = maxLength;
+	}
+
+	public String getRegularExpression()
+	{
+		return regularExpression;
+	}
+
+	public void setRegularExpression(String regularExpression)
+	{
+		this.regularExpression = regularExpression;
+	}
+
+	public boolean isLongText()
+	{
+		return longText;
+	}
+
+	public void setLongText(boolean longText)
+	{
+		this.longText = longText;
+	}
+
 	@Override
 	public MetadataRenderer getRenderer()
 	{
@@ -86,7 +126,7 @@ public class StringMetadataType extends MetadataType<String>
 
 		public String getMetadataValueEditTemplate()
 		{
-			return "vm/metadata/meta_edit_text.vm";
+			return "vm/metadata/meta_edit_string.vm";
 		}
 
 		public String getMetadataValuePrintTemplate()

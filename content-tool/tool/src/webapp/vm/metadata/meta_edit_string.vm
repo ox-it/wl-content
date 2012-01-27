@@ -1,5 +1,19 @@
-<label for="${metadataType.uuid}${suffix}">
-  $metadata.name
-</label>
-<input type="text" size="40" name="${metadataType.uuid}${suffix}" id="${metadataType.uuid}${suffix}"
-       value="$metadataValue"/>
+<label for="${metadataType.uuid}${suffix}">$metadataType.name</label>
+
+#if($multipleMetadataType.contains($metadataType.uuid))
+  #foreach($value in $metadataValue)
+    #if($metadataType.longText)
+    <textarea name="${metadataType.uuid}${suffix}" id="${metadataType.uuid}${suffix}">$value</textarea>
+    #else
+    <input type="text" size="40" name="${metadataType.uuid}${suffix}" id="${metadataType.uuid}${suffix}"
+           value="$value"/>
+    #end
+  #end
+#else
+  #if($metadataType.longText)
+  <textarea name="${metadataType.uuid}${suffix}" id="${metadataType.uuid}${suffix}">$metadataValue</textarea>
+  #else
+  <input type="text" size="40" name="${metadataType.uuid}${suffix}" id="${metadataType.uuid}${suffix}"
+         value="$metadataValue"/>
+  #end
+#end
