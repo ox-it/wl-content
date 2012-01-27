@@ -1,5 +1,6 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -37,16 +38,21 @@ public class WeekMetadataType extends MetadataType<Integer>
 	{
 		public String toString(Integer object)
 		{
-			if(object == null)
+			if (object == null)
 				return null;
 			return object.toString();
 		}
 
 		public Integer toObject(String string)
 		{
-			if(string == null)
+			if (string == null)
 				return null;
 			return Integer.parseInt(string);
+		}
+
+		public Map<Object, Object> toProperties(Integer object)
+		{
+			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
 		}
 
 		public Integer toObject(Map properties, String propertySuffix)

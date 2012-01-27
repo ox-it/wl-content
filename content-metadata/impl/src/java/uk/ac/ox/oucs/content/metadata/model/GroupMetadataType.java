@@ -27,6 +27,17 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 	}
 
 	@Override
+	public Map<String, ?> getDefaultValue()
+	{
+		Map<String, Object> defaultValue = new HashMap<String, Object>();
+		for (MetadataType<?> metadataType : metadataTypes)
+		{
+			defaultValue.put(metadataType.getUuid(), metadataType.getDefaultValue());
+		}
+		return defaultValue;
+	}
+
+	@Override
 	public MetadataRenderer getRenderer()
 	{
 		return new GroupMetadataRenderer();
@@ -111,6 +122,16 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 			}
 		}
 
+		public Map<Object, Object> toProperties(Map<String, ?> object)
+		{
+			Map<Object, Object> map = new HashMap<Object, Object>();
+			for (MetadataType metadataType : metadataTypes)
+			{
+				map.putAll(metadataType.getConverter().toProperties(object.get(metadataType.getUuid())));
+			}
+			return map;
+		}
+
 		public Map<String, ?> toObject(Map properties, String propertySuffix)
 		{
 			Map<String, Object> metaValues = new HashMap<String, Object>(metadataTypes.size());
@@ -155,7 +176,8 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 		}
 	}
 
-	private class GroupMetadataRenderer implements MetadataRenderer {
+	private class GroupMetadataRenderer implements MetadataRenderer
+	{
 		public String getMetadataTypeEditTemplate()
 		{
 			return null;	//To change body of implemented methods use File | Settings | File Templates.

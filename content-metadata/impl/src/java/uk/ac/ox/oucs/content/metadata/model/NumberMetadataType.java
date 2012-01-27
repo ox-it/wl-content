@@ -1,5 +1,6 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -69,6 +70,12 @@ public class NumberMetadataType extends MetadataType<Number>
 				return Float.parseFloat(string);
 			else
 				return Integer.parseInt(string);
+		}
+
+		public Map<Object, Object> toProperties(Number object)
+		{
+			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
+
 		}
 
 		public Number toObject(Map properties, String propertySuffix)

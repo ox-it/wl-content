@@ -2,6 +2,7 @@ package uk.ac.ox.oucs.content.metadata.model;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class DateMetadataType extends MetadataType<Date>
 
 		public Date toObject(String string)
 		{
-			if(string == null)
+			if (string == null)
 				return null;
 			try
 			{
@@ -71,6 +72,11 @@ public class DateMetadataType extends MetadataType<Date>
 			{
 				throw new RuntimeException(e);
 			}
+		}
+
+		public Map<Object, Object> toProperties(Date object)
+		{
+			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
 		}
 
 		public Date toObject(Map properties, String propertySuffix)

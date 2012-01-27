@@ -1,6 +1,7 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -85,6 +86,12 @@ public class EnumMetadataType extends MetadataType<String>
 		public String toObject(String string)
 		{
 			return string;
+		}
+
+		public Map<Object, Object> toProperties(String object)
+		{
+			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
+
 		}
 
 		public String toObject(Map properties, String propertySuffix)

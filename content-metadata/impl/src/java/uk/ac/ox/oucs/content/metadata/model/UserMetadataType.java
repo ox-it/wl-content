@@ -7,6 +7,7 @@ import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -94,7 +95,7 @@ public class UserMetadataType extends MetadataType<User>
 
 		public String toString(User object)
 		{
-			if(object == null)
+			if (object == null)
 				return null;
 			return object.getId();
 		}
@@ -103,7 +104,8 @@ public class UserMetadataType extends MetadataType<User>
 		{
 			try
 			{
-				if(string == null || string.isEmpty()){
+				if (string == null || string.isEmpty())
+				{
 					return null;
 				}
 
@@ -113,6 +115,11 @@ public class UserMetadataType extends MetadataType<User>
 			{
 				throw new RuntimeException(e);
 			}
+		}
+
+		public Map<Object, Object> toProperties(User object)
+		{
+			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
 		}
 
 		public User toObject(Map properties, String propertySuffix)

@@ -4,7 +4,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Colin Hebert
@@ -179,6 +182,22 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 			}
 		}
 
+		public Map<Object, Object> toProperties(List<T> object)
+		{
+			if (object == null || object.isEmpty())
+				return null;
+
+			List<String> values = new ArrayList<String>(object.size());
+			for (T item : object)
+			{
+				String converted = metadataConverter.toString(item);
+				if (converted != null)
+					values.add(converted);
+			}
+
+			return Collections.<Object, Object>singletonMap(getUuid(), values);
+		}
+
 		//TODO: Finish the to object from properties
 		public List<T> toObject(Map properties, String propertySuffix)
 		{
@@ -193,7 +212,6 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 				stringValues = (String[]) o;
 
 			//Workaround to confuse the Metadata making it think that it's getting an properties map
-			Properties fakeProperty = new Properties();
 			for (String value : stringValues)
 			{
 				T converted = metadataType.getConverter().toObject(Collections.<Object, Object>singletonMap(getUuid(), value), "");
