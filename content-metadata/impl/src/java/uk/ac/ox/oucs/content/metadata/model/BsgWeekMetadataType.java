@@ -1,83 +1,104 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * @author Colin Hebert
  */
 public class BsgWeekMetadataType extends WeekMetadataType
 {
-	//TODO : Temporary
-	private static enum BSGWeekName
+	private static final Map<Integer, String> weekNames = new LinkedHashMap<Integer, String>(52);
+
+	public BsgWeekMetadataType()
 	{
-		WEEK_00("Presession 1/Michaelmas -2"),
-		WEEK_01("Presession 2/Michaelmas -1"),
-		WEEK_02("Michaelmas 0"),
-		WEEK_03("Michaelmas 1"),
-		WEEK_04("Michaelmas 2"),
-		WEEK_05("Michaelmas 3"),
-		WEEK_06("Michaelmas 4"),
-		WEEK_07("Michaelmas 5"),
-		WEEK_08("Michaelmas 6"),
-		WEEK_09("Michaelmas 7"),
-		WEEK_10("Michaelmas 8"),
-		WEEK_11("Michaelmas 9"),
-		WEEK_12("Michaelmas 10"),
-		WEEK_13("Winter Break 1/Michaelmas 11"),
-		WEEK_14("Winter Break 2/Michaelmas 12"),
-		WEEK_15("Winter Break 3/Hilary -1"),
-		WEEK_16("Hilary 0"),
-		WEEK_17("Hilary 1"),
-		WEEK_18("Hilary 2"),
-		WEEK_19("Hilary 3"),
-		WEEK_20("Hilary 4"),
-		WEEK_21("Hilary 5"),
-		WEEK_22("Hilary 6"),
-		WEEK_23("Hilary 7"),
-		WEEK_24("Hilary 8"),
-		WEEK_25("Hilary 9"),
-		WEEK_26("Hilary 10"),
-		WEEK_27("Spring Break 1/Hilary 11"),
-		WEEK_28("Spring Break 2/Hilary 12"),
-		WEEK_29("Spring Break 3/Trinity -1"),
-		WEEK_30("Trinity 0"),
-		WEEK_31("Trinity 1"),
-		WEEK_32("Trinity 2"),
-		WEEK_33("Trinity 3"),
-		WEEK_34("Trinity 4"),
-		WEEK_35("Trinity 5"),
-		WEEK_36("Trinity 6"),
-		WEEK_37("Trinity 7"),
-		WEEK_38("Trinity 8"),
-		WEEK_39("Trinity 9"),
-		WEEK_40("Trinity 10"),
-		WEEK_41("Trinity 11"),
-		WEEK_42("Trinity 12"),
-		WEEK_43("Summer 1"),
-		WEEK_44("Summer 2"),
-		WEEK_45("Summer 3"),
-		WEEK_46("Summer 4"),
-		WEEK_47("Summer 5"),
-		WEEK_48("Summer 6"),
-		WEEK_49("Summer 7"),
-		WEEK_50("Summer 8"),
-		WEEK_51("Summer 9"),
-		WEEK_52("Summer 10");
-		private String weekName;
+		weekNames.put(0, "Presession 1/Michaelmas -2");
+		weekNames.put(1, "Presession 2/Michaelmas -1");
+		weekNames.put(2, "Michaelmas 0");
+		weekNames.put(3, "Michaelmas 1");
+		weekNames.put(4, "Michaelmas 2");
+		weekNames.put(5, "Michaelmas 3");
+		weekNames.put(6, "Michaelmas 4");
+		weekNames.put(7, "Michaelmas 5");
+		weekNames.put(8, "Michaelmas 6");
+		weekNames.put(9, "Michaelmas 7");
+		weekNames.put(10, "Michaelmas 8");
+		weekNames.put(11, "Michaelmas 9");
+		weekNames.put(12, "Michaelmas 10");
+		weekNames.put(13, "Winter Break 1/Michaelmas 11");
+		weekNames.put(14, "Winter Break 2/Michaelmas 12");
+		weekNames.put(15, "Winter Break 3/Hilary -1");
+		weekNames.put(16, "Hilary 0");
+		weekNames.put(17, "Hilary 1");
+		weekNames.put(18, "Hilary 2");
+		weekNames.put(19, "Hilary 3");
+		weekNames.put(20, "Hilary 4");
+		weekNames.put(21, "Hilary 5");
+		weekNames.put(22, "Hilary 6");
+		weekNames.put(23, "Hilary 7");
+		weekNames.put(24, "Hilary 8");
+		weekNames.put(25, "Hilary 9");
+		weekNames.put(26, "Hilary 10");
+		weekNames.put(27, "Spring Break 1/Hilary 11");
+		weekNames.put(28, "Spring Break 2/Hilary 12");
+		weekNames.put(29, "Spring Break 3/Trinity -1");
+		weekNames.put(30, "Trinity 0");
+		weekNames.put(31, "Trinity 1");
+		weekNames.put(32, "Trinity 2");
+		weekNames.put(33, "Trinity 3");
+		weekNames.put(34, "Trinity 4");
+		weekNames.put(35, "Trinity 5");
+		weekNames.put(36, "Trinity 6");
+		weekNames.put(37, "Trinity 7");
+		weekNames.put(38, "Trinity 8");
+		weekNames.put(39, "Trinity 9");
+		weekNames.put(40, "Trinity 10");
+		weekNames.put(41, "Trinity 11");
+		weekNames.put(42, "Trinity 12");
+		weekNames.put(43, "Summer 1");
+		weekNames.put(44, "Summer 2");
+		weekNames.put(45, "Summer 3");
+		weekNames.put(46, "Summer 4");
+		weekNames.put(47, "Summer 5");
+		weekNames.put(48, "Summer 6");
+		weekNames.put(49, "Summer 7");
+		weekNames.put(50, "Summer 8");
+		weekNames.put(51, "Summer 9");
+		weekNames.put(52, "Summer 10");
+	}
 
-		private BSGWeekName(String weekName)
-		{
-			this.weekName = weekName;
-		}
-
-		public String getWeekName()
-		{
-			return weekName;
-		}
+	public Map<Integer, String> getWeekNames()
+	{
+		return weekNames;
 	}
 
 	//Special renderer with BSG weeks
 	@Override
 	public MetadataRenderer getRenderer()
 	{
-		return super.getRenderer();		//To change body of overridden methods use File | Settings | File Templates.
+		return new BsgWeekMetadataRenderer();
+	}
+
+	private class BsgWeekMetadataRenderer implements MetadataRenderer
+	{
+		public String getMetadataTypeEditTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataTypePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public String getMetadataValueEditTemplate()
+		{
+			return "vm/metadata/meta_edit_bsg_week.vm";
+		}
+
+		public String getMetadataValuePrintTemplate()
+		{
+			return null;	//To change body of implemented methods use File | Settings | File Templates.
+		}
 	}
 }
