@@ -3782,7 +3782,8 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	{
 		logger.debug(this + ".buildCreateWizardContext()");
 		context.put("tlang",trb);
-		
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
+
 		context.put("DETAILS_FORM_NAME", "detailsForm");
 
 		String template = "content/sakai_resources_cwiz_finish";

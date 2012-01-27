@@ -344,6 +344,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	protected String buildNewUrlsContext(VelocityPortlet portlet, Context context, RunData data, SessionState state)
 	 {
 		logger.debug(this + ".buildNewUrlsContext()");
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
 
 		MultiFileUploadPipe pipe = (MultiFileUploadPipe) toolSession.getAttribute(ResourceToolAction.ACTION_PIPE);
@@ -410,6 +411,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	private String buildNewFoldersContext(VelocityPortlet portlet, Context context, RunData data, SessionState state)
 	{
 		logger.debug(this + ".buildNewFoldersContext()");
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
 
 		MultiFileUploadPipe pipe = (MultiFileUploadPipe) toolSession.getAttribute(ResourceToolAction.ACTION_PIPE);
@@ -581,6 +583,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	{
 		logger.debug(this + ".buildUploadFilesContext()");
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		
 		String max_file_size_mb = (String) state.getAttribute(STATE_FILE_UPLOAD_MAX_SIZE);
 		if(max_file_size_mb == null)

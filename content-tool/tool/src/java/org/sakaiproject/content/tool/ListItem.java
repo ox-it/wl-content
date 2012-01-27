@@ -3549,11 +3549,19 @@ public class ListItem
 		//TODO get only metadata related to the current entity and site
 		metadataGroups = ContentMetadataService.getInstance().getMetadataAvailable();
 		metadataValues = new HashMap<String, Object>(metadataGroups.size());
-		for (MetadataType metadataGroup : metadataGroups)
+		if (this.entity != null)
 		{
-			String stringValue = this.entity.getProperties().getProperty(metadataGroup.getUuid());
-			Object objectValue = metadataGroup.getConverter().toObject(stringValue);
-			metadataValues.put(metadataGroup.getUuid(), objectValue);
+			for (MetadataType metadataGroup : metadataGroups)
+			{
+				String stringValue = this.entity.getProperties().getProperty(metadataGroup.getUuid());
+				Object objectValue = metadataGroup.getConverter().toObject(stringValue);
+				metadataValues.put(metadataGroup.getUuid(), objectValue);
+			}
+		}else{
+			for (MetadataType metadataGroup : metadataGroups)
+			{
+				metadataValues.put(metadataGroup.getUuid(), metadataGroup.getDefaultValue());
+			}
 		}
 	}
 
