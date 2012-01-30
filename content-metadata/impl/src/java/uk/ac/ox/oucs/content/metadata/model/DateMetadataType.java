@@ -13,9 +13,71 @@ public class DateMetadataType extends MetadataType<Date>
 {
 	private Date minimumDateTime;
 	private Date maximumDateTime;
-	private boolean dateOnly;
+	private boolean date;
+	private boolean time;
+	private boolean defaultToday;
 	private final DateTimeConverter converter = new DateTimeConverter();
 
+	public Date getMinimumDateTime()
+	{
+		return minimumDateTime;
+	}
+
+	public void setMinimumDateTime(Date minimumDateTime)
+	{
+		this.minimumDateTime = minimumDateTime;
+	}
+
+	public Date getMaximumDateTime()
+	{
+		return maximumDateTime;
+	}
+
+	public void setMaximumDateTime(Date maximumDateTime)
+	{
+		this.maximumDateTime = maximumDateTime;
+	}
+
+	public boolean isDate()
+	{
+		return date;
+	}
+
+	public void setDate(boolean date)
+	{
+		this.date = date;
+	}
+
+	public boolean isTime()
+	{
+		return time;
+	}
+
+	public void setTime(boolean time)
+	{
+		this.time = time;
+	}
+
+	public boolean isDefaultToday()
+	{
+		return defaultToday;
+	}
+
+	public void setDefaultToday(boolean defaultToday)
+	{
+		this.defaultToday = defaultToday;
+	}
+
+	@Override
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Returns today's date if the default has been set to today
+	 */
+	public Date getDefaultValue()
+	{
+		return defaultToday ? new Date() : super.getDefaultValue();
+	}
 
 	@Override
 	public MetadataRenderer getRenderer()
@@ -38,13 +100,13 @@ public class DateMetadataType extends MetadataType<Date>
 
 	private final class DateMetadataValidator implements MetadataValidator<Date>
 	{
-		public boolean validate(Date object)
+		public boolean validate(Date metadataValue)
 		{
-			if (object == null)
+			if (metadataValue == null)
 				return isRequired();
-			if (minimumDateTime != null && object.before(minimumDateTime))
+			if (minimumDateTime != null && metadataValue.before(minimumDateTime))
 				return false;
-			if (maximumDateTime != null && object.after(maximumDateTime))
+			if (maximumDateTime != null && metadataValue.after(maximumDateTime))
 				return false;
 
 			return true;
@@ -53,20 +115,16 @@ public class DateMetadataType extends MetadataType<Date>
 
 	private final class DateTimeConverter implements MetadataConverter<Date>
 	{
-		public String toString(Date object)
+		public String toString(Date metadataValue)
 		{
-			if (object == null)
-				return null;
-			return DateFormat.getDateInstance().format(object);
+			return (metadataValue != null) ? DateFormat.getDateInstance().format(metadataValue) : null;
 		}
 
-		public Date toObject(String string)
+		public Date fromString(String stringValue)
 		{
-			if (string == null)
-				return null;
 			try
 			{
-				return DateFormat.getDateInstance().parse(string);
+				return (stringValue != null && !stringValue.isEmpty()) ? DateFormat.getDateInstance().parse(stringValue) : null;
 			}
 			catch (ParseException e)
 			{
@@ -74,14 +132,20 @@ public class DateMetadataType extends MetadataType<Date>
 			}
 		}
 
-		public Map<Object, Object> toProperties(Date object)
+		public Map<String, ?> toProperties(Date metadataValue)
 		{
-			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
+			String stringValue = toString(metadataValue);
+			return (stringValue != null) ? Collections.singletonMap(getUniqueName(), stringValue) : Collections.<String, Object>emptyMap();
 		}
 
-		public Date toObject(Map properties, String propertySuffix)
+		public Date fromProperties(Map<String, ?> properties)
 		{
-			return toObject((String) properties.get(getUuid() + propertySuffix));
+			return fromString((String) properties.get(getUniqueName()));
+		}
+
+		public Date fromHttpForm(Map parameters, String parameterSuffix)
+		{
+			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}
 	}
 }

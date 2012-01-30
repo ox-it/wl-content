@@ -74,15 +74,15 @@ public class StringMetadataType extends MetadataType<String>
 
 	private final class StringMetadataValidator implements MetadataValidator<String>
 	{
-		public boolean validate(String value)
+		public boolean validate(String metadataValue)
 		{
-			if (value == null || value.isEmpty())
+			if (metadataValue == null || metadataValue.isEmpty())
 				return isRequired();
-			if (minLength > 0 && value.length() < minLength)
+			if (minLength > 0 && metadataValue.length() < minLength)
 				return false;
-			if (maxLength > 0 && value.length() > maxLength)
+			if (maxLength > 0 && metadataValue.length() > maxLength)
 				return false;
-			if (regularExpression != null && !value.matches(regularExpression))
+			if (regularExpression != null && !metadataValue.matches(regularExpression))
 				return false;
 			return true;
 		}
@@ -90,24 +90,30 @@ public class StringMetadataType extends MetadataType<String>
 
 	protected final class StringMetadataConverter implements MetadataConverter<String>
 	{
-		public String toString(String object)
+		public String toString(String metadataValue)
 		{
-			return object;
+			return (metadataValue != null && !metadataValue.isEmpty()) ? metadataValue : null;
 		}
 
-		public String toObject(String string)
+		public String fromString(String stringValue)
 		{
-			return string;
+			return (stringValue != null && !stringValue.isEmpty()) ? stringValue : null;
 		}
 
-		public Map<Object, Object> toProperties(String object)
+		public Map<String, ?> toProperties(String metadataValue)
 		{
-			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
+			String stringValue = toString(metadataValue);
+			return (stringValue != null) ? Collections.singletonMap(getUniqueName(), stringValue) : Collections.<String, Object>emptyMap();
 		}
 
-		public String toObject(Map properties, String propertySuffix)
+		public String fromProperties(Map<String, ?> properties)
 		{
-			return (String) properties.get(getUuid() + propertySuffix);
+			return fromString((String) properties.get(getUniqueName()));
+		}
+
+		public String fromHttpForm(Map parameters, String parameterSuffix)
+		{
+			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}
 	}
 

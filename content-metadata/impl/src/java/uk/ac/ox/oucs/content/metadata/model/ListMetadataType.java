@@ -1,13 +1,13 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 /**
  * @author Colin Hebert
@@ -28,15 +28,15 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 	}
 
 	@Override
-	public String getUuid()
+	public String getUniqueName()
 	{
-		return metadataType.getUuid();
+		return metadataType.getUniqueName();
 	}
 
 	@Override
-	public void setUuid(String uuid)
+	public void setUniqueName(String uniqueName)
 	{
-		metadataType.setUuid(uuid);
+		metadataType.setUniqueName(uniqueName);
 	}
 
 	public String getName()
@@ -132,21 +132,22 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 	{
 		MetadataConverter<T> metadataConverter = metadataType.getConverter();
 
-		public String toString(List<T> object)
+		public String toString(List<T> metadataValues)
 		{
 			try
 			{
-				if (object == null || object.isEmpty())
-					return null;
+				List<String> stringValues = new ArrayList<String>();
 
-				List<String> values = new ArrayList<String>(object.size());
-				for (T item : object)
+				if (metadataValues != null && !metadataValues.isEmpty())
 				{
-					String converted = metadataConverter.toString(item);
-					if (converted != null)
-						values.add(converted);
+					for (T metadataValue : metadataValues)
+					{
+						String stringValue = metadataConverter.toString(metadataValue);
+						if (stringValue != null)
+							stringValues.add(stringValue);
+					}
 				}
-				return (!values.isEmpty()) ? new ObjectMapper().writeValueAsString(values) : null;
+				return new ObjectMapper().writeValueAsString(stringValues);
 			}
 			catch (IOException e)
 			{
@@ -154,27 +155,26 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 			}
 		}
 
-		public List<T> toObject(String string)
+		public List<T> fromString(String string)
 		{
 			try
 			{
-				if (string == null)
-				{
-					return null;
-				}
+				List<T> metadataValues = new ArrayList<T>();
 
-				List<String> values = new ObjectMapper().readValue(string, new TypeReference<List<String>>()
+				if (string != null)
 				{
-				});
-				List<T> objects = new ArrayList<T>(values.size());
+					List<String> stringValues = new ObjectMapper().readValue(string, new TypeReference<List<String>>()
+					{
+					});
 
-				for (String value : values)
-				{
-					T converted = metadataConverter.toObject(value);
-					if (converted != null)
-						objects.add(converted);
+					for (String stringValue : stringValues)
+					{
+						T metadataValue = metadataConverter.fromString(stringValue);
+						if (metadataValue != null)
+							metadataValues.add(metadataValue);
+					}
 				}
-				return objects;
+				return metadataValues;
 			}
 			catch (IOException e)
 			{
@@ -182,43 +182,56 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 			}
 		}
 
-		public Map<Object, Object> toProperties(List<T> object)
+		public Map<String, ?> toProperties(List<T> metadataValues)
 		{
-			if (object == null || object.isEmpty())
-				return null;
+			List<String> stringValues = new ArrayList<String>();
 
-			List<String> values = new ArrayList<String>(object.size());
-			for (T item : object)
+			if (metadataValues != null && !metadataValues.isEmpty())
 			{
-				String converted = metadataConverter.toString(item);
-				if (converted != null)
-					values.add(converted);
+				for (T metadataValue : metadataValues)
+				{
+					String stringValue = metadataConverter.toString(metadataValue);
+					if (stringValue != null)
+						stringValues.add(stringValue);
+				}
 			}
 
-			return Collections.<Object, Object>singletonMap(getUuid(), values);
+			return Collections.singletonMap(getUniqueName(), stringValues);
 		}
 
-		//TODO: Finish the to object from properties
-		public List<T> toObject(Map properties, String propertySuffix)
+		public List<T> fromProperties(Map<String, ?> properties)
 		{
-			List<T> list = new ArrayList<T>();
+			List<T> metadataValues = new ArrayList<T>();
+			List<String> stringValues = (List<String>) properties.get(getUniqueName());
+			if (stringValues != null)
+			{
+				for (String stringValue : stringValues)
+					metadataValues.add(metadataConverter.fromString(stringValue));
+			}
+
+			return metadataValues;
+		}
+
+		public List<T> fromHttpForm(Map parameters, String parameterSuffix)
+		{
+			List<T> metadataValues = new ArrayList<T>();
 			String[] stringValues;
-			Object o = properties.get(getUuid() + propertySuffix);
-			if (o == null)
-				return list;
-			else if (o instanceof String)
-				stringValues = new String[]{(String) o};
+			Object httpValue = parameters.get(getUniqueName() + parameterSuffix);
+			if (httpValue == null)
+				return metadataValues;
+			else if (httpValue instanceof String)
+				stringValues = new String[]{(String) httpValue};
 			else
-				stringValues = (String[]) o;
+				stringValues = (String[]) httpValue;
 
-			//Workaround to confuse the Metadata making it think that it's getting an properties map
-			for (String value : stringValues)
+			//Workaround to confuse the Metadata, making it think that it's getting a parameters map
+			for (String stringValue : stringValues)
 			{
-				T converted = metadataType.getConverter().toObject(Collections.<Object, Object>singletonMap(getUuid(), value), "");
-				if (converted != null)
-					list.add(converted);
+				T metadataValue = metadataType.getConverter().fromHttpForm(Collections.<Object, Object>singletonMap(getUniqueName(), stringValue), "");
+				if (metadataValue != null)
+					metadataValues.add(metadataValue);
 			}
-			return list;
+			return metadataValues;
 		}
 	}
 
@@ -226,9 +239,9 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 	{
 		MetadataValidator<T> metadataValidator = metadataType.getValidator();
 
-		public boolean validate(List<T> objects)
+		public boolean validate(List<T> metadataValue)
 		{
-			for (T item : objects)
+			for (T item : metadataValue)
 			{
 				if (!metadataValidator.validate(item))
 					return false;

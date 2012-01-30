@@ -28,36 +28,43 @@ public class WeekMetadataType extends MetadataType<Integer>
 
 	private final class WeekMetadataValidator implements MetadataValidator<Integer>
 	{
-		public boolean validate(Integer object)
+		public boolean validate(Integer metadataValue)
 		{
-			return object >= 0 && object <= 52;
+			if (metadataValue == null)
+				return isRequired();
+
+			return metadataValue >= 0 && metadataValue <= 52;
 		}
 	}
 
 	private final class WeekMetadataConverter implements MetadataConverter<Integer>
 	{
-		public String toString(Integer object)
+		public String toString(Integer metadataValue)
 		{
-			if (object == null)
+			return metadataValue != null ? metadataValue.toString() : null;
+		}
+
+		public Integer fromString(String stringValue)
+		{
+			if (stringValue == null || stringValue.isEmpty())
 				return null;
-			return object.toString();
+			return Integer.parseInt(stringValue);
 		}
 
-		public Integer toObject(String string)
+		public Map<String, ?> toProperties(Integer metadataValue)
 		{
-			if (string == null)
-				return null;
-			return Integer.parseInt(string);
+			String value = toString(metadataValue);
+			return (value != null) ? Collections.singletonMap(getUniqueName(), value) : Collections.<String, Object>emptyMap();
 		}
 
-		public Map<Object, Object> toProperties(Integer object)
+		public Integer fromProperties(Map<String, ?> properties)
 		{
-			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
+			return fromString((String) properties.get(getUniqueName()));
 		}
 
-		public Integer toObject(Map properties, String propertySuffix)
+		public Integer fromHttpForm(Map parameters, String parameterSuffix)
 		{
-			return toObject((String) properties.get(getUuid() + propertySuffix));
+			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}
 	}
 

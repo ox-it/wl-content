@@ -11,38 +11,39 @@ public interface MetadataConverter<T>
 {
 	/**
 	 * Transforms the object in parameter into a simple String.
-	 * The string can be later parsed with {@link MetadataConverter#toObject(String)}
+	 * The string can be later parsed with {@link MetadataConverter#fromString(String)}
 	 *
-	 * @param object Object to convert as a String
+	 * @param metaValue Object to convert as a String
 	 * @return String value of the parameter
 	 */
-	String toString(T object);
+	String toString(T metaValue);
 
 	/**
 	 * Converts a String into an object of the appropriate type.
 	 * The given String should be generated with {@link MetadataConverter#toString(Object)}
 	 *
-	 * @param string String to convert into an Object
+	 * @param stringValue String to convert into an Object
 	 * @return The converted result
 	 */
-	T toObject(String string);
-
-	/**
-	 * Fetches relevant information in a map (usually the parameters from a HttpServletRequest) to build an Object.
-	 *
-	 * @param properties		 Map containing the information
-	 * @param propertySuffix Optional suffix which can be used in HTML forms
-	 * @return The converted result
-	 */
-	T toObject(Map<Object, Object> properties, String propertySuffix);
+	T fromString(String stringValue);
 
 	/**
 	 * Transforms the object into a properties map.
 	 * The map should only contain String and List&lt;String&gt; elements.
 	 *
-	 * @param object Object to convert
+	 * @param metaValue Object to convert
 	 * @return a Map containing every relevant values
 	 */
-	Map<Object, Object> toProperties(T object);
+	Map<String, ?> toProperties(T metaValue);
 
+	T fromProperties(Map<String, ?> properties);
+
+	/**
+	 * Fetches relevant information in a map (usually the parameters from a HttpServletRequest) to build an Object.
+	 *
+	 * @param parameters			Map containing the information
+	 * @param parameterSuffix Optional suffix which can be used in HTML forms
+	 * @return The converted result
+	 */
+	T fromHttpForm(Map<Object, Object> parameters, String parameterSuffix);
 }

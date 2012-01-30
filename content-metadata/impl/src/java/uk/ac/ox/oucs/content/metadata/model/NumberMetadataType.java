@@ -34,18 +34,18 @@ public class NumberMetadataType extends MetadataType<Number>
 	private final class NumberMetadataValidator implements MetadataValidator<Number>
 	{
 
-		public boolean validate(Number value)
+		public boolean validate(Number metadataValue)
 		{
 
-			if (value == null)
+			if (metadataValue == null)
 				return isRequired();
-			if (!acceptFloat && value instanceof Float)
+			if (!acceptFloat && metadataValue instanceof Float)
 				return false;
-			if (!acceptNegative && value.doubleValue() < 0)
+			if (!acceptNegative && metadataValue.doubleValue() < 0)
 				return false;
-			if (minimumValue != null && minimumValue.doubleValue() > value.doubleValue())
+			if (minimumValue != null && minimumValue.doubleValue() > metadataValue.doubleValue())
 				return false;
-			if (maximumValue != null && maximumValue.doubleValue() < value.doubleValue())
+			if (maximumValue != null && maximumValue.doubleValue() < metadataValue.doubleValue())
 				return false;
 
 			return true;
@@ -55,32 +55,36 @@ public class NumberMetadataType extends MetadataType<Number>
 	private final class NumberMetadataConverter implements MetadataConverter<Number>
 	{
 
-		public String toString(Number object)
+		public String toString(Number metadataValue)
 		{
-			if (object == null)
-				return null;
-			return object.toString();
+			return metadataValue != null ? metadataValue.toString() : null;
 		}
 
-		public Number toObject(String string)
+		public Number fromString(String stringValue)
 		{
-			if (string == null)
+			if (stringValue == null || stringValue.isEmpty())
 				return null;
+
 			if (acceptFloat)
-				return Float.parseFloat(string);
+				return Float.parseFloat(stringValue);
 			else
-				return Integer.parseInt(string);
+				return Integer.parseInt(stringValue);
 		}
 
-		public Map<Object, Object> toProperties(Number object)
+		public Map<String, ?> toProperties(Number metadataValue)
 		{
-			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
-
+			String stringValue = toString(metadataValue);
+			return (stringValue != null) ? Collections.singletonMap(getUniqueName(), stringValue) : Collections.<String, Object>emptyMap();
 		}
 
-		public Number toObject(Map properties, String propertySuffix)
+		public Number fromProperties(Map<String, ?> properties)
 		{
-			return toObject((String) properties.get(getUuid() + propertySuffix));
+			return fromString((String) properties.get(getUniqueName()));
+		}
+
+		public Number fromHttpForm(Map parameters, String parameterSuffix)
+		{
+			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}
 	}
 }

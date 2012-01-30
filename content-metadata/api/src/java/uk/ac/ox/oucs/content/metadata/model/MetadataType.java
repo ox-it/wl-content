@@ -46,14 +46,14 @@ public abstract class MetadataType<T> implements Serializable
 	private String xmlElement;
 	private String xmlType;
 
-	public String getUuid()
+	public String getUniqueName()
 	{
 		return uuid;
 	}
 
-	public void setUuid(String uuid)
+	public void setUniqueName(String uniqueName)
 	{
-		this.uuid = uuid;
+		this.uuid = uniqueName;
 	}
 
 	public String getName()

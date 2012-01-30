@@ -1,14 +1,14 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author Colin Hebert
@@ -61,7 +61,7 @@ public class UserMetadataType extends MetadataType<User>
 
 	private final class UserMetadataValidator implements MetadataValidator<User>
 	{
-		public boolean validate(User value)
+		public boolean validate(User metadataValue)
 		{
 			return true;
 		}
@@ -93,23 +93,21 @@ public class UserMetadataType extends MetadataType<User>
 	private final class UserMetadataConverter implements MetadataConverter<User>
 	{
 
-		public String toString(User object)
+		public String toString(User metadataValue)
 		{
-			if (object == null)
-				return null;
-			return object.getId();
+			return metadataValue != null ? metadataValue.getId() : null;
 		}
 
-		public User toObject(String string)
+		public User fromString(String stringValue)
 		{
 			try
 			{
-				if (string == null || string.isEmpty())
+				if (stringValue == null || stringValue.isEmpty())
 				{
 					return null;
 				}
 
-				return userDirectoryService.getUser(string);
+				return userDirectoryService.getUser(stringValue);
 			}
 			catch (UserNotDefinedException e)
 			{
@@ -117,14 +115,20 @@ public class UserMetadataType extends MetadataType<User>
 			}
 		}
 
-		public Map<Object, Object> toProperties(User object)
+		public Map<String, ?> toProperties(User metadataValue)
 		{
-			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
+			String value = toString(metadataValue);
+			return (value != null) ? Collections.singletonMap(getUniqueName(), value) : Collections.<String, Object>emptyMap();
 		}
 
-		public User toObject(Map properties, String propertySuffix)
+		public User fromProperties(Map<String, ?> properties)
 		{
-			return toObject((String) properties.get(getUuid() + propertySuffix));
+			return fromString((String) properties.get(getUniqueName()));
+		}
+
+		public User fromHttpForm(Map parameters, String parameterSuffix)
+		{
+			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}
 	}
 }

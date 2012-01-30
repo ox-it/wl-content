@@ -1,12 +1,12 @@
 package uk.ac.ox.oucs.content.metadata.model;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 /**
  * @author Colin Hebert
@@ -32,7 +32,7 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 		Map<String, Object> defaultValue = new HashMap<String, Object>();
 		for (MetadataType<?> metadataType : metadataTypes)
 		{
-			defaultValue.put(metadataType.getUuid(), metadataType.getDefaultValue());
+			defaultValue.put(metadataType.getUniqueName(), metadataType.getDefaultValue());
 		}
 		return defaultValue;
 	}
@@ -63,28 +63,28 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 		 * <p/>
 		 * INFO: For the suppress warning, see the content of the method
 		 *
-		 * @param metaValues {@inheritDoc}
+		 * @param metadataValues {@inheritDoc}
 		 * @return {@inheritDoc}
 		 */
 		@SuppressWarnings("unchecked")
-		public String toString(Map<String, ?> metaValues)
+		public String toString(Map<String, ?> metadataValues)
 		{
 			try
 			{
-				if (metaValues == null)
-					return null;
-
-				Map<String, String> stringValues = new HashMap<String, String>(metaValues.size());
-				for (MetadataType metadataType : metadataTypes)
+				Map<String, String> stringValues = new HashMap<String, String>(metadataTypes.size());
+				if (metadataValues != null)
 				{
-					String id = metadataType.getUuid();
-					/*
-					 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
-					 * In this case we can't cast to "?" so here goes some unchecked operations.
-					 */
-					String converted = metadataType.getConverter().toString(metaValues.get(id)); //We do it live!
-					if (converted != null)
-						stringValues.put(id, converted);
+					for (MetadataType metadataType : metadataTypes)
+					{
+						String id = metadataType.getUniqueName();
+						/*
+						 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
+						 * In this case we can't cast to "?" so here goes some unchecked operations.
+						 */
+						String stringValue = metadataType.getConverter().toString(metadataValues.get(id)); //We do it live!
+						if (stringValue != null)
+							stringValues.put(id, stringValue);
+					}
 				}
 				return new ObjectMapper().writeValueAsString(stringValues);
 			}
@@ -94,27 +94,28 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 			}
 		}
 
-		public Map<String, ?> toObject(String string)
+		public Map<String, ?> fromString(String stringValue)
 		{
 			try
 			{
-				if (string == null)
-					return null;
-				Map<String, String> stringValues = new ObjectMapper().readValue(string, new TypeReference<Map<String, String>>()
+				Map<String, Object> metadataValues = new HashMap<String, Object>(metadataTypes.size());
+
+				if (stringValue == null || stringValue.isEmpty())
+					return metadataValues;
+
+				Map<String, String> stringValues = new ObjectMapper().readValue(stringValue, new TypeReference<Map<String, String>>()
 				{
 				});
 
-				Map<String, Object> metaValues = new HashMap<String, Object>(stringValues.size());
-
 				for (MetadataType metadataType : metadataTypes)
 				{
-					String uuid = metadataType.getUuid();
-					Object converted = metadataType.getConverter().toObject(stringValues.get(uuid));
-					if (converted != null)
-						metaValues.put(uuid, converted);
+					String uniqueName = metadataType.getUniqueName();
+					Object metadataValue = metadataType.getConverter().fromString(stringValues.get(uniqueName));
+					if (metadataValue != null)
+						metadataValues.put(uniqueName, metadataValue);
 				}
 
-				return metaValues;
+				return metadataValues;
 			}
 			catch (IOException e)
 			{
@@ -122,27 +123,42 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 			}
 		}
 
-		public Map<Object, Object> toProperties(Map<String, ?> object)
+		public Map<String, ?> toProperties(Map<String, ?> metadataValues)
 		{
-			Map<Object, Object> map = new HashMap<Object, Object>();
+			Map<String, ?> properties = new HashMap<String, Object>();
 			for (MetadataType metadataType : metadataTypes)
 			{
-				map.putAll(metadataType.getConverter().toProperties(object.get(metadataType.getUuid())));
+				properties.putAll(metadataType.getConverter().toProperties(metadataValues.get(metadataType.getUniqueName())));
 			}
-			return map;
+			return properties;
 		}
 
-		public Map<String, ?> toObject(Map properties, String propertySuffix)
+		public Map<String, ?> fromProperties(Map<String, ?> properties)
 		{
-			Map<String, Object> metaValues = new HashMap<String, Object>(metadataTypes.size());
+			Map<String, Object> metadataValues = new HashMap<String, Object>(metadataTypes.size());
+
 			for (MetadataType metadataType : metadataTypes)
 			{
-				String uuid = metadataType.getUuid();
-				Object converted = metadataType.getConverter().toObject(properties, propertySuffix);
-				if (converted != null)
-					metaValues.put(uuid, converted);
+				String uniqueName = metadataType.getUniqueName();
+				Object metadataValue = metadataType.getConverter().fromProperties(properties);
+				if (metadataValue != null)
+					metadataValues.put(uniqueName, metadataValue);
 			}
-			return metaValues;
+
+			return metadataValues;
+		}
+
+		public Map<String, ?> fromHttpForm(Map parameters, String parameterSuffix)
+		{
+			Map<String, Object> metadataValues = new HashMap<String, Object>(metadataTypes.size());
+			for (MetadataType metadataType : metadataTypes)
+			{
+				String uniqueName = metadataType.getUniqueName();
+				Object metadataValue = metadataType.getConverter().fromHttpForm(parameters, parameterSuffix);
+				if (metadataValue != null)
+					metadataValues.put(uniqueName, metadataValue);
+			}
+			return metadataValues;
 		}
 	}
 
@@ -153,20 +169,20 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 		 * <p/>
 		 * INFO: For the suppress warning, see the content of the method
 		 *
-		 * @param object {@inheritDoc}
+		 * @param metadataValue {@inheritDoc}
 		 * @return {@inheritDoc}
 		 */
 		@SuppressWarnings("unchecked")
-		public boolean validate(Map<String, ?> object)
+		public boolean validate(Map<String, ?> metadataValue)
 		{
 			for (MetadataType metadataType : metadataTypes)
 			{
-				String uuid = metadataType.getUuid();
+				String uniqueName = metadataType.getUniqueName();
 				/*
 				 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
 				 * In this case we can't cast to "?" so here goes some unchecked operations.
 				 */
-				if (!metadataType.getValidator().validate(object.get(uuid)))
+				if (!metadataType.getValidator().validate(metadataValue.get(uniqueName)))
 				{
 					return false;
 				}

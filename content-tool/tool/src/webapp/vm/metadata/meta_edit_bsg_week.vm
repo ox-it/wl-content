@@ -1,9 +1,9 @@
-<label for="${metadataType.uuid}${suffix}">$metadataType.name</label>
+<label for="${metadataType.uniqueName}${suffix}">$metadataType.name</label>
 
-<select data-placeholder="$metadataType.description" style="width: 350px" name="$!{metadataType.uuid}${suffix}"
-        id="$!{metadataType.uuid}${suffix}" #if($multipleMetadataType.contains($metadataType.uuid)) multiple #end
+<select data-placeholder="$metadataType.description" style="width: 350px" name="$!{metadataType.uniqueName}${suffix}"
+        id="$!{metadataType.uniqueName}${suffix}" #if($multipleMetadataType.contains($metadataType.uniqueName)) multiple #end
         class="chzn-select">
-  #if(!$multipleMetadataType.contains($metadataType.uuid))
+  #if(!$multipleMetadataType.contains($metadataType.uniqueName))
     <option></option>
   #end
   #foreach($week in ${metadataType.weekNames.entrySet()})

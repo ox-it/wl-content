@@ -22,6 +22,8 @@
 package org.sakaiproject.content.tool;
 
 import java.text.NumberFormat;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
@@ -42,27 +44,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.antivirus.api.VirusFoundException;
 import org.sakaiproject.authz.cover.SecurityService;
-import org.sakaiproject.cheftool.Context;
 import org.sakaiproject.component.cover.ComponentManager;
-import org.sakaiproject.conditions.api.ConditionService;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.conditions.api.ConditionService;
 import org.sakaiproject.content.api.ContentCollection;
 import org.sakaiproject.content.api.ContentCollectionEdit;
 import org.sakaiproject.content.api.ContentEntity;
+import org.sakaiproject.content.api.ContentHostingHandlerResolver;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.api.ContentResourceEdit;
 import org.sakaiproject.content.api.ContentResourceFilter;
 import org.sakaiproject.content.api.ExpandableResourceType;
 import org.sakaiproject.content.api.GroupAwareEdit;
 import org.sakaiproject.content.api.GroupAwareEntity;
+import org.sakaiproject.content.api.GroupAwareEntity.AccessMode;
 import org.sakaiproject.content.api.ResourceToolAction;
 import org.sakaiproject.content.api.ResourceToolActionPipe;
 import org.sakaiproject.content.api.ResourceType;
 import org.sakaiproject.content.api.ResourceTypeRegistry;
-import org.sakaiproject.content.api.ContentHostingHandlerResolver;
-import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.content.api.ServiceLevelAction;
-import org.sakaiproject.content.api.GroupAwareEntity.AccessMode;
+import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.content.cover.ContentTypeImageService;
 import org.sakaiproject.content.tool.ResourcesAction.ContentPermissions;
 import org.sakaiproject.entity.api.EntityPropertyNotDefinedException;
@@ -71,7 +72,6 @@ import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entity.api.ResourcePropertiesEdit;
 import org.sakaiproject.entity.cover.EntityManager;
-import org.sakaiproject.event.api.SessionState;
 import org.sakaiproject.event.cover.NotificationService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.InUseException;
@@ -3553,16 +3553,27 @@ public class ListItem
 		{
 			for (MetadataType metadataGroup : metadataGroups)
 			{
-				String stringValue = this.entity.getProperties().getProperty(metadataGroup.getUuid());
-				Object objectValue = metadataGroup.getConverter().toObject(stringValue);
-				metadataValues.put(metadataGroup.getUuid(), objectValue);
+				Object metadataValue = metadataGroup.getConverter().fromProperties(transformResourcePropertiesIntoMap(this.entity.getProperties()));
+				metadataValues.put(metadataGroup.getUniqueName(), metadataValue);
 			}
-		}else{
+		} else
+		{
 			for (MetadataType metadataGroup : metadataGroups)
 			{
-				metadataValues.put(metadataGroup.getUuid(), metadataGroup.getDefaultValue());
+				metadataValues.put(metadataGroup.getUniqueName(), metadataGroup.getDefaultValue());
 			}
 		}
+	}
+
+	private Map<String, Object> transformResourcePropertiesIntoMap(final ResourceProperties resourceProperties)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		for (Iterator<String> iterator = resourceProperties.getPropertyNames(); iterator.hasNext(); )
+		{
+			String propertyName = iterator.next();
+			map.put(propertyName, resourceProperties.get(propertyName));
+		}
+		return map;
 	}
 
 	protected void captureOptionalPropertyValues(ParameterParser params, String index)
@@ -3570,8 +3581,8 @@ public class ListItem
 		metadataValues = new HashMap<String, Object>(metadataGroups.size());
 		for (MetadataType metadataGroup : metadataGroups)
 		{
-			Object objectValue = metadataGroup.getConverter().toObject(params.getMultipleProperties(), index);
-			metadataValues.put(metadataGroup.getUuid(), objectValue);
+			Object metadataValue = metadataGroup.getConverter().fromHttpForm(params.getMultipleProperties(), index);
+			metadataValues.put(metadataGroup.getUniqueName(), metadataValue);
 		}
 	}
 
@@ -3584,22 +3595,23 @@ public class ListItem
 	 * @param props Entity properties
 	 */
 	@SuppressWarnings("unchecked")
-	protected void setMetadataPropertiesOnEntity(ResourcePropertiesEdit props) 
+	protected void setMetadataPropertiesOnEntity(ResourcePropertiesEdit props)
 	{
-		if(this.metadataValues == null)
+		if (this.metadataValues == null)
 		{
 			return;
 		}
-		
-		for(MetadataType metadataType : this.metadataGroups)
+
+		for (MetadataType metadataType : this.metadataGroups)
 		{
 			/*
 			 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
 			 * In this case we can't cast to "?" so here goes some unchecked operations.
 			 */
-			metadataType.getValidator().validate(metadataValues.get(metadataType.getUuid()));
-			String value = metadataType.getConverter().toString(metadataValues.get(metadataType.getUuid()));
-			props.addProperty(metadataType.getUuid(), value);
+			metadataType.getValidator().validate(metadataValues.get(metadataType.getUniqueName()));
+			Properties properties = new Properties();
+			properties.putAll(metadataType.getConverter().toProperties(metadataValues.get(metadataType.getUniqueName())));
+			props.addAll(properties);
 		}
 	}
 

@@ -1,6 +1,6 @@
-<label for="${metadataType.uuid}${suffix}">
+<label for="${metadataType.uniqueName}${suffix}">
   $metadataType.name
 </label>
-<input type="hidden" name="$!{metadataType.uuid}${suffix} id="${metadataType.uuid}${DOT}${i}"
+<input type="hidden" name="$!{metadataType.uniqueName}${suffix} id="${metadataType.uniqueName}${DOT}${i}"
        value="$!metadataValue"/>
-#resources_dateselectionwidget("${metadataType.uuid}" "${i}" $metadataValue $dateFormat)
+#resources_dateselectionwidget("${metadataType.uniqueName}" "${i}" $metadataValue $dateFormat)

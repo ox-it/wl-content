@@ -8,7 +8,7 @@
 #set($groupMetadataType = [])
 
 #foreach($metadataType in $!item.metadataGroups)
-  #set($metadataValue = $!item.metadataValues.get($metadataType.uuid))
+  #set($metadataValue = $!item.metadataValues.get($metadataType.uniqueName))
   #parse($metadataType.renderer.metadataValueEditTemplate)
 #end
 <!--

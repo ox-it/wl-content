@@ -42,11 +42,11 @@ public class EnumMetadataType extends MetadataType<String>
 
 	private final class EnumMetadataValidator implements MetadataValidator<String>
 	{
-		public boolean validate(String value)
+		public boolean validate(String metadataValue)
 		{
-			if (value == null)
+			if (metadataValue == null)
 				return isRequired();
-			if (allowedValues != null && allowedValues.contains(value))
+			if (allowedValues != null && allowedValues.contains(metadataValue))
 				return false;
 
 			return true;
@@ -78,25 +78,30 @@ public class EnumMetadataType extends MetadataType<String>
 
 	protected final class EnumMetadataConverter implements MetadataConverter<String>
 	{
-		public String toString(String object)
+		public String toString(String metadataValue)
 		{
-			return object;
+			return (metadataValue != null && !metadataValue.isEmpty()) ? metadataValue : null;
 		}
 
-		public String toObject(String string)
+		public String fromString(String stringValue)
 		{
-			return string;
+			return (stringValue != null && !stringValue.isEmpty()) ? stringValue : null;
 		}
 
-		public Map<Object, Object> toProperties(String object)
+		public Map<String, ?> toProperties(String metadataValue)
 		{
-			return Collections.<Object, Object>singletonMap(getUuid(), toString(object));
-
+			String stringValue = toString(metadataValue);
+			return (stringValue != null) ? Collections.singletonMap(getUniqueName(), stringValue) : Collections.<String, Object>emptyMap();
 		}
 
-		public String toObject(Map properties, String propertySuffix)
+		public String fromProperties(Map<String, ?> properties)
 		{
-			return (String) properties.get(getUuid() + propertySuffix);
+			return fromString((String) properties.get(getUniqueName()));
+		}
+
+		public String fromHttpForm(Map parameters, String parameterSuffix)
+		{
+			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}
 	}
 }
