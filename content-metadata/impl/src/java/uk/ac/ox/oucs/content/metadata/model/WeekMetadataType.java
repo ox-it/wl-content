@@ -62,7 +62,7 @@ public class WeekMetadataType extends MetadataType<Integer>
 			return fromString((String) properties.get(getUniqueName()));
 		}
 
-		public Integer fromHttpForm(Map parameters, String parameterSuffix)
+		public Integer fromHttpForm(Map<String, ?> parameters, String parameterSuffix)
 		{
 			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}

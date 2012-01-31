@@ -111,7 +111,7 @@ public class StringMetadataType extends MetadataType<String>
 			return fromString((String) properties.get(getUniqueName()));
 		}
 
-		public String fromHttpForm(Map parameters, String parameterSuffix)
+		public String fromHttpForm(Map<String, ?> parameters, String parameterSuffix)
 		{
 			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}

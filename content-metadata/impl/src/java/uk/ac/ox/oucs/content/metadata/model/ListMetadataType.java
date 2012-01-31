@@ -212,7 +212,7 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 			return metadataValues;
 		}
 
-		public List<T> fromHttpForm(Map parameters, String parameterSuffix)
+		public List<T> fromHttpForm(Map<String, ?> parameters, String parameterSuffix)
 		{
 			List<T> metadataValues = new ArrayList<T>();
 			String[] stringValues;
@@ -227,7 +227,7 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 			//Workaround to confuse the Metadata, making it think that it's getting a parameters map
 			for (String stringValue : stringValues)
 			{
-				T metadataValue = metadataType.getConverter().fromHttpForm(Collections.<Object, Object>singletonMap(getUniqueName(), stringValue), "");
+				T metadataValue = metadataType.getConverter().fromHttpForm(Collections.<String, Object>singletonMap(getUniqueName(), stringValue), "");
 				if (metadataValue != null)
 					metadataValues.add(metadataValue);
 			}

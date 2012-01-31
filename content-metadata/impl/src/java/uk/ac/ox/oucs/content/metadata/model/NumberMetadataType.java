@@ -82,7 +82,7 @@ public class NumberMetadataType extends MetadataType<Number>
 			return fromString((String) properties.get(getUniqueName()));
 		}
 
-		public Number fromHttpForm(Map parameters, String parameterSuffix)
+		public Number fromHttpForm(Map<String, ?> parameters, String parameterSuffix)
 		{
 			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}

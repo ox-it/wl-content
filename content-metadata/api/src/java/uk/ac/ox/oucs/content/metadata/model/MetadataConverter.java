@@ -45,5 +45,5 @@ public interface MetadataConverter<T>
 	 * @param parameterSuffix Optional suffix which can be used in HTML forms
 	 * @return The converted result
 	 */
-	T fromHttpForm(Map<Object, Object> parameters, String parameterSuffix);
+	T fromHttpForm(Map<String, ?> parameters, String parameterSuffix);
 }

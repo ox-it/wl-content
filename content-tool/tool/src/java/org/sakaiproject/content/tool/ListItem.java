@@ -3553,7 +3553,7 @@ public class ListItem
 		{
 			for (MetadataType metadataGroup : metadataGroups)
 			{
-				Object metadataValue = metadataGroup.getConverter().fromProperties(transformResourcePropertiesIntoMap(this.entity.getProperties()));
+				Object metadataValue = metadataGroup.getConverter().fromProperties(wrapResourcePropertiesInMap(this.entity.getProperties()));
 				metadataValues.put(metadataGroup.getUniqueName(), metadataValue);
 			}
 		} else
@@ -3565,15 +3565,86 @@ public class ListItem
 		}
 	}
 
-	private Map<String, Object> transformResourcePropertiesIntoMap(final ResourceProperties resourceProperties)
+	/**
+	 * Provides a huge wrapper around ResourceProperties to use it as a Map
+	 *
+	 * @param resourceProperties ResourceProperties to wrap
+	 * @return the wrapped value
+	 */
+	private Map<String, Object> wrapResourcePropertiesInMap(final ResourceProperties resourceProperties)
 	{
-		Map<String, Object> map = new HashMap<String, Object>();
-		for (Iterator<String> iterator = resourceProperties.getPropertyNames(); iterator.hasNext(); )
+		return new AbstractMap<String, Object>()
 		{
-			String propertyName = iterator.next();
-			map.put(propertyName, resourceProperties.get(propertyName));
-		}
-		return map;
+			public boolean isEmpty()
+			{
+				return !resourceProperties.getPropertyNames().hasNext();
+			}
+
+			public boolean containsKey(Object key)
+			{
+				return resourceProperties.get((String) key) != null;
+			}
+
+			public Object get(Object key)
+			{
+				return resourceProperties.get((String) key);
+			}
+
+			@Override
+			public Set<Entry<String, Object>> entrySet()
+			{
+				return new AbstractSet<Entry<String, Object>>()
+				{
+					@Override
+					public Iterator<Entry<String, Object>> iterator()
+					{
+						return new Iterator<Entry<String, Object>>()
+						{
+							private final Iterator<String> propertiesNames = resourceProperties.getPropertyNames();
+
+							public boolean hasNext()
+							{
+								return propertiesNames.hasNext();
+							}
+
+							public Entry<String, Object> next()
+							{
+								return new Entry<String, Object>()
+								{
+									private final String key = propertiesNames.next();
+
+									public String getKey()
+									{
+										return key;
+									}
+
+									public Object getValue()
+									{
+										return resourceProperties.get(key);
+									}
+
+									public Object setValue(Object value)
+									{
+										throw new UnsupportedOperationException();
+									}
+								};
+							}
+
+							public void remove()
+							{
+								throw new UnsupportedOperationException();
+							}
+						};
+					}
+
+					@Override
+					public int size()
+					{
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
 	}
 
 	protected void captureOptionalPropertyValues(ParameterParser params, String index)
@@ -3581,9 +3652,105 @@ public class ListItem
 		metadataValues = new HashMap<String, Object>(metadataGroups.size());
 		for (MetadataType metadataGroup : metadataGroups)
 		{
-			Object metadataValue = metadataGroup.getConverter().fromHttpForm(params.getMultipleProperties(), index);
+			Object metadataValue = metadataGroup.getConverter().fromHttpForm(wrapParametersInMap(params), index);
 			metadataValues.put(metadataGroup.getUniqueName(), metadataValue);
 		}
+	}
+
+	/**
+	 * Provides a huge wrapper around parameterParser to use it as a Map
+	 *
+	 * @param params ParameterParser to wrap
+	 * @return the wrapped value
+	 */
+	private Map<String, ?> wrapParametersInMap(final ParameterParser params)
+	{
+		return new AbstractMap<String, Object>()
+		{
+			public boolean isEmpty()
+			{
+				return !params.getNames().hasNext();
+			}
+
+			public boolean containsKey(Object key)
+			{
+				return params.get((String) key) != null;
+			}
+
+			public Object get(Object key)
+			{
+				String[] value = params.getStrings((String) key);
+				if (value == null || value.length == 0)
+					return null;
+				else if (value.length > 1)
+				{
+					return value;
+				} else
+					return value[0];
+			}
+
+			@Override
+			public Set<Entry<String, Object>> entrySet()
+			{
+				return new AbstractSet<Entry<String, Object>>()
+				{
+					@Override
+					public Iterator<Entry<String, Object>> iterator()
+					{
+						return new Iterator<Entry<String, Object>>()
+						{
+							private final Iterator<String> parametersNames = params.getNames();
+
+							public boolean hasNext()
+							{
+								return parametersNames.hasNext();
+							}
+
+							public Entry<String, Object> next()
+							{
+								return new Entry<String, Object>()
+								{
+									private final String key = parametersNames.next();
+
+									public String getKey()
+									{
+										return key;
+									}
+
+									public Object getValue()
+									{
+										String[] value = params.getStrings(key);
+										if (value == null || value.length == 0)
+											return null;
+										else if (value.length > 1)
+										{
+											return value;
+										} else
+											return value[0];
+									}
+
+									public Object setValue(Object value)
+									{
+										throw new UnsupportedOperationException();
+									}
+								};
+							}
+
+							public void remove()
+							{
+								throw new UnsupportedOperationException();
+							}
+						};
+					}
+
+					@Override
+					public int size()
+					{
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
 	}
 
 	/**

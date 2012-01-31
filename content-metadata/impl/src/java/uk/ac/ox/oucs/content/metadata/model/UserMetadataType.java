@@ -126,7 +126,7 @@ public class UserMetadataType extends MetadataType<User>
 			return fromString((String) properties.get(getUniqueName()));
 		}
 
-		public User fromHttpForm(Map parameters, String parameterSuffix)
+		public User fromHttpForm(Map<String, ?> parameters, String parameterSuffix)
 		{
 			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}

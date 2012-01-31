@@ -123,11 +123,24 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 			}
 		}
 
+		/**
+		 * {@inheritDoc}
+		 * <p/>
+		 * INFO: For the suppress warning, see the content of the method
+		 *
+		 * @param metadataValues {@inheritDoc}
+		 * @return {@inheritDoc}
+		 */
+		@SuppressWarnings("unchecked")
 		public Map<String, ?> toProperties(Map<String, ?> metadataValues)
 		{
 			Map<String, ?> properties = new HashMap<String, Object>();
 			for (MetadataType metadataType : metadataTypes)
 			{
+				/*
+				 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
+				 * In this case we can't cast to "?" so here goes some unchecked operations.
+				 */
 				properties.putAll(metadataType.getConverter().toProperties(metadataValues.get(metadataType.getUniqueName())));
 			}
 			return properties;

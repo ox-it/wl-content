@@ -143,7 +143,7 @@ public class DateMetadataType extends MetadataType<Date>
 			return fromString((String) properties.get(getUniqueName()));
 		}
 
-		public Date fromHttpForm(Map parameters, String parameterSuffix)
+		public Date fromHttpForm(Map<String, ?> parameters, String parameterSuffix)
 		{
 			return fromString((String) parameters.get(getUniqueName() + parameterSuffix));
 		}
