@@ -13,7 +13,7 @@ public abstract class MetadataType<T> implements Serializable
 	/**
 	 * Unique name used to identify the Metadata field
 	 */
-	private String uuid;
+	private String id;
 
 	/**
 	 * Name used in the view layer
@@ -48,12 +48,12 @@ public abstract class MetadataType<T> implements Serializable
 
 	public String getUniqueName()
 	{
-		return uuid;
+		return id;
 	}
 
 	public void setUniqueName(String uniqueName)
 	{
-		this.uuid = uniqueName;
+		this.id = uniqueName;
 	}
 
 	public String getName()
