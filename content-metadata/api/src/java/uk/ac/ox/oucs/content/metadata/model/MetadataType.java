@@ -26,6 +26,11 @@ public abstract class MetadataType<T> implements Serializable
 	private String description;
 
 	/**
+	 * Are the name an description translated (in properties files)
+	 */
+	private boolean translated;
+
+	/**
 	 * Default value
 	 */
 	private T defaultValue;
@@ -69,6 +74,16 @@ public abstract class MetadataType<T> implements Serializable
 	public void setDescription(String description)
 	{
 		this.description = description;
+	}
+
+	public boolean isTranslated()
+	{
+		return translated;
+	}
+
+	public void setTranslated(boolean translated)
+	{
+		this.translated = translated;
 	}
 
 	public T getDefaultValue()
