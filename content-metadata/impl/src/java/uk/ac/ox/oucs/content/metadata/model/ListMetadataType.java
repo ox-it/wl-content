@@ -89,26 +89,6 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 		metadataType.setContentTypeApplicable(contentTypeApplicable);
 	}
 
-	public String getXmlElement()
-	{
-		return metadataType.getXmlElement();
-	}
-
-	public void setXmlElement(String xmlElement)
-	{
-		metadataType.setXmlElement(xmlElement);
-	}
-
-	public String getXmlType()
-	{
-		return metadataType.getXmlType();
-	}
-
-	public void setXmlType(String xmlType)
-	{
-		metadataType.setXmlType(xmlType);
-	}
-
 	@Override
 	public MetadataRenderer getRenderer()
 	{
