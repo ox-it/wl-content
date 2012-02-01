@@ -3546,8 +3546,8 @@ public class ListItem
 	 */
 	public void initMetadataGroups()
 	{
-		//TODO get only metadata related to the current entity and site
-		metadataGroups = ContentMetadataService.getInstance().getMetadataAvailable();
+		//TODO get only metadata related to the current entity type
+		metadataGroups = ContentMetadataService.getInstance().getMetadataAvailable(ToolManager.getCurrentPlacement().getContext(), "");
 		metadataValues = new HashMap<String, Object>(metadataGroups.size());
 		if (this.entity != null)
 		{
