@@ -15,8 +15,9 @@ public interface MetadataService
 	 * Get all metadata groups available on the server
 	 *
 	 * @return A list of metadata fields, or an empty list if there is none.
+	 * @param resourceType
 	 */
-	List<MetadataType> getMetadataAvailable();
+	List<MetadataType> getMetadataAvailable(String resourceType);
 
 	/**
 	 * Get all metadata groups available on the server for a specific site and resourceType

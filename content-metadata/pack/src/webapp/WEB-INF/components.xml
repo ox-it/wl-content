@@ -3,8 +3,21 @@
 
 <beans>
   <bean id="uk.ac.ox.oucs.content.metadata.logic.MetadataService"
-        class="uk.ac.ox.oucs.content.metadata.logic.MetadataServiceImpl" singleton="true">
+        class="uk.ac.ox.oucs.content.metadata.logic.MetadataServiceAggregator" singleton="true">
+
+    <constructor-arg>
+      <list>
+        <bean class="uk.ac.ox.oucs.content.metadata.logic.MetadataServiceFromJsonContent">
+          <constructor-arg ref="org.sakaiproject.content.api.ContentHostingService"/>
+          <constructor-arg ref="org.sakaiproject.authz.api.SecurityService"/>
+          <constructor-arg ref="org.sakaiproject.tool.api.ToolManager"/>
+        </bean>
+        <!-- Hard import DublinCore for compatibility with old systems -->
+        <bean class="uk.ac.ox.oucs.content.metadata.logic.MetadataServiceDublinCore"/>
+      </list>
+    </constructor-arg>
   </bean>
+
 
   <bean id="uk.ac.ox.oucs.content.metadata.model.UserMetadataType"
         class="uk.ac.ox.oucs.content.metadata.model.UserMetadataType" singleton="true">
