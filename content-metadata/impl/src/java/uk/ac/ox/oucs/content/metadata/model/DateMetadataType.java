@@ -16,7 +16,6 @@ public class DateMetadataType extends MetadataType<Date>
 	private boolean date;
 	private boolean time;
 	private boolean defaultToday;
-	private final DateTimeConverter converter = new DateTimeConverter();
 
 	public Date getMinimumDateTime()
 	{
@@ -88,7 +87,7 @@ public class DateMetadataType extends MetadataType<Date>
 	@Override
 	public MetadataConverter<Date> getConverter()
 	{
-		return converter;
+		return new DateTimeConverter();
 	}
 
 	@Override
