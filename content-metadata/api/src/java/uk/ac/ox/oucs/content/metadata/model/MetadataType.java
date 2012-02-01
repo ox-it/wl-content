@@ -40,11 +40,6 @@ public abstract class MetadataType<T> implements Serializable
 	 */
 	private List<String> contentTypeApplicable;
 
-	/**
-	 * Backward compatibility with DublinCore
-	 */
-	private String xmlElement;
-	private String xmlType;
 
 	public String getUniqueName()
 	{
@@ -104,26 +99,6 @@ public abstract class MetadataType<T> implements Serializable
 	public void setContentTypeApplicable(List<String> contentTypeApplicable)
 	{
 		this.contentTypeApplicable = contentTypeApplicable;
-	}
-
-	public String getXmlElement()
-	{
-		return xmlElement;
-	}
-
-	public void setXmlElement(String xmlElement)
-	{
-		this.xmlElement = xmlElement;
-	}
-
-	public String getXmlType()
-	{
-		return xmlType;
-	}
-
-	public void setXmlType(String xmlType)
-	{
-		this.xmlType = xmlType;
 	}
 
 	/**
