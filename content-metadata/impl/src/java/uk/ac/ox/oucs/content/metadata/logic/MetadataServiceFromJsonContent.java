@@ -60,7 +60,7 @@ public class MetadataServiceFromJsonContent extends MetadataServiceFromContent
 	}
 
 	@Override
-	protected String getSiteMetaContent(String siteId)
+	protected String getSiteMetadataConfigFile(String siteId)
 	{
 		toolManager.getCurrentPlacement().getPlacementConfig().getProperty("home");
 		String siteRoot = contentHostingService.getSiteCollection(siteId);
