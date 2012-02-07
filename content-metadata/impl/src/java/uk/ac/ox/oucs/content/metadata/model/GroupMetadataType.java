@@ -13,8 +13,15 @@ import org.codehaus.jackson.type.TypeReference;
  */
 public class GroupMetadataType extends MetadataType<Map<String, ?>>
 {
-	//TODO : Provide a way to enable ordering ?
+	/**
+	 * Content of the group
+	 */
 	private List<MetadataType<?>> metadataTypes;
+
+	/**
+	 * Automatically expand the group
+	 */
+	private boolean expanded;
 
 	public List<MetadataType<?>> getMetadataTypes()
 	{
@@ -24,6 +31,16 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 	public void setMetadataTypes(List<MetadataType<?>> metadataTypes)
 	{
 		this.metadataTypes = metadataTypes;
+	}
+
+	public boolean isExpanded()
+	{
+		return expanded;
+	}
+
+	public void setExpanded(boolean expanded)
+	{
+		this.expanded = expanded;
 	}
 
 	@Override
