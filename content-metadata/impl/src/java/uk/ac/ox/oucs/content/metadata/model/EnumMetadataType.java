@@ -60,7 +60,7 @@ public class EnumMetadataType extends MetadataType<String>
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		public String getMetadataTypePrintTemplate()
+		public String getMetadataTypeDisplayTemplate()
 		{
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
@@ -70,7 +70,7 @@ public class EnumMetadataType extends MetadataType<String>
 			return "vm/metadata/meta_edit_enum.vm";
 		}
 
-		public String getMetadataValuePrintTemplate()
+		public String getMetadataValueDisplayTemplate()
 		{
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}

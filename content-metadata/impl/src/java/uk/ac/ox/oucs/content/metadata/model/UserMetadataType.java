@@ -74,7 +74,7 @@ public class UserMetadataType extends MetadataType<User>
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		public String getMetadataTypePrintTemplate()
+		public String getMetadataTypeDisplayTemplate()
 		{
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
@@ -84,7 +84,7 @@ public class UserMetadataType extends MetadataType<User>
 			return "vm/metadata/meta_edit_user.vm";
 		}
 
-		public String getMetadataValuePrintTemplate()
+		public String getMetadataValueDisplayTemplate()
 		{
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}

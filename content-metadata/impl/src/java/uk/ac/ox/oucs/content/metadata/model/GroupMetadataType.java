@@ -229,7 +229,7 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		public String getMetadataTypePrintTemplate()
+		public String getMetadataTypeDisplayTemplate()
 		{
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
@@ -239,7 +239,7 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 			return "vm/metadata/meta_edit_group.vm";
 		}
 
-		public String getMetadataValuePrintTemplate()
+		public String getMetadataValueDisplayTemplate()
 		{
 			return null;	//To change body of implemented methods use File | Settings | File Templates.
 		}
