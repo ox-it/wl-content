@@ -1,0 +1,13 @@
+#if(!$metadataValue.isEmpty()) ##Do not render empty metadata at all
+
+<label>$metadataType.name</label>
+&nbsp;
+  #if($multipleMetadataType.contains($metadataType.uniqueName))
+    #foreach($value in $metadataValue)
+    <span>$value</span>
+    #end
+  #else
+  <span>$metadataValue</span>
+  #end
+
+#end

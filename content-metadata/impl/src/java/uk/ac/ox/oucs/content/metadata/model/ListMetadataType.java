@@ -249,7 +249,7 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 
 		public String getMetadataValueDisplayTemplate()
 		{
-			return null;	//To change body of implemented methods use File | Settings | File Templates.
+			return "vm/metadata/meta_display_list.vm";
 		}
 	}
 }

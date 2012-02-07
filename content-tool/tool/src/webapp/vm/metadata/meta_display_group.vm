@@ -1,0 +1,39 @@
+$groupMetadataType.add($groupMetadataLevel, $metadataType)
+$groupMetadataValue.add($groupMetadataLevel, $metadataValue)
+
+<p class="discTria" id="metadataShown_${metadataType.uniqueName}${suffix}"
+   style="#if($metadataType.expanded)display:block;#else display:none;#end">
+  <a id="hideMetadata_${metadataType.uniqueName}${suffix}" href="#"
+     title="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)">
+    <img id="hideMetadataImage_${metadataType.uniqueName}${suffix}" src="#imageLink("sakai/collapse.gif")"
+         alt="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)" border="0" width="13" height="13"
+         align="top"/>
+    $validator.escapeHtml($metadataType.name)
+  </a>
+</p>
+<p class="discTria" id="metadataHidden_${metadataType.uniqueName}${suffix}"
+   style="#if($metadataType.expanded)display:none;#else display:block;#end">
+  <a id="showMetadata_${metadataType.uniqueName}${suffix}" href="#"
+     title="$tlang.getFormattedMessage("metadata.show", $metadataType.name)">
+    <img id="showMetadataImage_${metadataType.uniqueName}${suffix}" src="#imageLink("sakai/expand.gif")"
+         alt="$tlang.getFormattedMessage("metadata.show", $metadataType.name)" border="0" width="13" height="13"
+         align="top"/>
+    $validator.escapeHtml($metadataType.name)
+  </a>
+</p>
+<div id="metadataDiv_${metadataType.uniqueName}${suffix}"
+     style="#if($metadataType.expanded)display:block;#else display:none;#end">
+  #foreach($metadataType in $groupMetadataType.get($groupMetadataLevel).metadataTypes)
+  ## The #set directive is ignored if the value given evaluates to null, to avoid keeping old values
+  ## an empty string is set.
+    #set($metadataValue = "")
+    #set($metadataValue = $groupMetadataValue.get($groupMetadataLevel).get($metadataType.uniqueName))
+    #set($groupMetadataLevel = $groupMetadataLevel + 1)
+
+    <p class="shorttext">
+      #parse($metadataType.renderer.metadataValueDisplayTemplate)
+    </p>
+
+    #set($groupMetadataLevel = $groupMetadataLevel - 1)
+  #end
+</div>

@@ -86,7 +86,7 @@ public class UserMetadataType extends MetadataType<User>
 
 		public String getMetadataValueDisplayTemplate()
 		{
-			return null;	//To change body of implemented methods use File | Settings | File Templates.
+			return "vm/metadata/meta_display_user.vm";
 		}
 	}
 

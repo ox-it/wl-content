@@ -137,7 +137,7 @@ public class StringMetadataType extends MetadataType<String>
 
 		public String getMetadataValueDisplayTemplate()
 		{
-			return null;	//To change body of implemented methods use File | Settings | File Templates.
+			return "vm/metadata/meta_display_string.vm";
 		}
 	}
 }
