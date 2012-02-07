@@ -7,7 +7,6 @@ import java.util.List;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.sakaiproject.authz.api.SecurityService;
-import org.sakaiproject.content.api.ContentEntity;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.tool.api.ToolManager;
 import uk.ac.ox.oucs.content.metadata.mixins.MetadataTypeMixin;
@@ -18,6 +17,19 @@ import uk.ac.ox.oucs.content.metadata.model.MetadataType;
  */
 public class MetadataServiceFromJsonContent extends MetadataServiceFromContent
 {
+
+	private String localMetadataConfigFile = "metadata/metadata.json";
+	private String globalMetadataConfigFile = "/metadata/metadata.json";
+
+	public void setLocalMetadataConfigFile(String localMetadataConfigFile)
+	{
+		this.localMetadataConfigFile = localMetadataConfigFile;
+	}
+
+	public void setGlobalMetadataConfigFile(String globalMetadataConfigFile)
+	{
+		this.globalMetadataConfigFile = globalMetadataConfigFile;
+	}
 
 	@Override
 	protected List<MetadataType> parse(InputStream inputStream)
@@ -41,33 +53,24 @@ public class MetadataServiceFromJsonContent extends MetadataServiceFromContent
 		{
 			throw new RuntimeException(e);
 		}
-		finally {
+		finally
+		{
 			Thread.currentThread().setContextClassLoader(cl);
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * Look for metadata definition in /metadata/metadata.json
-	 *
-	 * @param siteId {@inheritDoc}
-	 * @return {@inheritDoc}
-	 */
 	@Override
 	protected String getSiteMetaContent(String siteId)
 	{
 		toolManager.getCurrentPlacement().getPlacementConfig().getProperty("home");
 		String siteRoot = contentHostingService.getSiteCollection(siteId);
-		ContentEntity metaFolder = getSubContent(forceAccessCollection(siteRoot), "metadata");
-		ContentEntity file = getSubContent(forceAccessCollection(metaFolder.getId()), "metadata.json");
-		return file.getId();
+		return siteRoot + localMetadataConfigFile;
 	}
 
 	@Override
 	protected String getGlobalMetaContent()
 	{
-		return "";
+		return globalMetadataConfigFile;
 	}
 
 	public MetadataServiceFromJsonContent(ContentHostingService contentHostingService, SecurityService securityService, ToolManager toolManager)
