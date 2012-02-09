@@ -1,3 +1,15 @@
+#* @vtlmacrolibrary path="../resources/sakai_metadata-display.vm" *#
+#* @vtlvariable name="tlang" type="org.sakaiproject.util.ResourceLoader" *#
+#* @vtlvariable name="item" type="org.sakaiproject.content.tool.ListItem" *#
+#* @vtlvariable name="site_id" type="java.lang.String" *#
+#* @vtlvariable name="metadataType" type="uk.ac.ox.oucs.content.metadata.model.MetadataType" *#
+#* @vtlvariable name="metadataValue" type="java.lang.Object" *#
+#* @vtlvariable name="multipleMetadataType" type="java.util.List<java.lang.String>" *#
+#* @vtlvariable name="groupMetadataLevel" type="int" *#
+#* @vtlvariable name="groupMetadataValue" type="java.util.List<java.lang.Object>" *#
+#* @vtlvariable name="groupMetadataType" type="java.util.List<uk.ac.ox.oucs.content.metadata.model.MetadataType>" *#
+#* @vtlvariable name="suffix" type="java.lang.String" *#
+
 $groupMetadataType.add($groupMetadataLevel, $metadataType)
 $groupMetadataValue.add($groupMetadataLevel, $metadataValue)
 
@@ -8,7 +20,7 @@ $groupMetadataValue.add($groupMetadataLevel, $metadataValue)
     <img id="hideMetadataImage_${metadataType.uniqueName}${suffix}" src="#imageLink("sakai/collapse.gif")"
          alt="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)" border="0" width="13" height="13"
          align="top"/>
-    $validator.escapeHtml($metadataType.name)
+    #printMetadataName($metadataType)
   </a>
 </p>
 <p class="discTria" id="metadataHidden_${metadataType.uniqueName}${suffix}"
@@ -18,7 +30,7 @@ $groupMetadataValue.add($groupMetadataLevel, $metadataValue)
     <img id="showMetadataImage_${metadataType.uniqueName}${suffix}" src="#imageLink("sakai/expand.gif")"
          alt="$tlang.getFormattedMessage("metadata.show", $metadataType.name)" border="0" width="13" height="13"
          align="top"/>
-    $validator.escapeHtml($metadataType.name)
+    #printMetadataName($metadataType)
   </a>
 </p>
 <div id="metadataDiv_${metadataType.uniqueName}${suffix}"

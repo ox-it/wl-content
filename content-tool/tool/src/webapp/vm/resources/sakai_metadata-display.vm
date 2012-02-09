@@ -1,3 +1,24 @@
+#* @vtlvariable name="tlang" type="org.sakaiproject.util.ResourceLoader" *#
+#* @vtlvariable name="item" type="org.sakaiproject.content.tool.ListItem" *#
+#* @vtlvariable name="site_id" type="java.lang.String" *#
+
+#macro( printMetadataName $metadataType )
+  #if($metadataType.translated)
+    $tlang.getString($metadataType.name)
+  #else
+    $metadataType.name
+  #end
+#end
+
+#macro( printMetadataDescription $metadataType )
+  #if($metadataType.translated)
+    $tlang.getString($metadataType.description)
+  #else
+    $metadataType.description
+  #end
+#end
+
+
 
 #macro( displayMetadata $metadataType )
   #set($template = $metadataType.renderer.metadataValueDisplayTemplate)

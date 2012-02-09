@@ -1,3 +1,22 @@
+#* @vtlvariable name="item" type="org.sakaiproject.content.tool.ListItem" *#
+#* @vtlvariable name="request" type="javax.servlet.http.HttpServletRequest" *#
+
+#macro( printMetadataName $metadataType )
+  #if($metadataType.translated)
+    $tlang.getString($metadataType.name)
+  #else
+    $metadataType.name
+  #end
+#end
+
+#macro( printMetadataDescription $metadataType )
+  #if($metadataType.translated)
+    $tlang.getString($metadataType.description)
+  #else
+    $metadataType.description
+  #end
+#end
+
 #macro( editMetadata $metadataType )
   #set($template = $metadataType.renderer.metadataValueEditTemplate)
   #parse($request.session.servletContext.getInitParameter($template))
