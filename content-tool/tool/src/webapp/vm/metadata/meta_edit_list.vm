@@ -1,4 +1,4 @@
 #if($multipleMetadataType.add($metadataType.uniqueName))
   #set($metadataType = $metadataType.metadataType)
-  #parse($metadataType.renderer.metadataValueEditTemplate)
+  #editMetadata($metadataType)
 #end

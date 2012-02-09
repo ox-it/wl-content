@@ -81,12 +81,12 @@ public class UserMetadataType extends MetadataType<User>
 
 		public String getMetadataValueEditTemplate()
 		{
-			return "vm/metadata/meta_edit_user.vm";
+			return "meta_edit_user";
 		}
 
 		public String getMetadataValueDisplayTemplate()
 		{
-			return "vm/metadata/meta_display_user.vm";
+			return "meta_display_user";
 		}
 	}
 

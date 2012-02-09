@@ -93,12 +93,12 @@ public class BsgWeekMetadataType extends WeekMetadataType
 
 		public String getMetadataValueEditTemplate()
 		{
-			return "vm/metadata/meta_edit_bsg_week.vm";
+			return "meta_edit_bsg_week";
 		}
 
 		public String getMetadataValueDisplayTemplate()
 		{
-			return "vm/metadata/meta_display_string.vm";
+			return "meta_display_string";
 		}
 	}
 }

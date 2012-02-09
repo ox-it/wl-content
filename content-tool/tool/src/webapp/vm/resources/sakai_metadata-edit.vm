@@ -1,3 +1,8 @@
+#macro( editMetadata $metadataType )
+  #set($template = $metadataType.renderer.metadataValueEditTemplate)
+  #parse($request.session.servletContext.getInitParameter($template))
+#end
+
 #set($suffix = "${DOT}$i")
 ######################## ================ Optional Properties of Item ================ ########################
 <input type="hidden" name="metadataGroup${suffix}" id="metadataGroup${suffix}" value=""/>
@@ -9,7 +14,7 @@
 
 #foreach($metadataType in $!item.metadataGroups)
   #set($metadataValue = $!item.metadataValues.get($metadataType.uniqueName))
-  #parse($metadataType.renderer.metadataValueEditTemplate)
+  #editMetadata($metadataType)
 #end
 <!--
 <script src="/library/js/jquery/1.4.2/jquery-1.4.2.min.js" type="text/javascript"></script>

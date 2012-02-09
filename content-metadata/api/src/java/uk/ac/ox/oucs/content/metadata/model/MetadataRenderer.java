@@ -17,7 +17,7 @@ public interface MetadataRenderer
 	 *
 	 * @return a path to a Velocity template
 	 */
-	String getMetadataTypePrintTemplate();
+	String getMetadataTypeDisplayTemplate();
 
 	/**
 	 * Specifies the Velocity template used in the rendering part when the user is editing the metadata of a resource.
@@ -31,5 +31,5 @@ public interface MetadataRenderer
 	 *
 	 * @return a path to a Velocity template
 	 */
-	String getMetadataValuePrintTemplate();
+	String getMetadataValueDisplayTemplate();
 }

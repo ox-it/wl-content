@@ -244,12 +244,12 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 
 		public String getMetadataValueEditTemplate()
 		{
-			return "vm/metadata/meta_edit_list.vm";
+			return "meta_edit_list";
 		}
 
 		public String getMetadataValueDisplayTemplate()
 		{
-			return "vm/metadata/meta_display_list.vm";
+			return "meta_display_list";
 		}
 	}
 }

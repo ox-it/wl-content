@@ -236,12 +236,12 @@ public class GroupMetadataType extends MetadataType<Map<String, ?>>
 
 		public String getMetadataValueEditTemplate()
 		{
-			return "vm/metadata/meta_edit_group.vm";
+			return "meta_edit_group";
 		}
 
 		public String getMetadataValueDisplayTemplate()
 		{
-			return "vm/metadata/meta_display_group.vm";
+			return "meta_display_group";
 		}
 	}
 }

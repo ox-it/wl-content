@@ -31,7 +31,7 @@ $groupMetadataValue.add($groupMetadataLevel, $metadataValue)
     #set($groupMetadataLevel = $groupMetadataLevel + 1)
 
     <p class="shorttext">
-      #parse($metadataType.renderer.metadataValueDisplayTemplate)
+      #displayMetadata($metadataType)
     </p>
 
     #set($groupMetadataLevel = $groupMetadataLevel - 1)

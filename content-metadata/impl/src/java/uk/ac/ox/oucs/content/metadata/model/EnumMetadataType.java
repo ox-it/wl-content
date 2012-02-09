@@ -67,12 +67,12 @@ public class EnumMetadataType extends MetadataType<String>
 
 		public String getMetadataValueEditTemplate()
 		{
-			return "vm/metadata/meta_edit_enum.vm";
+			return "meta_edit_enum";
 		}
 
 		public String getMetadataValueDisplayTemplate()
 		{
-			return "vm/metadata/meta_display_string.vm";
+			return "meta_display_string";
 		}
 	}
 
