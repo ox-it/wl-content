@@ -3554,45 +3554,6 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	}
 
 	/**
-	 * @param pedit
-	 * @param metadataGroups
-	 * @param metadata
-	 */
-	private static void saveMetadata(ResourcePropertiesEdit pedit, List metadataGroups, ResourcesEditItem item)
-	{
-		logger.debug("ResourcesAction.saveMetadata()");
-		if(metadataGroups != null && !metadataGroups.isEmpty())
-		{
-			MetadataGroup group = null;
-			Iterator it = metadataGroups.iterator();
-			while(it.hasNext())
-			{
-				group = (MetadataGroup) it.next();
-				Iterator props = group.iterator();
-				while(props.hasNext())
-				{
-					ResourcesMetadata prop = (ResourcesMetadata) props.next();
-
-					if(ResourcesMetadata.WIDGET_DATETIME.equals(prop.getWidget()) || ResourcesMetadata.WIDGET_DATE.equals(prop.getWidget()) || ResourcesMetadata.WIDGET_TIME.equals(prop.getWidget()))
-					{
-						Time val = (Time)item.getMetadata().get(prop.getFullname());
-						if(val != null)
-						{
-							pedit.addProperty(prop.getFullname(), val.toString());
-						}
-					}
-					else
-					{
-						String val = (String) item.getMetadata().get(prop.getFullname());
-						pedit.addProperty(prop.getFullname(), val);
-					}
-				}
-			}
-		}
-
-	}
-   
-	/**
 	 * @param url
 	 * @return
 	 * @throws MalformedURLException
@@ -3821,7 +3782,8 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	{
 		logger.debug(this + ".buildCreateWizardContext()");
 		context.put("tlang",trb);
-		
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
+
 		context.put("DETAILS_FORM_NAME", "detailsForm");
 
 		String template = "content/sakai_resources_cwiz_finish";
@@ -3884,9 +3846,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 
 			parent.setPubviewPossible(! preventPublicDisplay);
 			ListItem item = new ListItem(pipe, parent, defaultRetractDate);
-			//item.setPubviewPossible(! preventPublicDisplay);
-			item.metadataGroupsIntoContext(context);
-			
+			item.initMetadataGroups();
 			context.put("item", item);
 			
 			state.setAttribute(STATE_CREATE_WIZARD_ITEM, item);
@@ -5057,6 +5017,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		context.put("action", action);
 		
 		context.put("showItemSummary", Boolean.TRUE.toString());
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		
 		String typeId = action.getTypeId();
 		
@@ -5081,7 +5042,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 			item = getListItem(state);
 			state.setAttribute(STATE_REVISE_PROPERTIES_ITEM, item);
 		}
-		item.metadataGroupsIntoContext(context);
+		item.initMetadataGroups();
 		context.put("item", item);
 		
 		String chhbeanname = "";
@@ -6537,34 +6498,6 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 
 	}	// doDelete
 
-//    /**
-//	 * @param data
-//	 */
-//	public void doHide_metadata(RunData data)
-//	{
-//		ParameterParser params = data.getParameters ();
-//		String name = params.getString("metadataGroup");
-//
-//		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
-//		List metadataGroups = (List) state.getAttribute(ListItem.STATE_METADATA_GROUPS);
-//		if(metadataGroups != null && ! metadataGroups.isEmpty())
-//		{
-//			boolean found = false;
-//			MetadataGroup group = null;
-//			Iterator it = metadataGroups.iterator();
-//			while(!found && it.hasNext())
-//			{
-//				group = (MetadataGroup) it.next();
-//				found = (name.equals(Validator.escapeUrl(group.getName())) || name.equals(group.getName()));
-//			}
-//			if(found)
-//			{
-//				group.setShowing(false);
-//			}
-//		}
-//
-//	}	// doHide_metadata
-//
 	/**
 	 * @param data
 	 */
@@ -7230,37 +7163,6 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		}	// if-else
 
 	}	// doSaveOrder
-
-//	/**
-//	 * @param data
-//	 */
-//	public void doShow_metadata(RunData data)
-//	{
-//		ParameterParser params = data.getParameters ();
-//		String name = params.getString("metadataGroup");
-//
-//		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
-//		
-//		
-//		
-//		List metadataGroups = (List) state.getAttribute(ListItem.STATE_METADATA_GROUPS);
-//		if(metadataGroups != null && ! metadataGroups.isEmpty())
-//		{
-//			boolean found = false;
-//			MetadataGroup group = null;
-//			Iterator it = metadataGroups.iterator();
-//			while(!found && it.hasNext())
-//			{
-//				group = (MetadataGroup) it.next();
-//				found = (name.equals(Validator.escapeUrl(group.getName())) || name.equals(group.getName()));
-//			}
-//			if(found)
-//			{
-//				group.setShowing(true);
-//			}
-//		}
-//
-//	}	// doShow_metadata
 
 	/**
 	* Show information about WebDAV
