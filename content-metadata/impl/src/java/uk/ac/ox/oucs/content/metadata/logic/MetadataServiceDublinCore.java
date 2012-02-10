@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import uk.ac.ox.oucs.content.metadata.model.DateMetadataType;
 import uk.ac.ox.oucs.content.metadata.model.GroupMetadataType;
 import uk.ac.ox.oucs.content.metadata.model.MetadataType;
 import uk.ac.ox.oucs.content.metadata.model.StringMetadataType;
@@ -106,7 +105,7 @@ public final class MetadataServiceDublinCore implements MetadataService
 		//Issue date
 		{
 			//TODO Should be a date
-			DateMetadataType dateIssued = new DateMetadataType();
+			StringMetadataType dateIssued = new StringMetadataType();
 			dateIssued.setName("label.dc_issued");
 			dateIssued.setDescription("descr.dc_issued");
 			dateIssued.setTranslated(true);
@@ -117,7 +116,7 @@ public final class MetadataServiceDublinCore implements MetadataService
 		//Modification date
 		{
 			//TODO Should be a date
-			DateMetadataType dateModified = new DateMetadataType();
+			StringMetadataType dateModified = new StringMetadataType();
 			dateModified.setName("label.dc_modified");
 			dateModified.setDescription("descr.dc_modified");
 			dateModified.setTranslated(true);
