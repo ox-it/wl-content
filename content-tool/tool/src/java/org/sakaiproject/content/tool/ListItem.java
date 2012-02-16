@@ -94,6 +94,7 @@ import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.Validator;
 import uk.ac.ox.oucs.content.metadata.cover.ContentMetadataService;
+import uk.ac.ox.oucs.content.metadata.logic.MetadataService;
 import uk.ac.ox.oucs.content.metadata.model.MetadataType;
 
 /**
@@ -131,6 +132,12 @@ public class ListItem
 	
 	/** A long representing the number of milliseconds in one week.  Used for date calculations */
 	public static final long ONE_WEEK = 7L * ONE_DAY;
+
+	/**
+	 * Services
+	 */
+	private static final MetadataService metadataService = (MetadataService) ComponentManager.get(MetadataService.class.getCanonicalName());
+	private static final org.sakaiproject.tool.api.ToolManager toolManager = (org.sakaiproject.tool.api.ToolManager) ComponentManager.get(org.sakaiproject.tool.api.ToolManager.class.getCanonicalName());
 
 	/** 
 	 ** Comparator for sorting Group objects
@@ -3547,7 +3554,7 @@ public class ListItem
 	public void initMetadataGroups()
 	{
 		//TODO get only metadata related to the current entity type
-		metadataGroups = ContentMetadataService.getInstance().getMetadataAvailable(ToolManager.getCurrentPlacement().getContext(), "");
+		metadataGroups = metadataService.getMetadataAvailable(toolManager.getCurrentPlacement().getContext(), "");
 		metadataValues = new HashMap<String, Object>(metadataGroups.size());
 		if (this.entity != null)
 		{
