@@ -8,6 +8,7 @@ import uk.ac.ox.oucs.content.metadata.logic.MetadataService;
  *
  * @author Colin Hebert
  */
+@Deprecated
 public final class ContentMetadataService
 {
 	private static MetadataService instance;
