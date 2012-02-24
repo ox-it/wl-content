@@ -755,6 +755,8 @@ public class UrlResourceType extends BaseResourceType
 		actions.put(ResourceToolAction.COPY, new UrlResourceCopyAction());
 		actions.put(ResourceToolAction.MOVE, new UrlResourceMoveAction());
 		actions.put(ResourceToolAction.DELETE, new UrlResourceDeleteAction());
+		actions.put(ResourceToolAction.MAKE_SITE_PAGE, new MakeSitePageAction(typeId));
+
 		
 		// initialize actionMap with an empty List for each ActionType
 		for(ResourceToolAction.ActionType type : ResourceToolAction.ActionType.values())
