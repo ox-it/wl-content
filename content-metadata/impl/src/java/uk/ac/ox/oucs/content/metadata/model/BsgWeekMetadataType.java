@@ -3,21 +3,22 @@ package uk.ac.ox.oucs.content.metadata.model;
 import org.sakaiproject.component.cover.ComponentManager;
 import uk.ac.ox.oucs.termdates.TermConverterService;
 
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Colin Hebert
  */
 public class BsgWeekMetadataType extends WeekMetadataType
 {
-	private final Map<Integer, String> weekNames;
+	private final SortedMap<Integer, String> weekNames;
 
 	public BsgWeekMetadataType()
 	{
-		weekNames = ((TermConverterService) ComponentManager.get("uk.ac.ox.oucs.termdates.BsgTermConverterService")).getWeekNames();
+		weekNames = new TreeMap<Integer, String>(((TermConverterService) ComponentManager.get("uk.ac.ox.oucs.termdates.BsgTermConverterService")).getWeekNames());
 	}
 
-	public Map<Integer, String> getWeekNames()
+	public SortedMap<Integer, String> getWeekNames()
 	{
 		return weekNames;
 	}
