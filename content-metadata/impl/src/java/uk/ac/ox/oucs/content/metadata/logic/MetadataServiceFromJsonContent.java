@@ -9,7 +9,9 @@ import org.codehaus.jackson.type.TypeReference;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.tool.api.ToolManager;
+import uk.ac.ox.oucs.content.metadata.mixins.ListMetadataTypeMixin;
 import uk.ac.ox.oucs.content.metadata.mixins.MetadataTypeMixin;
+import uk.ac.ox.oucs.content.metadata.model.ListMetadataType;
 import uk.ac.ox.oucs.content.metadata.model.MetadataType;
 
 /**
@@ -46,6 +48,7 @@ public class MetadataServiceFromJsonContent extends MetadataServiceFromContent
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.getDeserializationConfig().addMixInAnnotations(MetadataType.class, MetadataTypeMixin.class);
+			objectMapper.getDeserializationConfig().addMixInAnnotations(ListMetadataType.class, ListMetadataTypeMixin.class);
 			Thread.currentThread().setContextClassLoader(MetadataServiceFromJsonContent.class.getClassLoader());
 			return objectMapper.readValue(inputStream, new TypeReference<List<MetadataType>>() {});
 		}
