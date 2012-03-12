@@ -3,7 +3,7 @@
 
 #macro( printMetadataName $metadataType )
   #if($metadataType.translated)
-    $tlang.getString($!metadataType.name)
+    $metaLang.getString($!metadataType.name)
   #else
     $!metadataType.name
   #end
@@ -11,7 +11,7 @@
 
 #macro( printMetadataDescription $metadataType )
   #if($metadataType.translated)
-    $tlang.getString($!metadataType.description)
+    $metaLang.getString($!metadataType.description)
   #else
     $!metadataType.description
   #end

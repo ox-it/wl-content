@@ -86,6 +86,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	 
 	/** Resource bundle using current language locale */
 	private static ResourceLoader rb = new ResourceLoader("types");
+	private static ResourceLoader metaLang = new ResourceLoader("metadata");
 	private static ResourceLoader contentResourceBundle = new ResourceLoader("content");
 	
 	protected  static final String ACCESS_HTML_TEMPLATE = "resources/sakai_access_html";
@@ -216,7 +217,8 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		logger.debug(this + ".buildMainPanelContext()");
 		// context.put("sysout", System.out);
 		context.put("tlang", rb);
-		
+		context.put("metaLang", metaLang);
+
 		context.put("validator", new Validator());
 		context.put("copyright_alert_url", COPYRIGHT_ALERT_URL);
 		context.put("DOT", ListItem.DOT);

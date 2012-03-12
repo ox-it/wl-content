@@ -1,5 +1,5 @@
 #* @vtlmacrolibrary path="../resources/sakai_metadata-edit.vm" *#
-#* @vtlvariable name="tlang" type="org.sakaiproject.util.ResourceLoader" *#
+#* @vtlvariable name="metaLang" type="org.sakaiproject.util.ResourceLoader" *#
 #* @vtlvariable name="item" type="org.sakaiproject.content.tool.ListItem" *#
 #* @vtlvariable name="site_id" type="java.lang.String" *#
 #* @vtlvariable name="metadataType" type="uk.ac.ox.oucs.content.metadata.model.MetadataType" *#
@@ -16,9 +16,9 @@ $groupMetadataValue.add($groupMetadataLevel, $metadataValue)
 <p class="discTria" id="metadataShown_${metadataType.uniqueName}${suffix}"
    style="#if($metadataType.expanded)display:block;#else display:none;#end">
   <a id="hideMetadata_${metadataType.uniqueName}${suffix}" href="#"
-     title="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)">
+     title="$metaLang.getFormattedMessage("metadata.hide", $metadataType.name)">
     <img id="hideMetadataImage_${metadataType.uniqueName}${suffix}" src="#imageLink("sakai/collapse.gif")"
-         alt="$tlang.getFormattedMessage("metadata.hide", $metadataType.name)" border="0" width="13" height="13"
+         alt="$metaLang.getFormattedMessage("metadata.hide", $metadataType.name)" border="0" width="13" height="13"
          align="top"/>
     #printMetadataName($metadataType)
   </a>
@@ -26,9 +26,9 @@ $groupMetadataValue.add($groupMetadataLevel, $metadataValue)
 <p class="discTria" id="metadataHidden_${metadataType.uniqueName}${suffix}"
    style="#if($metadataType.expanded)display:none;#else display:block;#end">
   <a id="showMetadata_${metadataType.uniqueName}${suffix}" href="#"
-     title="$tlang.getFormattedMessage("metadata.show", $metadataType.name)">
+     title="$metaLang.getFormattedMessage("metadata.show", $metadataType.name)">
     <img id="showMetadataImage_${metadataType.uniqueName}${suffix}" src="#imageLink("sakai/expand.gif")"
-         alt="$tlang.getFormattedMessage("metadata.show", $metadataType.name)" border="0" width="13" height="13"
+         alt="$metaLang.getFormattedMessage("metadata.show", $metadataType.name)" border="0" width="13" height="13"
          align="top"/>
     #printMetadataName($metadataType)
   </a>

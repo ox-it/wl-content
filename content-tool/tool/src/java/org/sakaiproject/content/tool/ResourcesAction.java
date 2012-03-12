@@ -390,6 +390,8 @@ public class ResourcesAction
     public static final ResourceLoader trb = new ResourceLoader("types");
     /** Resource bundle using current language locale */
     private static ResourceLoader rrb = new ResourceLoader("right");
+    /** Resource bundle using current language locale */
+    private static ResourceLoader metaLang = new ResourceLoader("metadata");
 	
 	/** Shared messages */
 	private static final String DEFAULT_RESOURCECLASS = "org.sakaiproject.sharedI18n.SharedProperties";
@@ -3782,6 +3784,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	{
 		logger.debug(this + ".buildCreateWizardContext()");
 		context.put("tlang",trb);
+		context.put("metaLang", metaLang);
 		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 
 		context.put("DETAILS_FORM_NAME", "detailsForm");
@@ -5010,7 +5013,8 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	{
 		logger.debug(this + ".buildReviseMetadataContext()");
 		context.put("tlang", trb);
-		
+		context.put("metaLang", metaLang);
+
 		context.put("DETAILS_FORM_NAME", "detailsForm");
 		
 		ResourceToolAction action = (ResourceToolAction) state.getAttribute(STATE_REVISE_PROPERTIES_ACTION);

@@ -1,10 +1,10 @@
-#* @vtlvariable name="tlang" type="org.sakaiproject.util.ResourceLoader" *#
+#* @vtlvariable name="metaLang" type="org.sakaiproject.util.ResourceLoader" *#
 #* @vtlvariable name="item" type="org.sakaiproject.content.tool.ListItem" *#
 #* @vtlvariable name="site_id" type="java.lang.String" *#
 
 #macro( printMetadataName $metadataType )
   #if($metadataType.translated)
-    $tlang.getString($!metadataType.name)
+    $metaLang.getString($!metadataType.name)
   #else
     $!metadataType.name
   #end
@@ -12,7 +12,7 @@
 
 #macro( printMetadataDescription $metadataType )
   #if($metadataType.translated)
-    $tlang.getString($!metadataType.description)
+    $metaLang.getString($!metadataType.description)
   #else
     $!metadataType.description
   #end
@@ -25,7 +25,7 @@
   #parse($request.session.servletContext.getInitParameter($template))
 
   #if($metadataType.translated)
-    $tlang.getString($metadataType.description)
+    $metaLang.getString($metadataType.description)
   #else
     $metadataType.description
   #end

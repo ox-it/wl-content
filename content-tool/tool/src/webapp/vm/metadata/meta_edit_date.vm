@@ -1,5 +1,4 @@
 #* @vtlmacrolibrary path="../resources/sakai_metadata-edit.vm" *#
-#* @vtlvariable name="tlang" type="org.sakaiproject.util.ResourceLoader" *#
 #* @vtlvariable name="item" type="org.sakaiproject.content.tool.ListItem" *#
 #* @vtlvariable name="site_id" type="java.lang.String" *#
 #* @vtlvariable name="metadataType" type="uk.ac.ox.oucs.content.metadata.model.MetadataType" *#
@@ -13,6 +12,6 @@
 <label for="${metadataType.uniqueName}${suffix}">
   #printMetadataName($metadataType)
 </label>
-<input type="hidden" name="$!{metadataType.uniqueName}${suffix} id="${metadataType.uniqueName}${DOT}${i}"
+<input type="hidden" name="$!{metadataType.uniqueName}${suffix}" id="${metadataType.uniqueName}${suffix}"
        value="$!metadataValue"/>
 #resources_dateselectionwidget("${metadataType.uniqueName}" "${i}" $metadataValue $dateFormat)
