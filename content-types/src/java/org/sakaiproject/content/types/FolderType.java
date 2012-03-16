@@ -78,6 +78,7 @@ public class FolderType extends BaseResourceType implements ExpandableResourceTy
 	public FolderType()
 	{
 		this.userDirectoryService = (UserDirectoryService) ComponentManager.get("org.sakaiproject.user.api.UserDirectoryService");
+		this.contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 		
 		//actions.put(ResourceToolAction.PASTE_MOVED, new FolderPasteMovedAction());
 		//actions.put(ResourceToolAction.PASTE_COPIED, new FolderPasteCopiedAction());
@@ -93,6 +94,7 @@ public class FolderType extends BaseResourceType implements ExpandableResourceTy
 		actions.put(ResourceToolAction.REORDER, new FolderReorderAction());
 		actions.put(ResourceToolAction.PERMISSIONS, new FolderPermissionsAction());
 		actions.put(ResourceToolAction.EXPAND, new FolderExpandAction());
+		actions.put(ResourceToolAction.RESTORE, new FolderRestoreAction());
 		actions.put(ResourceToolAction.COLLAPSE, new FolderCollapseAction());
 		actions.put(ResourceToolAction.MAKE_SITE_PAGE, new MakeSitePageAction(typeId));
 
@@ -1011,6 +1013,45 @@ public class FolderType extends BaseResourceType implements ExpandableResourceTy
 		
 	}
 
+	
+	public class FolderRestoreAction implements ServiceLevelAction {
+	    
+	    public void cancelAction(Reference reference) {
+	        // TODO Auto-generated method stub
+	    }
+	    
+	    public void finalizeAction(Reference reference) {
+	        // TODO Auto-generated method stub        
+	    }
+	    
+	    public void initializeAction(Reference reference) {
+	    }
+	    
+	    public boolean isMultipleItemAction() {
+	        return false;
+	    }
+	    
+	    public boolean available(ContentEntity entity) {
+	        return !contentService.getAllDeletedResources(entity.getId()).isEmpty();
+	    }
+	    
+	    public ActionType getActionType() {
+	        return ResourceToolAction.ActionType.RESTORE;
+	    }
+	    
+	    public String getId() {
+	        return ResourceToolAction.RESTORE;
+	    }
+	    
+	    public String getLabel() {
+	        return rb.getString("action.restore"); 
+	    }
+	    
+	    public String getTypeId() {
+	        return typeId;
+	    }
+	}
+	
 	public class FolderViewPropertiesAction implements ServiceLevelAction
 	{
 		/* (non-Javadoc)
