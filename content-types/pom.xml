@@ -50,5 +50,12 @@
   		<groupId>commons-logging</groupId>
   		<artifactId>commons-logging</artifactId>
   	</dependency>
+  	
+  	<dependency>
+  		<groupId>uk.ac.ox.oucs.termdates</groupId>
+  		<artifactId>termdates-api</artifactId>
+  		<scope>provided</scope>
+  	</dependency>
+  	
   </dependencies>
 </project>

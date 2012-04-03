@@ -1094,6 +1094,12 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 				{
 					resourceProperties.addProperty(ResourceProperties.PROP_DISPLAY_NAME, displayName);
 				}
+				
+				if(obj != null && obj instanceof ListItem) {
+					ListItem item = (ListItem)obj;
+					edit.setResourceType(item.getResourceType());
+				}
+				
 				Map<String, String> values = pipe.getRevisedResourceProperties(); 	 	 
 				for(Iterator<Entry<String, String>> mapIter = values.entrySet().iterator(); mapIter.hasNext();) 
 				{ 	 
@@ -7760,6 +7766,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 			toolSession.removeAttribute(ResourceToolAction.ACTION_PIPE);
 			state.setAttribute(STATE_MODE, MODE_LIST);
 			break;
+			
 		case NEW_FOLDER:
 			List<ContentCollection> folders = createFolders(state, pipe);
 			if(folders != null && ! folders.isEmpty())
@@ -7770,7 +7777,14 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 			}
 			toolSession.removeAttribute(ResourceToolAction.ACTION_PIPE);
 			state.setAttribute(STATE_MODE, MODE_LIST);
+			
+			if(action instanceof InteractionAction) {
+				Reference reference = EntityManager.newReference(ContentHostingService.getReference(pipe.getContentEntity().getId()+pipe.getFileName()+"/"));			
+				InteractionAction iAction = (InteractionAction) action;
+				iAction.finalizeAction(reference, pipe.getInitializationId());
+			}
 			break;
+			
 		case NEW_URLS:
 			List<ContentResource> urls = createUrls(state, pipe);
 			if(urls == null || urls.isEmpty())
