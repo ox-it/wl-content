@@ -22,11 +22,19 @@
 package org.sakaiproject.content.types;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.sakaiproject.authz.api.PermissionsHelper;
 import org.sakaiproject.component.cover.ComponentManager;
@@ -52,7 +60,11 @@ import org.sakaiproject.exception.IdInvalidException;
 import org.sakaiproject.exception.IdLengthException;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.IdUsedException;
+import org.sakaiproject.exception.InUseException;
+import org.sakaiproject.exception.InconsistentException;
+import org.sakaiproject.exception.OverQuotaException;
 import org.sakaiproject.exception.PermissionException;
+import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.exception.TypeException;
 import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.tool.api.ToolSession;
@@ -61,6 +73,9 @@ import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.util.Resource;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.Validator;
+
+import uk.ac.ox.oucs.termdates.TermConverterService;
+
 
 public class BlavatnikFolderType extends BaseResourceType implements ExpandableResourceType 
 {
@@ -77,7 +92,7 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 	private static final String PROP_BSG_START_WEEK = "bsg_start_week";
 	private static final String PROP_BSG_END_WEEK = "bsg_end_week";
 	
-	private static final String PROP_WEEK = "week";
+	private static final String PROP_BSG_WEEK = "BSG:weekofyear";
 	
 	private String resourceClass = ServerConfigurationService.getString(RESOURCECLASS, DEFAULT_RESOURCECLASS);
 	private String resourceBundle = ServerConfigurationService.getString(RESOURCEBUNDLE, DEFAULT_RESOURCEBUNDLE);
@@ -697,6 +712,10 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 		public void finalizeAction(Reference reference, String initializationId) { 
 			
 			System.out.println("BlavatnikCreateAction.finalizeAction");
+			
+			TermConverterService termConverterService = 
+					(TermConverterService) ComponentManager.get("uk.ac.ox.oucs.termdates.BsgTermConverterService");
+			
 			ContentCollection entity = (ContentCollection)reference.getEntity();
 			ResourceProperties properties = entity.getProperties();
 			int startWeek = parseInt(properties.getProperty(PROP_BSG_START_WEEK));
@@ -708,12 +727,13 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 			
 			try {
 				for (int i = startWeek; i <= endWeek; i++) {
-					String name = "Week"+Integer.toString(i);
+					String name = termConverterService.getWeekName(i);
+					//String name = "Week"+Integer.toString(i);
 					ContentCollectionEdit edit = contentService.addCollection(entity.getId(), Validator.escapeResourceName(name));
 					
 					ResourcePropertiesEdit resourceProperties = edit.getPropertiesEdit();
 					resourceProperties.addProperty(ResourceProperties.PROP_DISPLAY_NAME, name);
-					resourceProperties.addProperty(PROP_WEEK, Integer.toString(i));
+					resourceProperties.addProperty(PROP_BSG_WEEK, Integer.toString(i));
 				
 					contentService.commitCollection(edit);
 				}
@@ -1019,10 +1039,120 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 		public void finalizeAction(Reference reference)
 		{
 			System.out.println("BlavatnikFolderType.BlavatnikPropertiesAction.finalizeAction");
+			
+			TermConverterService termConverterService = 
+					(TermConverterService) ComponentManager.get("uk.ac.ox.oucs.termdates.BsgTermConverterService");
+			
 			ContentCollection entity = (ContentCollection)reference.getEntity();
+			
+			SortedMap<Integer, String> oldMap = new TreeMap<Integer, String>();
+			SortedSet<Integer> newSet = new TreeSet<Integer>();
+			
 			ResourceProperties properties = entity.getProperties();
 			int startWeek = parseInt(properties.getProperty(PROP_BSG_START_WEEK));
 			int endWeek = parseInt(properties.getProperty(PROP_BSG_END_WEEK));
+			
+			//existing members
+			Collection<ContentEntity> collection = entity.getMemberResources();
+			for (ContentEntity contentEntity : collection) {
+				if (contentEntity instanceof ContentCollection) {
+					ContentCollection content = (ContentCollection)contentEntity;
+					String weekName = content.getProperties().getProperty(PROP_BSG_WEEK);
+					if (null != weekName) {
+						oldMap.put(new Integer(weekName), content.getId());
+					}
+				}
+			}
+			
+			//new members
+			for (int i = startWeek; i <= endWeek; i++) {
+				newSet.add(i);
+			}
+				
+			Object[] oldArray = oldMap.keySet().toArray();
+			Object[] newArray = newSet.toArray();
+				
+			if (equals(oldArray, newArray)) {
+				return;
+			}
+			
+			//Do something with the member resources
+			try {
+				
+				String lastId = null;
+				for (int i=0; i<newArray.length; i++) {	
+					
+					String name = termConverterService.getWeekName((Integer)newArray[i]);
+					ContentCollectionEdit edit = null;
+					
+					if (i<oldArray.length) {
+						edit = contentService.editCollection(
+								oldMap.get((Integer)oldArray[i]));			
+						oldMap.remove((Integer)oldArray[i]);
+						
+					} else {
+						edit = contentService.addCollection(
+								entity.getId(), Validator.escapeResourceName(name));
+					}
+					
+					if (null != edit) {
+						ResourcePropertiesEdit resourceProperties = edit.getPropertiesEdit();
+						resourceProperties.addProperty(ResourceProperties.PROP_DISPLAY_NAME, name);
+						resourceProperties.addProperty(PROP_BSG_WEEK, Integer.toString((Integer)newArray[i]));
+						
+						contentService.commitCollection(edit);
+						lastId = edit.getId();
+					}
+					
+				}	
+				
+				for (Map.Entry<Integer, String> entry : oldMap.entrySet()) {
+					
+					ContentCollection binIt = contentService.getCollection(entry.getValue());
+					Collection<ContentEntity> resources = binIt.getMemberResources();
+					
+					if (!resources.isEmpty()) {
+						ContentCollectionEdit lastCollection = contentService.editCollection(lastId);
+						for (ContentEntity contentEntity : resources) {
+							contentService.moveIntoFolder(contentEntity.getId(), lastCollection.getId());
+						}
+						contentService.commitCollection(lastCollection);
+					}
+					contentService.removeCollection(binIt.getId());
+				}
+				
+			} catch (IdUnusedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TypeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (PermissionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IdUsedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IdLengthException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IdInvalidException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InUseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ServerOverloadException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (OverQuotaException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InconsistentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+				
 		}
 
 		/* (non-Javadoc)
@@ -1080,6 +1210,22 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 			} catch (NumberFormatException e) {
 				return 0;
 			}
+		}
+		
+		private boolean equals(Object[] oldArray, Object[] newArray) {
+			
+			if (oldArray.length != newArray.length) {
+				return false;
+			}
+			
+			for (int i=0; i<oldArray.length; i++) {
+				Integer oC = (Integer)oldArray[i];
+				Integer nC = (Integer)newArray[i];
+				if (!oC.equals(nC)) {
+					return false;
+				}
+			}
+			return true;
 		}
 		
 	}
