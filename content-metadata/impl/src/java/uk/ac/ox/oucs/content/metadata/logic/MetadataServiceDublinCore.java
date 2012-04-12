@@ -24,8 +24,9 @@ public final class MetadataServiceDublinCore implements MetadataService
 	public MetadataServiceDublinCore()
 	{
 		GroupMetadataType dcMetadata = new GroupMetadataType();
-		dcMetadata.setName("Dublin core");
+		dcMetadata.setName("label.dc");
 		dcMetadata.setUniqueName("dublin_core");
+        dcMetadata.setTranslated(true);
 		List<MetadataType<?>> subTags = new ArrayList<MetadataType<?>>();
 		dcMetadata.setMetadataTypes(subTags);
 

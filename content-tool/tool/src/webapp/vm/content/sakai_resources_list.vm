@@ -339,10 +339,11 @@ $(document).ready(function() {
 							#foreach($key in $item.multipleItemActions.keySet())$counter.increment("$key") $counter.increment("selectall")#if($selectedItems.contains($item.id))$counter.increment("${key}selected")#end#end
 						#end
 					</td>
-					<td headers="title" style="text-indent:$width" class="specialLink">
-					#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end 
+					<td headers="title" class="specialLink">
+					#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end
 						<h$headerDepth> 
 							#if ($item.canRead())
+    					        <span class="indent">#foreach($temp in [0..$!{item.depth}])&nbsp;#end</span>
 								#if($item.isCollection())
 									<span class="skip">$newNote</span><span class="$iconDecor">
 									#if($item.isEmpty() || $item.isTooBig() || $item.depth < 1)
@@ -600,10 +601,11 @@ $(document).ready(function() {
 									#foreach($key in $item.multipleItemActions.keySet())$counter.increment("$key") $counter.increment("selectall")#if($selectedItems.contains($item.id))$counter.increment("${key}selected")#end#end
 								#end
 							</td>
-							<td headers="title" style="text-indent:$width" class="specialLink">
-						#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end 
+					        <td headers="title" class="specialLink">
+						#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end
 								<h$headerDepth> 
 									#if ($item.canRead())
+    					                <span class="indent">#foreach($temp in [0..${item.depth}])&nbsp;#end</span>
 										#if($item.isCollection())
 										<span class="skip">$newNote</span><span class="$iconDecor">	
 											#if($item.isEmpty() || $item.isTooBig())
