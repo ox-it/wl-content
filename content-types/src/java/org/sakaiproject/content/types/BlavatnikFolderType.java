@@ -711,8 +711,6 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 
 		public void finalizeAction(Reference reference, String initializationId) { 
 			
-			System.out.println("BlavatnikCreateAction.finalizeAction");
-			
 			TermConverterService termConverterService = 
 					(TermConverterService) ComponentManager.get("uk.ac.ox.oucs.termdates.BsgTermConverterService");
 			
@@ -1029,17 +1027,14 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 		 */
 		public void cancelAction(Reference reference)
 		{
-			// do nothing
-			
+			// do nothing	
 		}
 
 		/* (non-Javadoc)
 		 * @see org.sakaiproject.content.api.ServiceLevelAction#finalizeAction(org.sakaiproject.entity.api.Reference)
 		 */
-		public void finalizeAction(Reference reference)
-		{
-			System.out.println("BlavatnikFolderType.BlavatnikPropertiesAction.finalizeAction");
-			
+		public void finalizeAction(Reference reference)	{
+
 			TermConverterService termConverterService = 
 					(TermConverterService) ComponentManager.get("uk.ac.ox.oucs.termdates.BsgTermConverterService");
 			
@@ -1072,53 +1067,95 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 			Object[] oldArray = oldMap.keySet().toArray();
 			Object[] newArray = newSet.toArray();
 				
-			if (equals(oldArray, newArray)) {
-				return;
-			}
-			
 			//Do something with the member resources
 			try {
-				
+				// stashMap used as a temporary stash for id clashes
+				Map<String, String> stashMap = new HashMap<String, String>();
+				// remember the last id so that unallocated resources can be put into it
 				String lastId = null;
+				
 				for (int i=0; i<newArray.length; i++) {	
 					
-					String name = termConverterService.getWeekName((Integer)newArray[i]);
+					Integer newInteger = ((Integer)newArray[i]);
+					String name = termConverterService.getWeekName(newInteger);
+					ContentCollection from = null;
 					ContentCollectionEdit edit = null;
 					
 					if (i<oldArray.length) {
-						edit = contentService.editCollection(
-								oldMap.get((Integer)oldArray[i]));			
-						oldMap.remove((Integer)oldArray[i]);
 						
-					} else {
+						Integer oldInteger = ((Integer)oldArray[i]);
+						if (newInteger.intValue() == oldInteger.intValue()) {
+							lastId = oldMap.get(oldInteger);
+							oldMap.remove(oldInteger);
+							continue;
+						}
+						
+						String id = null;
+						String key = oldMap.get(oldInteger);
+						if (stashMap.containsKey(key)) {
+							id = stashMap.get(key);
+						} else {
+							id = key;
+						}
+						
+						from = contentService.getCollection(id);			
+						oldMap.remove(oldInteger);
+					} 
+					
+					try {
 						edit = contentService.addCollection(
 								entity.getId(), Validator.escapeResourceName(name));
-					}
 					
-					if (null != edit) {
-						ResourcePropertiesEdit resourceProperties = edit.getPropertiesEdit();
-						resourceProperties.addProperty(ResourceProperties.PROP_DISPLAY_NAME, name);
-						resourceProperties.addProperty(PROP_BSG_WEEK, Integer.toString((Integer)newArray[i]));
+					} catch (IdUsedException e) {
+						// there is a clash of id's, 
+						// stash the old id so that we can create the new one
+						String oldId = entity.getId() + Validator.escapeResourceName(name) + "/";
+						String newId = entity.getId() + Validator.escapeResourceName(
+								new Long(System.currentTimeMillis()).toString()) + "/";
 						
-						contentService.commitCollection(edit);
-						lastId = edit.getId();
+						ContentCollectionEdit stash = contentService.addCollection(newId);
+						ContentCollection binIt = contentService.getCollection(oldId);
+						
+						ResourcePropertiesEdit resourcePropertiesEdit = stash.getPropertiesEdit();
+						resourcePropertiesEdit.addAll(binIt.getProperties());
+						
+						Collection<ContentEntity> resources = binIt.getMemberResources();
+						for (ContentEntity contentEntity : resources) {
+							contentService.moveIntoFolder(contentEntity.getId(), stash.getId());
+						}
+						
+						contentService.commitCollection(stash);
+						contentService.removeCollection(binIt.getId());
+						
+						stashMap.put(oldId, newId);
+						
+						edit = contentService.addCollection(oldId);
 					}
 					
+					ResourcePropertiesEdit resourceProperties = edit.getPropertiesEdit();
+					resourceProperties.addProperty(ResourceProperties.PROP_DISPLAY_NAME, name);
+					resourceProperties.addProperty(PROP_BSG_WEEK, Integer.toString((Integer)newArray[i]));
+					
+					if (null != from) {
+						Collection<ContentEntity> resources = from.getMemberResources();
+						for (ContentEntity contentEntity : resources) {
+							contentService.moveIntoFolder(contentEntity.getId(), edit.getId());
+						}
+						contentService.removeCollection(from.getId());
+					}
+					
+					contentService.commitCollection(edit);
+					lastId = edit.getId();
 				}	
 				
+				// Tidy up extra ContentCollections
 				for (Map.Entry<Integer, String> entry : oldMap.entrySet()) {
-					
-					ContentCollection binIt = contentService.getCollection(entry.getValue());
-					Collection<ContentEntity> resources = binIt.getMemberResources();
-					
-					if (!resources.isEmpty()) {
-						ContentCollectionEdit lastCollection = contentService.editCollection(lastId);
-						for (ContentEntity contentEntity : resources) {
-							contentService.moveIntoFolder(contentEntity.getId(), lastCollection.getId());
-						}
-						contentService.commitCollection(lastCollection);
-					}
-					contentService.removeCollection(binIt.getId());
+					copyResources(entry.getValue(), lastId);
+				}
+				
+				// Tidy up stashed ContentCollections
+				for (Map.Entry<String, String> entry : stashMap.entrySet()) {
+					copyResources(entry.getValue(), lastId);
 				}
 				
 			} catch (IdUnusedException e) {
@@ -1161,7 +1198,6 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 		public void initializeAction(Reference reference)
 		{
 			// do nothing
-			
 		}
 
 		/* (non-Javadoc)
@@ -1212,20 +1248,36 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 			}
 		}
 		
-		private boolean equals(Object[] oldArray, Object[] newArray) {
+		/**
+		 * Copy the resources from one ContentCollection to another
+		 * 
+		 * @param fromId
+		 * @param toId
+		 * @throws IdUnusedException
+		 * @throws TypeException
+		 * @throws PermissionException
+		 * @throws InUseException
+		 * @throws OverQuotaException
+		 * @throws IdUsedException
+		 * @throws InconsistentException
+		 * @throws ServerOverloadException
+		 */
+		private void copyResources(String fromId, String toId) 
+				throws IdUnusedException, TypeException, PermissionException, 
+						InUseException, OverQuotaException, IdUsedException, 
+						InconsistentException, ServerOverloadException {
 			
-			if (oldArray.length != newArray.length) {
-				return false;
-			}
+			ContentCollection fromCollection = contentService.getCollection(fromId);
+			Collection<ContentEntity> resources = fromCollection.getMemberResources();
 			
-			for (int i=0; i<oldArray.length; i++) {
-				Integer oC = (Integer)oldArray[i];
-				Integer nC = (Integer)newArray[i];
-				if (!oC.equals(nC)) {
-					return false;
+			if (!resources.isEmpty()) {
+				ContentCollectionEdit toCollection = contentService.editCollection(toId);
+				for (ContentEntity contentEntity : resources) {
+					contentService.moveIntoFolder(contentEntity.getId(), toCollection.getId());
 				}
+				contentService.commitCollection(toCollection);
 			}
-			return true;
+			contentService.removeCollection(fromCollection.getId());
 		}
 		
 	}
