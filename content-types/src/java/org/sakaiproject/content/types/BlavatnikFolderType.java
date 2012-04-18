@@ -1130,10 +1130,15 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 						
 						// make sure the stashId isn't in the oldMap
 						if (oldMap.containsValue(stashId)) {
+							Integer removalKey = null;
 							for (Map.Entry<Integer, String> entry : oldMap.entrySet()) {
 								if (stashId.equals(entry.getValue())) {
-									oldMap.remove(entry.getKey());
+									removalKey = entry.getKey();
+			                        break;
 								}
+							}
+							if (removalKey != null) {
+				                oldMap.remove(removalKey);
 							}
 						}
 						
