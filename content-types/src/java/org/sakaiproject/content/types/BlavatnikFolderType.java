@@ -1109,27 +1109,36 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 					} catch (IdUsedException e) {
 						// there is a clash of id's, 
 						// stash the old id so that we can create the new one
-						String oldId = entity.getId() + Validator.escapeResourceName(name) + "/";
-						String newId = entity.getId() + Validator.escapeResourceName(
+						String stashId = entity.getId() + Validator.escapeResourceName(name) + "/";
+						String tempId = entity.getId() + Validator.escapeResourceName(
 								new Long(System.currentTimeMillis()).toString()) + "/";
 						
-						ContentCollectionEdit stash = contentService.addCollection(newId);
-						ContentCollection binIt = contentService.getCollection(oldId);
+						ContentCollectionEdit temp = contentService.addCollection(tempId);
+						ContentCollection stash = contentService.getCollection(stashId);
 						
-						ResourcePropertiesEdit resourcePropertiesEdit = stash.getPropertiesEdit();
-						resourcePropertiesEdit.addAll(binIt.getProperties());
+						ResourcePropertiesEdit resourcePropertiesEdit = temp.getPropertiesEdit();
+						resourcePropertiesEdit.addAll(stash.getProperties());
 						
-						Collection<ContentEntity> resources = binIt.getMemberResources();
+						Collection<ContentEntity> resources = stash.getMemberResources();
 						for (ContentEntity contentEntity : resources) {
-							contentService.moveIntoFolder(contentEntity.getId(), stash.getId());
+							contentService.moveIntoFolder(contentEntity.getId(), temp.getId());
 						}
 						
-						contentService.commitCollection(stash);
-						contentService.removeCollection(binIt.getId());
+						stashMap.put(stashId, tempId);
+						contentService.commitCollection(temp);
+						contentService.removeCollection(stash.getId());
 						
-						stashMap.put(oldId, newId);
+						// make sure the stashId isn't in the oldMap
+						if (oldMap.containsValue(stashId)) {
+							for (Map.Entry<Integer, String> entry : oldMap.entrySet()) {
+								if (stashId.equals(entry.getValue())) {
+									oldMap.remove(entry.getKey());
+								}
+							}
+						}
 						
-						edit = contentService.addCollection(oldId);
+						// set up the new folder
+						edit = contentService.addCollection(stashId);
 					}
 					
 					ResourcePropertiesEdit resourceProperties = edit.getPropertiesEdit();
@@ -1141,6 +1150,7 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 						for (ContentEntity contentEntity : resources) {
 							contentService.moveIntoFolder(contentEntity.getId(), edit.getId());
 						}
+						// remove old entity
 						contentService.removeCollection(from.getId());
 					}
 					
@@ -1263,21 +1273,26 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 		 * @throws ServerOverloadException
 		 */
 		private void copyResources(String fromId, String toId) 
-				throws IdUnusedException, TypeException, PermissionException, 
+				throws TypeException, PermissionException, 
 						InUseException, OverQuotaException, IdUsedException, 
 						InconsistentException, ServerOverloadException {
 			
-			ContentCollection fromCollection = contentService.getCollection(fromId);
-			Collection<ContentEntity> resources = fromCollection.getMemberResources();
+			try {
+				ContentCollection fromCollection = contentService.getCollection(fromId);
+				Collection<ContentEntity> resources = fromCollection.getMemberResources();
 			
-			if (!resources.isEmpty()) {
-				ContentCollectionEdit toCollection = contentService.editCollection(toId);
-				for (ContentEntity contentEntity : resources) {
-					contentService.moveIntoFolder(contentEntity.getId(), toCollection.getId());
+				if (!resources.isEmpty()) {
+					ContentCollectionEdit toCollection = contentService.editCollection(toId);
+					for (ContentEntity contentEntity : resources) {
+						contentService.moveIntoFolder(contentEntity.getId(), toCollection.getId());
+					}
+					contentService.commitCollection(toCollection);
 				}
-				contentService.commitCollection(toCollection);
+				contentService.removeCollection(fromCollection.getId());
+				
+			} catch (IdUnusedException e) {
+				// do nothing
 			}
-			contentService.removeCollection(fromCollection.getId());
 		}
 		
 	}
