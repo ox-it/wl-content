@@ -1094,6 +1094,7 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 						String key = oldMap.get(oldInteger);
 						if (stashMap.containsKey(key)) {
 							id = stashMap.get(key);
+							stashMap.remove(key);
 						} else {
 							id = key;
 						}
@@ -1128,20 +1129,6 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 						contentService.commitCollection(temp);
 						contentService.removeCollection(stash.getId());
 						
-						// make sure the stashId isn't in the oldMap
-						if (oldMap.containsValue(stashId)) {
-							Integer removalKey = null;
-							for (Map.Entry<Integer, String> entry : oldMap.entrySet()) {
-								if (stashId.equals(entry.getValue())) {
-									removalKey = entry.getKey();
-			                        break;
-								}
-							}
-							if (removalKey != null) {
-				                oldMap.remove(removalKey);
-							}
-						}
-						
 						// set up the new folder
 						edit = contentService.addCollection(stashId);
 					}
@@ -1165,10 +1152,16 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 				
 				// Tidy up extra ContentCollections
 				for (Map.Entry<Integer, String> entry : oldMap.entrySet()) {
-					copyResources(entry.getValue(), lastId);
+					
+					if (stashMap.containsKey(entry.getValue())) {
+						copyResources(stashMap.get(entry.getValue()), lastId);
+						stashMap.remove(entry.getValue());
+					} else {
+						copyResources(entry.getValue(), lastId);
+					}
 				}
 				
-				// Tidy up stashed ContentCollections
+				// Tidy up stashed ContentCollections 
 				for (Map.Entry<String, String> entry : stashMap.entrySet()) {
 					copyResources(entry.getValue(), lastId);
 				}
