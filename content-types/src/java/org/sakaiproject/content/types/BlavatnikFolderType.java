@@ -700,7 +700,14 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
          */
         public boolean available(ContentEntity entity)
         {
-	        return true;
+        	if (contentService == null) {
+				contentService = (ContentHostingService)ComponentManager.get(ContentHostingService.class);
+			}
+        	// Don't show blavatnik foldertypes in Drop Box tool
+        	if (contentService.isInDropbox(entity.getId())) {
+        		return false;
+        	}
+        	return true;
         }
 
 		public void cancelAction(Reference reference, String initializationId) 
