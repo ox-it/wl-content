@@ -46,12 +46,15 @@ import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ExpandableResourceType;
 import org.sakaiproject.content.api.InteractionAction;
 import org.sakaiproject.content.api.ResourceToolAction;
+import org.sakaiproject.content.api.ResourceTypeRegistry;
 import org.sakaiproject.content.api.ResourceToolAction.ActionType;
 import org.sakaiproject.content.api.ResourceType;
 import org.sakaiproject.content.api.ServiceLevelAction;
 import org.sakaiproject.content.util.BaseInteractionAction;
 import org.sakaiproject.content.util.BaseResourceType;
 import org.sakaiproject.content.util.ZipContentUtil;
+import org.sakaiproject.entity.api.EntityPropertyNotDefinedException;
+import org.sakaiproject.entity.api.EntityPropertyTypeException;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entity.api.ResourcePropertiesEdit;
@@ -66,7 +69,8 @@ import org.sakaiproject.exception.OverQuotaException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.exception.TypeException;
-import org.sakaiproject.site.cover.SiteService;
+import org.sakaiproject.site.api.Site;
+import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.user.api.UserDirectoryService;
@@ -94,6 +98,8 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 	
 	private static final String PROP_BSG_WEEK = "BSG:weekofyear";
 	
+	private static final String PROP_ISBLAVATNIK = "isBlavatnik";
+	
 	private String resourceClass = ServerConfigurationService.getString(RESOURCECLASS, DEFAULT_RESOURCECLASS);
 	private String resourceBundle = ServerConfigurationService.getString(RESOURCEBUNDLE, DEFAULT_RESOURCEBUNDLE);
 	private ResourceLoader rb = new Resource().getLoader(resourceClass, resourceBundle);
@@ -105,9 +111,24 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 	protected UserDirectoryService userDirectoryService;
 	protected ContentHostingService contentService;
 	
+	private SiteService siteService;
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
+	}
+	
+	private ResourceTypeRegistry resourceTypeRegistry;
+	public void setResourceTypeRegistry(ResourceTypeRegistry resourceTypeRegistry) {
+		this.resourceTypeRegistry = resourceTypeRegistry;
+	}
+	
 	public BlavatnikFolderType() {
 		this.userDirectoryService = (UserDirectoryService) ComponentManager.get("org.sakaiproject.user.api.UserDirectoryService");
 		this.contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
+	}
+	
+	public void init() {
+		
+		resourceTypeRegistry.register(this);
 		
 		//actions.put(ResourceToolAction.PASTE_MOVED, new BlavatnikPasteMovedAction());
 		//actions.put(ResourceToolAction.PASTE_COPIED, new BlavatnikPasteCopiedAction());
@@ -305,7 +326,8 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
     		toolSession.setAttribute(PermissionsHelper.TARGET_REF, reference.getReference());
 
     		// use the folder's context (as a site) for roles
-    		String siteRef = SiteService.siteReference(reference.getContext());
+    		String siteRef = org.sakaiproject.site.cover.SiteService.siteReference(
+    				reference.getContext());
     		toolSession.setAttribute(PermissionsHelper.ROLES_REF, siteRef);
 
     		// ... with this description
@@ -707,7 +729,30 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
         	if (contentService.isInDropbox(entity.getId())) {
         		return false;
         	}
-        	return true;
+        	
+        	// Only show blavatnik foldertypes in blavatnik sites
+        	Reference ref = EntityManager.newReference(entity.getReference());
+        	String siteId = ref.getContext();
+
+        	if (null != siteId) {
+        		try {
+        			Site site = siteService.getSite(siteId);
+        			ResourceProperties properties = site.getProperties();
+        			if (properties.getBooleanProperty(PROP_ISBLAVATNIK)) {
+        				return true;
+        			}
+				
+        		} catch (IdUnusedException e) {
+        			e.printStackTrace();
+        		} catch (EntityPropertyNotDefinedException e) {
+		
+        		} catch (EntityPropertyTypeException e) {
+        		
+        		}
+				
+			}
+        	
+        	return false;
         }
 
 		public void cancelAction(Reference reference, String initializationId) 
@@ -838,18 +883,14 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
     				if(grandparent != null && ContentHostingService.COLLECTION_DROPBOX.equals(grandparent.getId()))
     				{
     					Reference ref = EntityManager.newReference(entity.getReference());
-    					if(ref != null)
-    					{
+    					if(ref != null) {
 	    					String siteId = ref.getContext();
-	    					if(siteId != null)
-	    					{
-	        					if(contentService == null)
-	        					{
+	    					if(siteId != null) 	{
+	        					if(contentService == null) 	{
 	        						contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 	        					}
 	    						String dropboxId = contentService.getDropboxCollection(siteId);
-	    						if(entity.getId().equals(dropboxId))
-	    						{
+	    						if(entity.getId().equals(dropboxId)) {
 	    							ok = false;
 	    						}
 	    					}

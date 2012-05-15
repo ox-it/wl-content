@@ -26,7 +26,6 @@ public class ContentTypeRegistryBean {
 		{
 			resourceTypeRegistry.register(new FileUploadType());
 			resourceTypeRegistry.register(new FolderType());
-			resourceTypeRegistry.register(new BlavatnikFolderType());
 			resourceTypeRegistry.register(new TextDocumentType());
 			resourceTypeRegistry.register(new HtmlDocumentType());
 			resourceTypeRegistry.register(new UrlResourceType());

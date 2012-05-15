@@ -9,5 +9,12 @@
 		<property name="resourceTypeRegistry" ref="org.sakaiproject.content.api.ResourceTypeRegistry"/>
 		<property name="useContentTypeRegistry"><value>true</value></property>
 	</bean>
+	
+	<bean id="BlavatnikFolderType" 
+		class="org.sakaiproject.content.types.BlavatnikFolderType"
+		init-method="init">
+		<property name="resourceTypeRegistry" ref="org.sakaiproject.content.api.ResourceTypeRegistry"/>
+		<property name="siteService" ref="org.sakaiproject.site.api.SiteService" />
+	</bean>
 
 </beans>
