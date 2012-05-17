@@ -343,7 +343,7 @@ $(document).ready(function() {
 					#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end
 						<h$headerDepth> 
 							#if ($item.canRead())
-    					        <span class="indent">#foreach($temp in [0..$!{item.depth}])&nbsp;#end</span>
+						        <span class="indent">#if(${item.depth}!=0)#foreach($temp in [1..$!{item.depth}])&nbsp;#end#end</span>
 								#if($item.isCollection())
 									<span class="skip">$newNote</span><span class="$iconDecor">
 									#if($item.isEmpty() || $item.isTooBig() || $item.depth < 1)
@@ -605,7 +605,7 @@ $(document).ready(function() {
 						#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end
 								<h$headerDepth> 
 									#if ($item.canRead())
-    					                <span class="indent">#foreach($temp in [0..${item.depth}])&nbsp;#end</span>
+						                <span class="indent">#if(${item.depth}!=0)#foreach($temp in [1..${item.depth}])&nbsp;#end#end</span>
 										#if($item.isCollection())
 										<span class="skip">$newNote</span><span class="$iconDecor">	
 											#if($item.isEmpty() || $item.isTooBig())
