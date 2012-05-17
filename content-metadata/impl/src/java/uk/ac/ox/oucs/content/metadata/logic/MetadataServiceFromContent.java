@@ -93,7 +93,7 @@ public abstract class MetadataServiceFromContent implements MetadataService
 
 	private ContentResource forceAccessResource(String contentId) throws IdUnusedException, TypeException, PermissionException
 	{
-		SecurityAdvisor securityAdvisor = tempReadOnlyAdvisor(contentId);
+		SecurityAdvisor securityAdvisor = tempReadOnlyAdvisor(contentHostingService.getReference(contentId));
 		securityService.pushAdvisor(securityAdvisor);
 		try
 		{
@@ -110,17 +110,17 @@ public abstract class MetadataServiceFromContent implements MetadataService
 	 * <p/>
 	 * Any use of this advisor should be temporary as it could create a security breach
 	 *
-	 * @param contentId Content to unlock
+	 * @param contentReference Content to unlock
 	 * @return an advisor allowing read access on the specified content
 	 */
-	private SecurityAdvisor tempReadOnlyAdvisor(final String contentId)
+	private SecurityAdvisor tempReadOnlyAdvisor(final String contentReference)
 	{
 		return new SecurityAdvisor()
 		{
 			public SecurityAdvice isAllowed(String userId, String function, String reference)
 			{
 				//TODO Check userId too ?
-				if (ContentHostingService.AUTH_RESOURCE_READ.equals(function) && contentId.equals(reference))
+				if (ContentHostingService.AUTH_RESOURCE_READ.equals(function) && contentReference.equals(reference))
 					return SecurityAdvice.ALLOWED;
 				else
 					return SecurityAdvice.PASS;
