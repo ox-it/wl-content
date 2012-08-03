@@ -305,7 +305,7 @@
 			<table>
 				<tr>
 					<td>
-						<input type="radio" name="hidden${DOT}$i" id="hidden_false${DOT}$i" value="false" #if(!$model.isHidden())checked="checked" #end/>
+						<input type="radio" name="hidden${DOT}$i" id="hidden_false${DOT}$i" value="false" #if(!$model.isHidden() && !$model.isHiddenWithAccessibleContent())checked="checked" #end/>
 					</td>
 					<td colspan="4">
 						<label for="hidden_false${DOT}$i">
@@ -483,6 +483,21 @@
 						</label>
 					</td>
 				</tr>
+								
+				#if($model.isCollection())
+				######### Samoo S.L.   hidden resource with accessible content - S2U project #########
+				<tr>
+					<td>
+						<input type="radio" name="hidden${DOT}$i" id="hidden_with_accessible_content_true${DOT}$i" value="hidden_with_accessible_content" #if($model.isHiddenWithAccessibleContent())checked="checked" #end/>
+					</td>
+					<td colspan="4">
+						<label for="hidden_with_accessible_content_true${DOT}$i">
+							$tlang.getString("avail.hide30")
+						</label>
+					</td>
+				</tr>
+				#end
+				
 			</table>
 		</div>
 	#end

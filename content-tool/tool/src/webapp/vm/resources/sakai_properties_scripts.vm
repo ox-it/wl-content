@@ -121,6 +121,10 @@
 			{
 				tag.onclick = handleSetToHidden;
 			}
+			else if(tag.id && tag.id.match(/^hidden_with_accessible_content_true${DOT}\d+$/))
+			{
+				tag.onclick = handleSetToHidden;
+			}
 #if($model.isGroupPossible())
 			else if(tag.id && tag.id.match(/^access_mode_inherited${DOT}\d+$/))
 			{
