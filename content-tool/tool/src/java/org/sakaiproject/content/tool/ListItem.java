@@ -93,7 +93,6 @@ import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.Validator;
-import org.sakaiproject.tool.api.SessionManager;
 import uk.ac.ox.oucs.content.metadata.cover.ContentMetadataService;
 import uk.ac.ox.oucs.content.metadata.logic.MetadataService;
 import uk.ac.ox.oucs.content.metadata.model.MetadataType;
@@ -303,39 +302,7 @@ public class ListItem
 					{
 						continue;
 					}
-					
-					//Samoo S.L.   hidden resource with accessible content - S2U project
-					if(isAvailabilityEnabled){
-						boolean entityHiddenWithAccessibleContent = false;
-						try{
-							entityHiddenWithAccessibleContent = childEntity.getProperties().getBooleanProperty("PROP_HIDDEN_WITH_ACCESSIBLE_CONTENT");
-						}catch(Exception e){
-							entityHiddenWithAccessibleContent = false;
-						}
-						
-						if(entityHiddenWithAccessibleContent){
-							//do not show childEntity if the user is a student with read only permissions on the entity
-							String creator = childEntity.getProperties().getProperty(ResourceProperties.PROP_CREATOR);
-							String userId = ((SessionManager) ComponentManager.get(SessionManager.class)).getCurrentSessionUserId();
-							
-							// available if user is creator
-							boolean available = ( creator != null && userId != null && creator.equals(userId) ) 
-							|| ( creator == null && userId == null );
-							
-							if(! available)
-							{
-								// available if user has permission to view hidden entities
-								available = SecurityService.unlock(ContentHostingService.AUTH_RESOURCE_HIDDEN, childEntity.getReference());
-							}
-							
-							if(! available)
-							{
-								continue;
-							}
-						}
-						
-					}//Samoo S.L.   hidden resource with accessible content - S2U project
-					
+
 	        		ListItem child = getListItem(childEntity, item, registry, expandAll, expandedFolders, items_to_be_moved, items_to_be_copied, depth + 1, userSelectedSort, preventPublicDisplay, addFilter);
 	        		if(items_to_be_copied != null && items_to_be_copied.contains(child.id))
 	        		{
@@ -445,7 +412,6 @@ public class ListItem
 	protected boolean isPubview = false;
 
 	protected boolean hidden;
-	protected boolean hiddenWithAccessibleContent;
 	protected boolean isAvailable;
 	protected boolean useReleaseDate;
 	protected Time releaseDate;
@@ -881,14 +847,6 @@ public class ListItem
 			this.retractDate = retractDate;
 		}
 		this.isAvailable = entity.isAvailable();
-		
-		//Samoo S.L.   hidden resource with accessible content - S2U project
-		try{
-			this.hiddenWithAccessibleContent = props.getBooleanProperty("PROP_HIDDEN_WITH_ACCESSIBLE_CONTENT");
-		}catch(Exception e){
-			this.hiddenWithAccessibleContent = false;
-		}//Samoo S.L.   hidden resource with accessible content - S2U project
-
 		this.htmlFilter = entity.getProperties().getProperty(ResourceProperties.PROP_ADD_HTML);
 		if (this.htmlFilter == null)
 		{
@@ -1445,21 +1403,7 @@ public class ListItem
 	protected void captureAvailability(ParameterParser params, String index) 
 	{
 		// availability
-		String hiddenParam = params.getString("hidden" + index);
-		if("false".equals(hiddenParam)){
-			this.hidden = false;
-			this.hiddenWithAccessibleContent = false;
-		}
-		if("true".equals(hiddenParam)){
-			this.hidden = true;
-			this.hiddenWithAccessibleContent = false;
-		}
-		//Samoo S.L.   hidden resource with accessible content - S2U project
-		if("hidden_with_accessible_content".equals(hiddenParam)){
-			this.hidden = false;
-			this.hiddenWithAccessibleContent = true;
-		}
-		
+		this.hidden = params.getBoolean("hidden" + index);
 		boolean use_start_date = params.getBoolean("use_start_date" + index);
 		boolean use_end_date = params.getBoolean("use_end_date" + index);
 		
@@ -2392,7 +2336,7 @@ public class ListItem
      */
     public boolean isAvailable()
     {
-		return isAvailable;
+    	return isAvailable;
     }
 
 	/**
@@ -2755,15 +2699,6 @@ public class ListItem
     {
     	this.hidden = hidden;
     }
-	
-	//Samoo S.L.   hidden resource with accessible content - S2U project
-	/**
-	 * @return the hiddenWithAccessibleContent
-	 */
-	public boolean isHiddenWithAccessibleContent()
-	{
-		return this.hiddenWithAccessibleContent;
-	}
 
 	/**
 	 * @param hover
@@ -3076,7 +3011,7 @@ public class ListItem
 		//setCopyrightOnEntity(props);
 		setConditionalReleaseOnEntity(props);
 		setAccessOnEntity(edit);
-		setAvailabilityOnEntity(props, edit);
+		setAvailabilityOnEntity(edit);
 		setQuotaOnEntity(props);
 		setHtmlInlineOnEntity(props, edit);
 		
@@ -3206,26 +3141,9 @@ public class ListItem
 	}
 	
 	
-	protected void setAvailabilityOnEntity(ResourcePropertiesEdit props, GroupAwareEdit edit)
+	protected void setAvailabilityOnEntity(GroupAwareEdit edit)
 	{
-		//Samoo S.L.   hidden resource with accessible content - S2U project
-		if( this.hiddenWithAccessibleContent == true ){
-			props.addProperty("PROP_HIDDEN_WITH_ACCESSIBLE_CONTENT", "true");
-			hidden = false;
-			useReleaseDate = false;
-			useRetractDate = false;
-		} else {
-			props.removeProperty("PROP_HIDDEN_WITH_ACCESSIBLE_CONTENT");
-		}
-		
-		if(useReleaseDate == false){
-			releaseDate = null;
-		}
-		if(useRetractDate == false){
-			retractDate = null;
-		}
-		
-		edit.setAvailability(hidden, releaseDate, retractDate);		
+		edit.setAvailability(hidden, releaseDate, retractDate);
 	}
 	
 	protected void setConditionalReleaseOnEntity(ResourcePropertiesEdit props) 
@@ -3327,7 +3245,7 @@ public class ListItem
 		setCopyrightOnEntity(props);
 		setHtmlFilterOnEntity(props);
 		setAccessOnEntity(edit);
-		setAvailabilityOnEntity(props, edit);
+		setAvailabilityOnEntity(edit);
 		setHtmlInlineOnEntity(props, edit);
 		
 		if(! isUrl() && ! isCollection() && this.mimetype != null)

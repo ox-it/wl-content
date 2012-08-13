@@ -323,9 +323,9 @@ $(document).ready(function() {
 				############################### Show top level folder #################
 				<tr
 					#if ($itemcount % 2==0)
-						class="odd#if($item.isSelectedForCopy()) selectedCopy#end#if($item.isSelectedForMove()) selectedMove#end#if(!$item.isAvailable() || $item.isHiddenWithAccessibleContent()) inactive#end"
+						class="odd#if($item.isSelectedForCopy()) selectedCopy#end#if($item.isSelectedForMove()) selectedMove#end#if(!$item.isAvailable()) inactive#end"
 					#else
-						class="even#if($item.isSelectedForCopy()) selectedCopy#end#if($item.isSelectedForMove()) selectedMove#end#if(!$item.isAvailable() || $item.isHiddenWithAccessibleContent()) inactive#end"
+						class="even#if($item.isSelectedForCopy()) selectedCopy#end#if($item.isSelectedForMove()) selectedMove#end#if(!$item.isAvailable()) inactive#end"
 					#end>
 					#set ($num=$num + 1)
 					<td headers="expansion">
@@ -585,9 +585,9 @@ $(document).ready(function() {
 						############################### Show top level folder #################
 					<tr
 					#if ($itemcount % 2==0)
-						class="odd#if($item.isSelectedForCopy()) selectedCopy#end#if($item.isSelectedForMove()) selectedMove#end#if(!$item.isAvailable() || $item.isHiddenWithAccessibleContent()) inactive#end"
+						class="odd#if($item.isSelectedForCopy()) selectedCopy#end#if($item.isSelectedForMove()) selectedMove#end#if(!$item.isAvailable()) inactive#end"
 					#else
-						class="even#if($item.isSelectedForCopy()) selectedCopy#end#if($item.isSelectedForMove()) selectedMove#end#if(!$item.isAvailable() || $item.isHiddenWithAccessibleContent()) inactive#end"
+						class="even#if($item.isSelectedForCopy()) selectedCopy#end#if($item.isSelectedForMove()) selectedMove#end#if(!$item.isAvailable()) inactive#end"
 					#end>
 
 							<td headers="expansion">
