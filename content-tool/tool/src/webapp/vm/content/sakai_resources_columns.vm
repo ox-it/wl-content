@@ -22,6 +22,7 @@
 	#set($itemsOnLine = 0)
 	<div class="navIntraTool">
 		$tlang.getString("list.site")
+        #if("$!dropboxMode" == "true")$tlang.getString("list.dropbox")#else $tlang.getString("list.site") #end
 		| <a href="#toolLink("ResourcesAction" "doShow_webdav")" title="$tlang.getString('dav.webdav')">$tlang.getString("dav.webdav")</a> 
 		#if($showPermissions)
 		| <a href="#toolLinkParam("ResourcesAction" "doPermissions" "collectionId=$validator.escapeUrl(${site.id})")" title="$tlang.getString('list.sPerm')">$tlang.getString("list.sPerm")</a>
