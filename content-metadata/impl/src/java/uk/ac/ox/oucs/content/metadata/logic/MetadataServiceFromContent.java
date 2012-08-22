@@ -20,7 +20,7 @@ import uk.ac.ox.oucs.content.metadata.model.MetadataType;
 /**
  * @author Colin Hebert
  */
-public abstract class MetadataServiceFromContent implements MetadataService
+public class MetadataServiceFromContent implements MetadataService
 {
 
 	private static Log logger = LogFactory.getLog(MetadataServiceFromContent.class);
@@ -28,12 +28,27 @@ public abstract class MetadataServiceFromContent implements MetadataService
 	protected final ContentHostingService contentHostingService;
 	protected final SecurityService securityService;
 	protected final ToolManager toolManager;
+	protected final MetadataParser parser;
+	
+	private String localMetadataConfigFile = "metadata/metadata.json";
+	private String globalMetadataConfigFile = "/metadata/metadata.json";
 
-	public MetadataServiceFromContent(ContentHostingService contentHostingService, SecurityService securityService, ToolManager toolManager)
+	public MetadataServiceFromContent(ContentHostingService contentHostingService, SecurityService securityService, ToolManager toolManager, MetadataParser parser)
 	{
 		this.contentHostingService = contentHostingService;
 		this.securityService = securityService;
 		this.toolManager = toolManager;
+		this.parser = parser;
+	}
+
+	public void setLocalMetadataConfigFile(String localMetadataConfigFile)
+	{
+		this.localMetadataConfigFile = localMetadataConfigFile;
+	}
+
+	public void setGlobalMetadataConfigFile(String globalMetadataConfigFile)
+	{
+		this.globalMetadataConfigFile = globalMetadataConfigFile;
 	}
 
 	public List<MetadataType> getMetadataAvailable(String resourceType)
@@ -42,7 +57,7 @@ public abstract class MetadataServiceFromContent implements MetadataService
 		{
 			InputStream is = forceAccessResource(getGlobalMetaContent()).streamContent();
 			//TODO find a way to filter based on resourceType (should be in an AbstractMetadataService?)
-			return parse(is);
+			return parser.parse(is);
 		}
 		catch (IdUnusedException e)
 		{
@@ -72,7 +87,7 @@ public abstract class MetadataServiceFromContent implements MetadataService
 			InputStream is = forceAccessResource(getSiteMetadataConfigFile(siteId)).streamContent();
 			//TODO find a way to filter based on resourceType (should be in an AbstractMetadataService?)
 
-			metadataTypes.addAll(parse(is));
+			metadataTypes.addAll(parser.parse(is));
 		}
 		catch (IdUnusedException e)
 		{
@@ -128,26 +143,14 @@ public abstract class MetadataServiceFromContent implements MetadataService
 		};
 	}
 
-	/**
-	 * Parse a metadata configuration file
-	 *
-	 * @param inputStream Configuration file stream
-	 * @return A list of metadata obtained in the configuration file
-	 */
-	protected abstract List<MetadataType> parse(InputStream inputStream);
+	protected String getSiteMetadataConfigFile(String siteId)
+	{
+		String siteRoot = contentHostingService.getSiteCollection(siteId);
+		return siteRoot + localMetadataConfigFile;
+	}
 
-	/**
-	 * Returns the contentId of a file containing a metadata configuration for a specific site
-	 *
-	 * @param siteId site on which the configuration should be searched
-	 * @return a content id
-	 */
-	protected abstract String getSiteMetadataConfigFile(String siteId);
-
-	/**
-	 * Return the contentId of a file containing a metadata configuration for the whole sakai application
-	 *
-	 * @return a content id
-	 */
-	protected abstract String getGlobalMetaContent();
+	protected String getGlobalMetaContent()
+	{
+		return globalMetadataConfigFile;
+	}
 }

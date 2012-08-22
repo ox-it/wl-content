@@ -15,7 +15,7 @@ public interface MetadataService
 	 * Get all metadata groups available on the server
 	 *
 	 * @return A list of metadata fields, or an empty list if there is none.
-	 * @param resourceType
+	 * @param resourceType Restricts the returned values to those applicable to this resourceType. Empty string means all.
 	 */
 	List<MetadataType> getMetadataAvailable(String resourceType);
 
@@ -23,7 +23,7 @@ public interface MetadataService
 	 * Get all metadata groups available on the server for a specific site and resourceType
 	 *
 	 * @param siteId			 Site identifier
-	 * @param resourceType Type of resource/content
+	 * @param resourceType Restricts the returned values to those applicable to this resourceType. Empty string means all.
 	 * @return A list of metadata fields, or an empty list if there is none.
 	 */
 	List<MetadataType> getMetadataAvailable(String siteId, String resourceType);

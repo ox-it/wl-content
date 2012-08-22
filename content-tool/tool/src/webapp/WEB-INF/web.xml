@@ -131,6 +131,10 @@
 		<param-name>meta_display_list</param-name>
 		<param-value>vm/metadata/meta_display_list.vm</param-value>
 	</context-param>
+	<context-param>
+		<param-name>meta_display_boolean</param-name>
+		<param-value>vm/metadata/meta_display_boolean.vm</param-value>
+	</context-param>
 
 	<context-param>
 		<param-name>meta_edit_bsg_week</param-name>
@@ -155,5 +159,9 @@
 	<context-param>
 		<param-name>meta_edit_string</param-name>
 		<param-value>vm/metadata/meta_edit_string.vm</param-value>
+	</context-param>
+	<context-param>
+		<param-name>meta_edit_boolean</param-name>
+		<param-value>vm/metadata/meta_edit_boolean.vm</param-value>
 	</context-param>
 </web-app>

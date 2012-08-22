@@ -7,10 +7,13 @@
 
     <constructor-arg>
       <list>
-        <bean class="uk.ac.ox.oucs.content.metadata.logic.MetadataServiceFromJsonContent">
+        <bean class="uk.ac.ox.oucs.content.metadata.logic.MetadataServiceFromContent">
           <constructor-arg ref="org.sakaiproject.content.api.ContentHostingService"/>
           <constructor-arg ref="org.sakaiproject.authz.api.SecurityService"/>
           <constructor-arg ref="org.sakaiproject.tool.api.ToolManager"/>
+          <constructor-arg>
+            <bean class="uk.ac.ox.oucs.content.metadata.logic.JsonMetadataParser"/> 
+          </constructor-arg>
         </bean>
         <!-- Hard import DublinCore for compatibility with old systems -->
         <bean class="uk.ac.ox.oucs.content.metadata.logic.MetadataServiceDublinCore"/>

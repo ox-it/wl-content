@@ -1,0 +1,20 @@
+[ {
+    "metadataTypes" : [ { "@class" : "uk.ac.ox.oucs.content.metadata.model.BsgWeekMetadataType",
+          "name" : "Start week",
+          "id" : "bsg_start_week"
+        },
+        { "@class" : "uk.ac.ox.oucs.content.metadata.model.BsgWeekMetadataType",
+          "name" : "End week",
+          "id" : "bsg_end_week"
+        },
+        { "@class" : "uk.ac.ox.oucs.content.metadata.model.UserMetadataType",
+          "name" : "Convener",
+          "id" : "bsg_convener"
+        }
+      ],
+    "expanded" : true,
+    "name" : "Blavatnik school of government",
+    "id" : "bsg",
+    "@class" : "uk.ac.ox.oucs.content.metadata.model.GroupMetadataType"
+  }
+]

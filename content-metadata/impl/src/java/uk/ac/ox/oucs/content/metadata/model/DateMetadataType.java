@@ -13,9 +13,9 @@ public class DateMetadataType extends MetadataType<Date>
 {
 	private Date minimumDateTime;
 	private Date maximumDateTime;
-	private boolean date;
-	private boolean time;
-	private boolean defaultToday;
+	private boolean date = true;
+	private boolean time = false;
+	private boolean defaultToday = true;
 
 	public Date getMinimumDateTime()
 	{
