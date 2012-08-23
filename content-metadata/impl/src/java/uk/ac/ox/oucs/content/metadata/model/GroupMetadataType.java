@@ -9,6 +9,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 /**
+ * This allows you to group metadata items into a set.
+ * <p>
+ * One gotcha with this type is that in the rendering with Velocity it converts all <code>null</code>
+ * values into empty strings.
  * @author Colin Hebert
  */
 public class GroupMetadataType extends MetadataType<Map<String, ?>>
