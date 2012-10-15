@@ -182,11 +182,15 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 		public List<T> fromProperties(Map<String, ?> properties)
 		{
 			List<T> metadataValues = new ArrayList<T>();
-			List<String> stringValues = (List<String>) properties.get(getUniqueName());
-			if (stringValues != null)
-			{
-				for (String stringValue : stringValues)
-					metadataValues.add(metadataConverter.fromString(stringValue));
+			try {
+				List<String> stringValues = (List<String>) properties.get(getUniqueName());
+				if (stringValues != null)
+				{
+					for (String stringValue : stringValues)
+						metadataValues.add(metadataConverter.fromString(stringValue));
+				}
+			} catch (Exception e) {
+				// WL-2461 Do Nothing
 			}
 
 			return metadataValues;
