@@ -182,6 +182,12 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 		public List<T> fromProperties(Map<String, ?> properties)
 		{
 			List<T> metadataValues = new ArrayList<T>();
+			
+			/**
+			 * WL-2461
+			 * It might be worth just adding a catch clause so that the page still
+			 * renders and we can come back to this one.
+			 */
 			try {
 				List<String> stringValues = (List<String>) properties.get(getUniqueName());
 				if (stringValues != null)
