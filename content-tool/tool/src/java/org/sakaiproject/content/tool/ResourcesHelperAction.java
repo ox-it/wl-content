@@ -1041,7 +1041,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 				{
 					 pipe.setRevisedContentStream(stream);
 				}
-				String contentType = fileitem.getContentType();
+				String contentType = fileitem.getContentType().replaceAll("\"", "");
 				//pipe.setRevisedContent(bytes);
 				pipe.setRevisedMimeType(contentType);
 				pipe.setFileName(filename);
@@ -1438,7 +1438,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 			{
 				String filename = Validator.getFileName(fileitem.getFileName());
 				pipe.setRevisedContentStream( fileitem.getInputStream() );
-				String contentType = fileitem.getContentType();
+				String contentType = fileitem.getContentType().replaceAll("\"", "");
 				pipe.setRevisedMimeType(contentType);
 				
 				// If no encoding specified, default to UTF-8 encoding
