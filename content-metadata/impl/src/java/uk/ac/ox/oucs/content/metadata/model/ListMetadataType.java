@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -137,9 +138,9 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 
 		public List<T> fromString(String string)
 		{
+			List<T> metadataValues = new ArrayList<T>();
 			try
 			{
-				List<T> metadataValues = new ArrayList<T>();
 
 				if (string != null)
 				{
@@ -154,12 +155,13 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 							metadataValues.add(metadataValue);
 					}
 				}
-				return metadataValues;
+				
 			}
 			catch (IOException e)
 			{
-				throw new RuntimeException(e);
+				// Ignore any problems parsing them.
 			}
+			return metadataValues;
 		}
 
 		public Map<String, ?> toProperties(List<T> metadataValues)
@@ -182,23 +184,17 @@ public class ListMetadataType<T> extends MetadataType<List<T>>
 		public List<T> fromProperties(Map<String, ?> properties)
 		{
 			List<T> metadataValues = new ArrayList<T>();
-			
-			/**
-			 * WL-2461
-			 * It might be worth just adding a catch clause so that the page still
-			 * renders and we can come back to this one.
-			 */
-			try {
-				List<String> stringValues = (List<String>) properties.get(getUniqueName());
+			Object value = properties.get(getUniqueName());
+			if (value instanceof List<?>) {
+				List<?> stringValues = (List<?>) value;
 				if (stringValues != null)
 				{
-					for (String stringValue : stringValues)
-						metadataValues.add(metadataConverter.fromString(stringValue));
+					for (Object stringValue : stringValues)
+						if (stringValue instanceof String) {
+							metadataValues.add(metadataConverter.fromString((String)stringValue));
+						}
 				}
-			} catch (Exception e) {
-				// WL-2461 Do Nothing
 			}
-
 			return metadataValues;
 		}
 
