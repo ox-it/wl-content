@@ -2571,6 +2571,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 						comparator = ListItem.DEFAULT_COMPARATOR;
 					}
 				}
+				expandedCollections.add(collectionId);
 				expandedFolderSortMap.put(collectionId, comparator);
 				// state.setAttribute(STATE_EXPANDED_FOLDER_SORT_MAP, expandedFolderSortMap);
 			}
