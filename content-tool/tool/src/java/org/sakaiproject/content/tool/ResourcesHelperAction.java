@@ -1138,13 +1138,15 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 			
 			ResourceToolActionPipe pipe = pipes.get(actualCount);
 			
-			String url = params.getString("content" + ListItem.DOT + i ).trim();
+			String url = params.getString("content" + ListItem.DOT + i );
 				if(url == null)
 				{
 					continue;
 				}
 				else
 				{
+					url = url.trim();
+				
 					try
 					 {
 						 url = ResourcesAction.validateURL(url);
