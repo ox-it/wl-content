@@ -1138,7 +1138,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 			
 			ResourceToolActionPipe pipe = pipes.get(actualCount);
 			
-			String url = params.getString("content" + ListItem.DOT + i );
+			String url = params.getString("content" + ListItem.DOT + i ).trim();
 				if(url == null)
 				{
 					continue;
