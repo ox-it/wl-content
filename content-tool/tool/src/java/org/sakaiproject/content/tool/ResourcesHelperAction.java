@@ -1250,6 +1250,8 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 				}
 				else
 				{
+					url = url.trim();
+				
 					try
 					 {
 						 url = ResourcesAction.validateURL(url);
