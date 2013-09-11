@@ -10,7 +10,7 @@
 	<p class="instruction">
 		$tlang.getString("instr.replace")
 	</p>
-	<form name="addContentForm" id="addContentForm" method="post" action="#toolForm("ResourcesHelperAction")"  enctype="multipart/form-data">
+	<form name="addContentForm" id="addContentForm" method="post" action="#toolForm("ResourcesHelperAction")" onsubmit="return confirmFileNamesMatch()" enctype="multipart/form-data">
 		<input type="hidden" name="pipe-init-id" id="pipe-init-id" value="$!{pipe-init-id}" />
 		<input type="hidden" name="requestStateId" id="requestStateId" value="$!{requestStateId}" />
 		
@@ -28,7 +28,7 @@
 				<td style="width:180px;padding-left:0"> 
 					<label>$tlang.getString("label.name")</label>
 				</td>
-				<td style="width:180px;padding-left:0"> 
+				<td style="width:180px;padding-left:0" id="itemName">
 					$validator.escapeHtml($item.name)
 				</td>
 			</tr>
@@ -80,7 +80,6 @@
 		
 		<p class="act">
 			<input type="button" class="active" name="savechanges" id="saveChanges" onclick="onClickSaveChanges()" value="$tlang.getString("label.upl")" accesskey="s" />
-			<input type="button" class="active" name="savechanges" id="saveChanges" onclick="javascript:showNotif('submitnotifxxx','saveChanges','addContentForm');document.getElementById('addContentForm').action='#toolLink("ResourcesHelperAction" "doReplace")';submitform('addContentForm');" value="$tlang.getString("label.upl")" accesskey="s" />
 			<input type="button" name="cancel" onclick="javascript:document.getElementById('addContentForm').action='#toolLink("ResourcesHelperAction" "doCancel")';submitform('addContentForm');" value="$tlang.getString("label.cancel")" accesskey="x" />
 			<span id="submitnotifxxx"  class="messageProgress"  style="visibility:hidden">$tlang.getString("processmessage.save.file")</span>
 		</p>
@@ -91,9 +90,10 @@
 	<!--
 
 	function onClickSaveChanges() {
-		javascript:showNotif('submitnotifxxx','saveChanges','addContentForm');
 		document.getElementById('addContentForm').action='#toolLink("ResourcesHelperAction" "doReplace")';
-		submitform('addContentForm');
+		if(submitform('addContentForm') != false) {
+			javascript:showNotif('submitnotifxxx','saveChanges','addContentForm');
+		}
 	}
 
 	function submitform(id)
@@ -101,12 +101,26 @@
 		var theForm = document.getElementById(id);
 		if(theForm && theForm.onsubmit)
 		{
-			theForm.onsubmit();
+			if(theForm.onsubmit() == false)
+			{
+			    // we should break execution if onsubmit fails
+				return false;
+			}
 		}
 		if(theForm && theForm.submit)
 		{
 			theForm.submit();
 		}
 	}
+
+	function confirmFileNamesMatch() { // called from form.onsubmit()
+		var originalFileName = document.getElementById('itemName').innerHTML.replace(/^\s+|\s+$/g, ''); // trims whitespace
+		var newFileName = document.getElementById('content').value.match(/[^\/\\]+$/); // removes directory path
+
+		if(newFileName && newFileName != originalFileName) {
+			return confirm("The file you have selected does not match the original file name. Are you sure you want to continue?");
+		}
+	}
+
 	-->
 </script>
