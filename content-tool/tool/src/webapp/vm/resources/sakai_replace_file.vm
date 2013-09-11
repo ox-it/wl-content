@@ -118,7 +118,7 @@
 		var newFileName = document.getElementById('content').value.match(/[^\/\\]+$/); // removes directory path
 
 		if(newFileName && newFileName != originalFileName) {
-			return confirm("The file you have selected does not match the original file name. Are you sure you want to continue?");
+			return confirm("$tlang.getString("alert.replace.differentFile")");
 		}
 	}
 
