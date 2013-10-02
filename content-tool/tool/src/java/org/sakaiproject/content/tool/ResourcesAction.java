@@ -4169,7 +4169,12 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		} else {
 			context.put("showQuota", Boolean.valueOf(false));
 		}
-		
+
+		// Work out whether we can show the recycle bin for this collection
+		boolean showRecycleBin = !isSpecialSite && !dropboxMode && allowUpdateSite;
+		context.put("showRecycleBin", Boolean.valueOf(showRecycleBin));
+		context.put("RESTORE_ACTION_ID", ResourceToolAction.RESTORE);
+
 		context.put("atHome", Boolean.toString(atHome));
 
 		if(ContentHostingService.isAvailabilityEnabled())
