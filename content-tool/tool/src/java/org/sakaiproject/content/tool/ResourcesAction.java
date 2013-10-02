@@ -4171,7 +4171,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		}
 
 		// Work out whether we can show the recycle bin for this collection
-		boolean showRecycleBin = !isSpecialSite && !dropboxMode && allowUpdateSite;
+		boolean showRecycleBin = allowUpdateSite && ServerConfigurationService.getBoolean("content.showRecycleBin", true);
 		context.put("showRecycleBin", Boolean.valueOf(showRecycleBin));
 		context.put("RESTORE_ACTION_ID", ResourceToolAction.RESTORE);
 
