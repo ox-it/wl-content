@@ -1380,10 +1380,21 @@ public class ListItem
 		}
 		else if(AccessMode.INHERITED.toString().equals(access_mode))
 		{
+			captureAccessRoles(params, index);
 			setAccessMode(AccessMode.INHERITED);
 			this.groups.clear();
 			setPubview(false);
 		}
+	}
+
+	/**
+	 * Set up the access roles as defined by checkboxes in the form.
+	 */
+	protected void captureAccessRoles(ParameterParser params, String index) {
+		Set<String> roleIds = new LinkedHashSet<String>();
+		roleIds.addAll(Arrays.asList(params.getStrings("access_roles" + index)));
+
+		setRoleIds(roleIds);
 	}
 
 	protected void captureAvailability(ParameterParser params, String index) 
@@ -2488,7 +2499,7 @@ public class ListItem
      * Returns the list of roleIds currently defined for this List Item, this will include the Pubview (anon) role
      * @return
      */
-    public Collection<String> getRoleIds() {
+    public Set<String> getRoleIds() {
         return roleIds;
     }
 
@@ -2497,7 +2508,7 @@ public class ListItem
      * These will be committed when the listitem is saved.
      * @param roleIds, the roleIds to set.
      */
-    public void setRoleIds(Collection<String> roleIds) {
+    public void setRoleIds(Set<String> roleIds) {
         this.roleIds = roleIds;
     }
 
