@@ -386,6 +386,7 @@ public class ListItem
 	protected AccessMode inheritedAccessMode;
 	protected Collection<Group> groups = new ArrayList<Group>();
 	protected Set<String> roleIds = new LinkedHashSet<String>();
+	protected Set<String> inheritedRoleIds = new LinkedHashSet<String>();
 	protected Collection<Group> inheritedGroups = new ArrayList<Group>();
 	protected Collection<Group> possibleGroups = new ArrayList<Group>();
 	protected Collection<Group> allowedRemoveGroups = null;
@@ -2501,6 +2502,14 @@ public class ListItem
      */
     public Set<String> getRoleIds() {
         return roleIds;
+    }
+
+    /**
+     * Gets the list of inheritedRoleIds currently defined for this List Item, which may include the Pubview (anon) role.
+     * @return a set of role ids
+     */
+    public Set<String> getInheritedRoleIds() {
+        return this.inheritedRoleIds;
     }
 
     /**
