@@ -2504,12 +2504,26 @@ public class ListItem
     }
 
     /**
-     * Sets the list of roleIds currently defined for this List Item, which may include the Pubview (anon) role.
-     * These will be committed when the listitem is saved.
-     * @param roleIds, the roleIds to set.
+     * Asks the Server Configuration Service to get a list of available roles with the prefix "access.enabledRoles"
+     * We should expect language strings for these to be defined in the bundles.
+     * @return a set of role ids that can be used
      */
-    public void setRoleIds(Set<String> roleIds) {
-        this.roleIds = roleIds;
+    public Set<String> availableRoleIds() {
+        String[] configStrings = ServerConfigurationService.getStrings("access.enabledRoles");
+
+        LinkedHashSet<String> availableIds = new LinkedHashSet<String>();
+        availableIds.addAll(availableIds);
+
+        if(!this.isPubviewPossible) {
+            availableIds.remove(PUBVIEW_ROLE);
+        }
+
+        return availableIds;
+    }
+
+    /** Uses availableRoleIds to determine whether roles are available to be used, includes roleIds */
+    public boolean rolesAreAvailable() {
+        return !availableRoleIds().isEmpty();
     }
 
 	public boolean isSelected() 
