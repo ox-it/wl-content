@@ -22,23 +22,7 @@
 package org.sakaiproject.content.tool;
 
 import java.text.NumberFormat;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,7 +78,6 @@ import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.Validator;
-import uk.ac.ox.oucs.content.metadata.cover.ContentMetadataService;
 import uk.ac.ox.oucs.content.metadata.logic.MetadataService;
 import uk.ac.ox.oucs.content.metadata.model.MetadataType;
 
@@ -402,6 +385,7 @@ public class ListItem
 	protected AccessMode accessMode;
 	protected AccessMode inheritedAccessMode;
 	protected Collection<Group> groups = new ArrayList<Group>();
+	protected Set<String> roleIds = new LinkedHashSet<String>();
 	protected Collection<Group> inheritedGroups = new ArrayList<Group>();
 	protected Collection<Group> possibleGroups = new ArrayList<Group>();
 	protected Collection<Group> allowedRemoveGroups = null;
@@ -2498,6 +2482,23 @@ public class ListItem
     public boolean isPubviewPossible()
     {
     	return isPubviewPossible;
+    }
+
+    /**
+     * Returns the list of roleIds currently defined for this List Item, this will include the Pubview (anon) role
+     * @return
+     */
+    public Collection<String> getRoleIds() {
+        return roleIds;
+    }
+
+    /**
+     * Sets the list of roleIds currently defined for this List Item, which may include the Pubview (anon) role.
+     * These will be committed when the listitem is saved.
+     * @param roleIds, the roleIds to set.
+     */
+    public void setRoleIds(Collection<String> roleIds) {
+        this.roleIds = roleIds;
     }
 
 	public boolean isSelected() 
