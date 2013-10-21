@@ -27,6 +27,7 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.antivirus.api.VirusFoundException;
+import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
@@ -108,6 +109,9 @@ public class ListItem
 	protected static boolean optionalPropertiesEnabled = false;
 
     protected static final Comparator<ContentEntity> PRIORITY_SORT_COMPARATOR = ContentHostingService.newContentHostingComparator(ResourceProperties.PROP_CONTENT_PRIORITY, true);
+
+    /** The role that is used to define pubview or public access */
+    public static final String PUBVIEW_ROLE = AuthzGroupService.ANON_ROLE;
 
 	public static final String DOT = "_";
 
@@ -394,8 +398,6 @@ public class ListItem
 	protected Map<String,Group> siteGroupsMap = new HashMap<String, Group>();
 
 	protected boolean isPubviewPossible;
-	protected boolean isPubviewInherited = false;
-	protected boolean isPubview = false;
 
 	protected boolean hidden;
 	protected boolean isAvailable;
@@ -805,10 +807,10 @@ public class ListItem
 			setPossibleGroups(site_groups);
 		}
 
-        this.isPubviewInherited = contentService.isInheritingPubView(id);
-		if (!this.isPubviewInherited) 
+		this.setPubviewInherited(contentService.isInheritingPubView(id));
+		if (!this.isPubviewInherited())
 		{
-			this.isPubview = contentService.isPubView(id);
+			this.setPubview(contentService.isPubView(id));
 		}
 		
 		this.hidden = entity.isHidden();
@@ -1094,16 +1096,16 @@ public class ListItem
 			this.setPossibleGroups(parent.getPossibleGroups());
 		}
 
- 		this.isPubviewPossible = parent.isPubviewPossible;
-        this.isPubviewInherited = parent.isPubviewInherited || parent.isPubview;
-        if(this.isPubviewInherited)
-        {
-        	this.isPubview = false;
-        }
-        else
-        {
-        	this.isPubview = contentService.isPubView(id);
-        }
+		this.isPubviewPossible = parent.isPubviewPossible;
+		this.setPubviewInherited(parent.isPubviewInherited() || parent.isPubview());
+		if(this.isPubviewInherited())
+		{
+			this.setPubview(false);
+		}
+		else
+		{
+			this.setPubview(contentService.isPubView(id));
+		}
 		
 		this.hidden = false;
 		this.useReleaseDate = false;
@@ -2023,7 +2025,7 @@ public class ListItem
     {
 		String label = rb.getString("access.site");
 		
-		if(this.isPubviewInherited || this.isPubview)
+		if(this.isPubviewInherited() || this.isPubview())
 		{
 			label = rb.getString("access.public");
 		}
@@ -2477,7 +2479,7 @@ public class ListItem
      */
     public boolean isPubview()
     {
-    	return isPubview;
+        return this.roleIds.contains(PUBVIEW_ROLE);
     }
 
 	/**
@@ -2485,7 +2487,7 @@ public class ListItem
      */
     public boolean isPubviewInherited()
     {
-    	return isPubviewInherited;
+        return this.inheritedRoleIds.contains(PUBVIEW_ROLE);
     }
 
 	/**
@@ -2493,7 +2495,8 @@ public class ListItem
      */
     public boolean isPubviewPossible()
     {
-    	return isPubviewPossible;
+        return availableRoleIds().contains(PUBVIEW_ROLE);
+    }
     }
 
     /**
@@ -2571,7 +2574,7 @@ public class ListItem
 	  */
 	 public boolean isSitePossible()
 	 {
-		 return !this.isPubviewInherited && !isGroupInherited() && !isSingleGroupInherited();
+		 return !this.isPubviewInherited() && !isGroupInherited() && !isSingleGroupInherited();
 	 }
 
 	public boolean isTooBig()
@@ -2907,7 +2910,11 @@ public class ListItem
      */
     public void setPubview(boolean isPubview)
     {
-    	this.isPubview = isPubview;
+        if(isPubview) {
+            this.roleIds.add(PUBVIEW_ROLE);
+        } else {
+            this.roleIds.remove(PUBVIEW_ROLE);
+        }
     }
 
 	/**
@@ -2915,7 +2922,11 @@ public class ListItem
      */
     public void setPubviewInherited(boolean isPubviewInherited)
     {
-    	this.isPubviewInherited = isPubviewInherited;
+        if(isPubviewInherited) {
+            this.inheritedRoleIds.add(PUBVIEW_ROLE);
+        } else {
+            this.inheritedRoleIds.remove(PUBVIEW_ROLE);
+        }
     }
 
 	/**
@@ -2923,7 +2934,7 @@ public class ListItem
      */
     public void setPubviewPossible(boolean isPubviewPossible)
     {
-    	this.isPubviewPossible = isPubviewPossible;
+        this.isPubviewPossible = isPubviewPossible;
     }
 
 	/**
@@ -3233,7 +3244,7 @@ public class ListItem
 			{
 					edit.setGroupAccess(groups);
 			}
-			else if(this.isPubview && ! this.isPubviewInherited)
+			else if(this.isPubview() && ! this.isPubviewInherited())
 			{
 				edit.setPublicAccess();
 			}
@@ -3241,7 +3252,7 @@ public class ListItem
 			{
 				edit.clearGroupAccess();
 			}
-			else if(ContentHostingService.isPubView(edit.getId()) && ! this.isPubview)
+			else if(ContentHostingService.isPubView(edit.getId()) && ! this.isPubview())
 			{
 				edit.clearPublicAccess();
 			}
