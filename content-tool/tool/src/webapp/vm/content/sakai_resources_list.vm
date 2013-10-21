@@ -514,16 +514,8 @@ $(document).ready(function() {
 
 						</td>
 					#if($item.depth > 0)
-						<td headers="access" title="$item.effectiveGroupsLabel">
-							#if($item.isPubviewInherited() || $item.isPubview())
-								$tlang.getString("access.public")
-							#elseif($item.isDropbox())
-								$tlang.getString("access.dropbox")
-							#elseif($item.effectiveAccess == $GROUP_ACCESS)
-								$tlang.getString("access.group")
-							#else
-								$tlang.getString("access.site")
-							#end
+						<td headers="access" title="$item.getShortAccessLabel()">
+							$item.getShortAccessLabel()
 						</td>
 						<td headers="creator">
 							$validator.escapeHtml($item.createdBy)
