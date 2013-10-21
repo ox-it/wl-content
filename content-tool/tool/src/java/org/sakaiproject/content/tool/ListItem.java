@@ -1394,10 +1394,10 @@ public class ListItem
 	 * Set up the access roles as defined by checkboxes in the form.
 	 */
 	protected void captureAccessRoles(ParameterParser params, String index) {
-		Set<String> roleIds = new LinkedHashSet<String>();
-		roleIds.addAll(Arrays.asList(params.getStrings("access_roles" + index)));
+		Set<String> formRoleIds = new LinkedHashSet<String>();
+		formRoleIds.addAll(Arrays.asList(params.getStrings("access_roles" + index)));
 
-		setRoleIds(roleIds);
+		this.roleIds = formRoleIds;
 	}
 
 	protected void captureAvailability(ParameterParser params, String index) 
