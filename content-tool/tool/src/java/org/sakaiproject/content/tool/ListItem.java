@@ -807,11 +807,7 @@ public class ListItem
 			setPossibleGroups(site_groups);
 		}
 
-		this.setPubviewInherited(contentService.isInheritingPubView(id));
-		if (!this.isPubviewInherited())
-		{
-			this.setPubview(contentService.isPubView(id));
-		}
+		this.initialiseRoleIds(entity);
 		
 		this.hidden = entity.isHidden();
 		Time releaseDate = entity.getReleaseDate();
@@ -1097,7 +1093,9 @@ public class ListItem
 		}
 
 		this.isPubviewPossible = parent.isPubviewPossible;
-		this.setPubviewInherited(parent.isPubviewInherited() || parent.isPubview());
+
+		this.inheritedRoleIds.addAll(parent.inheritedRoleIds);
+		this.inheritedRoleIds.addAll(parent.roleIds);
 		if(this.isPubviewInherited())
 		{
 			this.setPubview(false);
@@ -2497,6 +2495,14 @@ public class ListItem
     {
         return availableRoleIds().contains(PUBVIEW_ROLE);
     }
+
+    /**
+     * Sets the initial list of role ids and inherited role ids defined in the List Item, including pubview
+     * @param entity the entity to get the roleIds frome
+     */
+    protected void initialiseRoleIds(ContentEntity entity) {
+        this.roleIds = entity.getRoleAccessIds();
+        this.inheritedRoleIds = entity.getInheritedRoleAccessIds();
     }
 
     /**
