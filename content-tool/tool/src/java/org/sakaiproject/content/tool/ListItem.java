@@ -2542,9 +2542,21 @@ public class ListItem
         return availableIds;
     }
 
-    /** Uses availableRoleIds to determine whether roles are available to be used, includes roleIds */
+    /**
+     * Uses availableRoleIds to determine whether roles are available to be used, includes roleIds.
+     * @return ture if no roles are available, false otherwise.
+     */
     public boolean rolesAreAvailable() {
         return !availableRoleIds().isEmpty();
+    }
+
+    /**
+     * Checks whether the List Item has the role access set for this role.
+     * @param roleId the role to check.
+     * @return true if the role is enabled, false otherwise.
+     */
+    public boolean hasRoleEnabled(String roleId) {
+        return this.roleIds.contains(roleId);
     }
 
 	public boolean isSelected() 

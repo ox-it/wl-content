@@ -227,7 +227,7 @@
 				<ul style="list-style: none;">
 					#foreach ($roleId in $model.availableRoleIds())
 						<li>
-							<input type="checkbox" name="access_roles${DOT}$i" id="access_role_$roleId${DOT}$i" value="$roleId" #if($model.hasRole($roleId)) checked="checked"#end />
+							<input type="checkbox" name="access_roles${DOT}$i" id="access_role_$roleId${DOT}$i" value="$roleId" #if($model.hasRoleEnabled($roleId)) checked="checked"#end />
 							<label for="access_mode_$roleId${DOT}$i">#if($model.isCollection())$tlang.getString("access.role${roleId}fldr")#else$tlang.getString("access.role${roleId}.choice")#end</label>
 						</li>
 					#end
