@@ -3261,21 +3261,14 @@ public class ListItem
 	{
 		try 
 		{
-			if(this.accessMode == AccessMode.GROUPED && this.groups != null && ! this.groups.isEmpty())
-			{
+			if(this.accessMode == AccessMode.GROUPED) {
+				if (this.groups != null && ! this.groups.isEmpty()) {
 					edit.setGroupAccess(groups);
-			}
-			else if(this.isPubview() && ! this.isPubviewInherited())
-			{
-				edit.setPublicAccess();
-			}
-			else if(edit.getAccess() == AccessMode.GROUPED)
-			{
-				edit.clearGroupAccess();
-			}
-			else if(ContentHostingService.isPubView(edit.getId()) && ! this.isPubview())
-			{
-				edit.clearPublicAccess();
+				} else {
+					edit.clearGroupAccess();
+				}
+			} else if(this.roleIds != null && !this.roleIds.isEmpty()) {
+				setAccessRoles(edit);
 			}
 		} 
 		catch (InconsistentException e) 
@@ -3285,6 +3278,31 @@ public class ListItem
 		catch (PermissionException e) 
 		{
 			logger.warn("PermissionException " + e);
+		}
+	}
+
+	/**
+	 * Sets the access roles on the entity when saving the ListItem.
+	 * @param entityEdit the Edit object of the underlying ListItem that is being saved.
+	 * @throws PermissionException if the current user doesn't have permission to add or remove roles.
+	 * @throws InconsistentException if the current entity inherits an access mode such as group access.
+	 */
+	protected void setAccessRoles(GroupAwareEdit entityEdit) throws PermissionException, InconsistentException {
+		Set<String> rolesToSave = new LinkedHashSet<String>(roleIds);
+		rolesToSave.retainAll(availableRoleIds());
+
+		Set<String> currentRoles = entityEdit.getRoleAccessIds();
+
+		Set<String> rolesToAdd = new LinkedHashSet<String>(rolesToSave);
+		rolesToAdd.removeAll(currentRoles);
+		for (String role : rolesToAdd) {
+			entityEdit.addRoleAccess(role);
+		}
+
+		Set<String> rolesToRemove = new LinkedHashSet<String>(currentRoles);
+		rolesToRemove.removeAll(rolesToSave);
+		for (String role : rolesToRemove) {
+			entityEdit.removeRoleAccess(role);
 		}
 	}
 
