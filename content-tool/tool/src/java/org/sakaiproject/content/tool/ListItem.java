@@ -1384,7 +1384,6 @@ public class ListItem
 			captureAccessRoles(params, index);
 			setAccessMode(AccessMode.INHERITED);
 			this.groups.clear();
-			setPubview(false);
 		}
 	}
 
