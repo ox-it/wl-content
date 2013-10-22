@@ -2024,18 +2024,69 @@ public class ListItem
     public String getEffectiveAccessLabel()
     {
 		String label = rb.getString("access.site");
-		
-		if(this.isPubviewInherited() || this.isPubview())
-		{
-			label = rb.getString("access.public");
-		}
-		else if(AccessMode.GROUPED == this.getEffectiveAccess())
-		{
-			label = rb.getString("access.group");
-		}
 
-		return label;
+        if(AccessMode.GROUPED == this.getEffectiveAccess())
+        {
+            label = rb.getString("access.group");
+        } else if(this.inheritsRoles() || this.hasRoles())
+        {
+            label = accessLabelForRoles(false);
+        }
 
+        return label;
+
+    }
+
+    /**
+     * Constructs a nice language representation of the roles that are defined agains the list item
+     * If there are more than 2 roles defined it will show "Role_A and 5 others".
+     * @param useLongerLabel set to true if you want a label that is a natural sentence.
+     *   e.g. "Oxford members" vs "Visible to Oxford members."
+     * @return 
+     */
+    public String accessLabelForRoles(boolean useLongerLabel) {
+        String label;
+        Collection<String> candidateRoleIds = new ArrayList<String>(roleIds);
+        candidateRoleIds.addAll(this.inheritedRoleIds);
+        String chosenId;
+
+        if (candidateRoleIds.size() == 0) {
+            logger.warn("ListItem: Constructing a roles access label with no roles defined");
+            return "";
+        }
+
+        // Prioritise public over all others
+        if (candidateRoleIds.contains(PUBVIEW_ROLE)) {
+            chosenId = PUBVIEW_ROLE;
+        } else {
+            chosenId = candidateRoleIds.iterator().next();
+        }
+        String chosenAccessLabel = rb.getString(String.format("access.role%s", chosenId));
+
+        candidateRoleIds.remove(chosenId);
+
+        // Decide how to format the string based on how many roles there are
+        switch (candidateRoleIds.size()) {
+            case 0:
+                label = chosenAccessLabel;
+                break;
+            case 1:
+                String nextRoleId = candidateRoleIds.iterator().next();
+                String nextRoleLabel = rb.getString(String.format("access.role%s", nextRoleId)); 
+                String[] twoLabelParams = {chosenAccessLabel, nextRoleLabel};
+                label = rb.getFormattedMessage("access.roleLabel.two", twoLabelParams);
+                break;
+            default:
+                String[] multiLabelParams = {chosenAccessLabel, Integer.toString(candidateRoleIds.size())};
+                label = rb.getFormattedMessage("access.roleLabel.moreThanTwo", multiLabelParams);
+                break;
+        }
+
+        if (useLongerLabel) {
+            label = rb.getFormattedMessage("access.roleLabel.long", new Object[]{label});
+        }
+
+        return label;
     }
     
     public String getGroupNamesAsString()
@@ -2057,13 +2108,9 @@ public class ListItem
     {
 		String label = rb.getString("access.site1");
 		
-		if(this.isPubviewInherited())
+		if(this.hasRoles() || this.inheritsRoles())
 		{
-			label = rb.getString("access.public1");
-		}
-		else if(this.isPubview())
-		{
-			label = rb.getString("access.public1");
+			label = accessLabelForRoles(true);
 		}
 		else if(this.isDropbox)
 		{
