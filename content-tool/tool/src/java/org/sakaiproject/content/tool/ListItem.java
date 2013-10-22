@@ -1776,17 +1776,25 @@ public class ListItem
 			//Grouped access is inherited
 			label = getMultiGroupLabel();
 		}
-		else if(isPubviewInherited())
+		else if(inheritsRoles())
 		{
 			checkParent();
 			if(parent == null)
 			{
-				label = trb.getString("access.public.noparent");
+				Iterator<String> roleIterator = this.inheritedRoleIds.iterator();
+				label = trb.getString(String.format(String.format("access.role%s.noparent", roleIterator.next())));
+				while(roleIterator.hasNext()) {
+					label += "<br/>" + trb.getString(String.format(String.format("access.role%s.noparent", roleIterator.next())));
+				}
 				logger.warn("ListItem.getLongAccessLabel(): Unable to display label because isPubviewInherited == true and parent == null and constructor == " + this.constructor);  
 			}
 			else
 			{
-				label = trb.getFormattedMessage("access.public.nochoice", new String[]{parent.getName()});
+				Iterator<String> roleIterator = this.inheritedRoleIds.iterator();
+				label = trb.getFormattedMessage(String.format("access.role%s.nochoice", roleIterator.next()), new String[]{parent.getName()});
+				while(roleIterator.hasNext()) {
+					label += "<br/>" + trb.getFormattedMessage(String.format("access.role%s.nochoice", roleIterator.next()), new String[]{parent.getName()});
+				}
 			}
 		}
 		else if(isCollection())
