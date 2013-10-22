@@ -1390,10 +1390,13 @@ public class ListItem
 
 	/**
 	 * Set up the access roles as defined by checkboxes in the form.
+	 * Should only be called if it is compatible with the form submission
+	 *    e.g.  when access mode is not set to groups.
 	 */
 	protected void captureAccessRoles(ParameterParser params, String index) {
 		Set<String> formRoleIds = new LinkedHashSet<String>();
 		formRoleIds.addAll(Arrays.asList(params.getStrings("access_roles" + index)));
+		formRoleIds.retainAll(availableRoleIds());
 
 		this.roleIds = formRoleIds;
 	}
