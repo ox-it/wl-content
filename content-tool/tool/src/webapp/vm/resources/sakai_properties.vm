@@ -213,8 +213,8 @@
 					<input type="radio" name="access_mode${DOT}$i" id="access_mode_groups${DOT}$i" value="$GROUP_ACCESS"   style="border:none" />
 					<label for="access_mode_groups${DOT}$i">$tlang.getString("access.groups.choice")</label>
 				</p>
-			#elseif($model.isPubviewInherited())
-				## Public access inherited from parent (report that to user)
+			#elseif($model.inheritsRoles())
+				## Role based access inherited from parent (report that to user)
 				<input type="hidden" name="access_mode${DOT}$i" id="access_mode_hidden${DOT}$i" value="$INHERITED_ACCESS" />
 			#else
 				## Site is possible; group and additional roles (including pubview) may be possible.

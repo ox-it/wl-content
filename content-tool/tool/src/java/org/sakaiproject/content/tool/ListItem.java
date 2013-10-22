@@ -2559,6 +2559,14 @@ public class ListItem
         return this.roleIds.contains(roleId);
     }
 
+    /**
+     * Checks whether the List Item has any inherited roles defined.
+     * @return true if the List Item inherits roles, false otherwise
+     */
+    public boolean inheritsRoles() {
+        return this.inheritedRoleIds != null && !this.inheritedRoleIds.isEmpty();
+    }
+
 	public boolean isSelected() 
 	{
 		return selected;
@@ -3267,7 +3275,7 @@ public class ListItem
 				} else {
 					edit.clearGroupAccess();
 				}
-			} else if(this.roleIds != null && !this.roleIds.isEmpty()) {
+			} else if(this.roleIds != null && !this.roleIds.isEmpty() && !this.inheritsRoles()) {
 				setAccessRoles(edit);
 			}
 		} 
@@ -3288,6 +3296,7 @@ public class ListItem
 	 * @throws InconsistentException if the current entity inherits an access mode such as group access.
 	 */
 	protected void setAccessRoles(GroupAwareEdit entityEdit) throws PermissionException, InconsistentException {
+
 		Set<String> rolesToSave = new LinkedHashSet<String>(roleIds);
 		rolesToSave.retainAll(availableRoleIds());
 
