@@ -2560,10 +2560,19 @@ public class ListItem
 
     /**
      * Checks whether the List Item has any inherited roles defined.
+     * Used in the UI to determine whether some elements should be displayed
      * @return true if the List Item inherits roles, false otherwise
      */
     public boolean inheritsRoles() {
         return this.inheritedRoleIds != null && !this.inheritedRoleIds.isEmpty();
+    }
+
+    /**
+     * Checks whether the List Item has any roles defined.
+     * @return true if the List Item has roles, false otherwise
+     */
+    public boolean hasRoles() {
+        return this.roleIds != null && !this.roleIds.isEmpty();
     }
 
 	public boolean isSelected() 
@@ -3274,7 +3283,7 @@ public class ListItem
 				} else {
 					edit.clearGroupAccess();
 				}
-			} else if(this.roleIds != null && !this.roleIds.isEmpty() && !this.inheritsRoles()) {
+			} else if(this.hasRoles() && !this.inheritsRoles()) {
 				setAccessRoles(edit);
 			}
 		} 
