@@ -1782,9 +1782,9 @@ public class ListItem
 			if(parent == null)
 			{
 				Iterator<String> roleIterator = this.inheritedRoleIds.iterator();
-				label = trb.getString(String.format(String.format("access.role%s.noparent", roleIterator.next())));
+				label = trb.getString(String.format("access.role%s.noparent", roleIterator.next()));
 				while(roleIterator.hasNext()) {
-					label += "<br/>" + trb.getString(String.format(String.format("access.role%s.noparent", roleIterator.next())));
+					label += "<br/>" + trb.getString(String.format("access.role%s.noparent", roleIterator.next()));
 				}
 				logger.warn("ListItem.getLongAccessLabel(): Unable to display label because isPubviewInherited == true and parent == null and constructor == " + this.constructor);  
 			}
