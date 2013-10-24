@@ -807,7 +807,10 @@ public class ListItem
 			setPossibleGroups(site_groups);
 		}
 
+		// it only initialises roles that are available but so far pubviewPossible is defaulted to false which disables it.
+		this.setPubviewPossible(true);
 		this.initialiseRoleIds(entity);
+		this.setPubviewPossible(!this.inheritsRoles());
 
 		this.hidden = entity.isHidden();
 		Time releaseDate = entity.getReleaseDate();
@@ -2557,8 +2560,14 @@ public class ListItem
      * @param entity the entity to get the roleIds frome
      */
     protected void initialiseRoleIds(ContentEntity entity) {
-        this.roleIds = entity.getRoleAccessIds();
-        this.inheritedRoleIds = entity.getInheritedRoleAccessIds();
+        for (String roleId : availableRoleIds()) {
+            if (contentService.isRoleView(entity.getId(), roleId)) {
+                this.roleIds.add(roleId);
+            }
+            if (contentService.isInheritingRoleView(entity.getId(), roleId)) {
+                this.roleIds.add(roleId);
+            }
+        }
     }
 
     /**
