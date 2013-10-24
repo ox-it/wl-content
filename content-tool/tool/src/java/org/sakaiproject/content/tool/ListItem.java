@@ -808,7 +808,7 @@ public class ListItem
 		}
 
 		this.initialiseRoleIds(entity);
-		
+
 		this.hidden = entity.isHidden();
 		Time releaseDate = entity.getReleaseDate();
 		if(releaseDate == null)
@@ -837,7 +837,7 @@ public class ListItem
 		{
 			this.htmlFilter = "auto";
 		}
-    }
+	}
 
 	/**
 	 * Determine whether or not the given entity is configured to allow inline HTML.
@@ -1092,13 +1092,12 @@ public class ListItem
 			this.setPossibleGroups(parent.getPossibleGroups());
 		}
 
-		this.isPubviewPossible = parent.isPubviewPossible;
-
 		this.inheritedRoleIds.addAll(parent.inheritedRoleIds);
 		this.inheritedRoleIds.addAll(parent.roleIds);
-		if(this.isPubviewInherited())
+
+		if(this.inheritsRoles())
 		{
-			this.setPubview(false);
+			this.roleIds.clear();
 		}
 		else
 		{
