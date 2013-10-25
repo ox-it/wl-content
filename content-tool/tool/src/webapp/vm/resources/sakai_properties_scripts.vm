@@ -1193,6 +1193,7 @@
 					{
 						var index = element.id.substr(dot + 1);
 						hideGroupsTable(index);
+						setDisabledRolesCheckboxes(index, false);
 					}
 				}
 			}
@@ -1215,6 +1216,7 @@
 					{
 						var index = element.id.substr(dot + 1);
 						showGroupsTable(index);
+						setDisabledRolesCheckboxes(index, true);
 					}
 				}
 			}
@@ -1236,6 +1238,15 @@
 			element.style.display = "block";
 		}
 		resizeFrame('grow');		
+	}
+	/* Sets the roles checkboxes as disabled for the specified index if disabledElements is set to true,
+	 * otherwise renables the checkboxes
+	 */
+	function setDisabledRolesCheckboxes(index, disableElements) {
+		var checkboxes = document.getElementsByName("access_roles$DOT" + index);
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].disabled = disableElements;
+		}
 	}
 	function handleReleaseDateChange(evt)
 	{
