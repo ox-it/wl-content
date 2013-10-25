@@ -2598,7 +2598,10 @@ public class ListItem
         String[] configStrings = ServerConfigurationService.getStrings("access.enabledRoles");
 
         LinkedHashSet<String> availableIds = new LinkedHashSet<String>();
-        availableIds.addAll(Arrays.asList(configStrings));
+
+        if(configStrings != null) {
+            availableIds.addAll(Arrays.asList(configStrings));
+        }
 
         if(!this.isPubviewPossible) {
             availableIds.remove(PUBVIEW_ROLE);
