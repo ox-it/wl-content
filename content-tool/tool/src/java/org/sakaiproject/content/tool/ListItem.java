@@ -1396,8 +1396,12 @@ public class ListItem
 	 */
 	protected void captureAccessRoles(ParameterParser params, String index) {
 		Set<String> formRoleIds = new LinkedHashSet<String>();
-		formRoleIds.addAll(Arrays.asList(params.getStrings("access_roles" + index)));
-		formRoleIds.retainAll(availableRoleIds());
+
+		String[] rolesArray = params.getStrings("access_roles" + index);
+		if (rolesArray != null) {
+			formRoleIds.addAll(Arrays.asList(rolesArray));
+			formRoleIds.retainAll(availableRoleIds());
+		}
 
 		this.roleIds = formRoleIds;
 	}
@@ -2561,10 +2565,9 @@ public class ListItem
      */
     protected void initialiseRoleIds(ContentEntity entity) {
         for (String roleId : availableRoleIds()) {
-            if (contentService.isRoleView(entity.getId(), roleId)) {
-                this.roleIds.add(roleId);
-            }
             if (contentService.isInheritingRoleView(entity.getId(), roleId)) {
+                this.inheritedRoleIds.add(roleId);
+            } else if (contentService.isRoleView(entity.getId(), roleId)) {
                 this.roleIds.add(roleId);
             }
         }
@@ -3346,7 +3349,7 @@ public class ListItem
 				} else {
 					edit.clearGroupAccess();
 				}
-			} else if(this.hasRoles() && !this.inheritsRoles()) {
+			} else if(!this.inheritsRoles()) {
 				setAccessRoles(edit);
 			}
 		} 
