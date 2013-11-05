@@ -36,19 +36,17 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
-import java.util.Map.Entry;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -4318,10 +4316,10 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 				item.setName(trb.getFormattedMessage("title.resources", args));
 
 				// Compressing the root folder is disabled because it does not work.
-				List<ResourceToolAction> actions = item.getOtherActions();
-				for (ResourceToolAction action : actions) {
-					if (action.getId().equals(ResourceToolAction.COMPRESS_ZIP_FOLDER)) {
-						actions.remove(action);
+				List<ResourceToolAction> actions = new ArrayList(item.getOtherActions());
+				for (int i = 0; i < actions.size(); i++) {
+					if(actions.get(i).getId().equals(ResourceToolAction.COMPRESS_ZIP_FOLDER)) {
+						actions.remove(i);
 						break;
 					}
 				}
