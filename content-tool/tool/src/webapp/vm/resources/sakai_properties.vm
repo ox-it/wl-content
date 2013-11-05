@@ -219,7 +219,7 @@
 			#else
 				## Site is possible; group and additional roles (including pubview) may be possible.
 				<p>
-					<input type="radio" name="access_mode${DOT}$i" id="access_mode_inherited${DOT}$i" value="inherited" #if(    $model.hasRoles() && "$!model.accessMode" != "$GROUP_ACCESS") checked="checked"#end style="border:none" />
+					<input type="radio" name="access_mode${DOT}$i" id="access_mode_inherited${DOT}$i" value="inherited" #if("$!model.accessMode" != "$GROUP_ACCESS") checked="checked"#end style="border:none" />
 					<label for="access_mode_inherited${DOT}$i">#if($model.isCollection())$tlang.getString("access.site.fldr")#else$tlang.getString("access.site.choice")#end</label>
 				</p>
 				#if($model.rolesAreAvailable())
