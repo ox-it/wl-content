@@ -4316,6 +4316,17 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 				Site site = SiteService.getSite(ref.getContext());
 				String[] args = {site.getTitle()};
 				item.setName(trb.getFormattedMessage("title.resources", args));
+
+				// Compressing the root folder is disabled because it does not work.
+				List<ResourceToolAction> actions = item.getOtherActions();
+				for (ResourceToolAction action : actions) {
+					if (action.getId().equals(ResourceToolAction.COMPRESS_ZIP_FOLDER)) {
+						actions.remove(action);
+						break;
+					}
+				}
+				item.setOtherActions(actions);
+
 			}
 			
 			
