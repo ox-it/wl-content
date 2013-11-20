@@ -171,7 +171,11 @@ public class ListItem
         	item = new ListItem(entity);
             //item.m_reference = EntityManager.newReference(entity.getReference());
         }
-        
+
+        if (expandedFolders == null) {
+            expandedFolders = new LinkedHashSet<String>();
+        }
+
         boolean isCollection = entity.isCollection();
         
         item.setPubviewPossible(! preventPublicDisplay);
