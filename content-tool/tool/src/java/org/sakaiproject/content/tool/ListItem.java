@@ -2637,6 +2637,7 @@ public class ListItem
 
     /**
      * Checks whether the List Item inherits a given role.
+     * Used in the UI to determine whether some elements should be displayed
      * @param roleId  the id of the role to check for inheritance
      * @return        true if the List Item inherits the role, false otherwise
      */
