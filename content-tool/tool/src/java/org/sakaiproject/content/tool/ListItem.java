@@ -2637,6 +2637,15 @@ public class ListItem
     }
 
     /**
+     * Checks whether the List Item inherits a given role.
+     * @param roleId  the id of the role to check for inheritance
+     * @return        true if the List Item inherits the role, false otherwise
+     */
+    public boolean inheritsRole(String roleId) {
+        return this.inheritedRoleIds != null && this.inheritedRoleIds.contains(roleId);
+    }
+
+    /**
      * Checks whether the List Item has any roles defined.
      * @return true if the List Item has roles, false otherwise
      */
