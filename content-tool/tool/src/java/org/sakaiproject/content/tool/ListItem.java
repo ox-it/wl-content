@@ -3361,7 +3361,7 @@ public class ListItem
 				} else {
 					edit.clearGroupAccess();
 				}
-			} else if(!this.inheritsRoles()) {
+			} else {
 				setAccessRoles(edit);
 			}
 		} 
