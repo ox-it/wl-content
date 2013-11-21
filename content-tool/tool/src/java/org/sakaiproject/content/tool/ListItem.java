@@ -2629,7 +2629,6 @@ public class ListItem
 
     /**
      * Checks whether the List Item has any inherited roles defined.
-     * Used in the UI to determine whether some elements should be displayed
      * @return true if the List Item inherits roles, false otherwise
      */
     public boolean inheritsRoles() {
