@@ -2629,11 +2629,20 @@ public class ListItem
 
     /**
      * Checks whether the List Item has any inherited roles defined.
-     * Used in the UI to determine whether some elements should be displayed
      * @return true if the List Item inherits roles, false otherwise
      */
     public boolean inheritsRoles() {
         return this.inheritedRoleIds != null && !this.inheritedRoleIds.isEmpty();
+    }
+
+    /**
+     * Checks whether the List Item inherits a given role.
+     * Used in the UI to determine whether some elements should be displayed
+     * @param roleId  the id of the role to check for inheritance
+     * @return        true if the List Item inherits the role, false otherwise
+     */
+    public boolean inheritsRole(String roleId) {
+        return this.inheritedRoleIds != null && this.inheritedRoleIds.contains(roleId);
     }
 
     /**
@@ -3352,7 +3361,7 @@ public class ListItem
 				} else {
 					edit.clearGroupAccess();
 				}
-			} else if(!this.inheritsRoles()) {
+			} else {
 				setAccessRoles(edit);
 			}
 		} 
