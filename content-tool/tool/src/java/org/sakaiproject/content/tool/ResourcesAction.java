@@ -1692,7 +1692,6 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
     protected static List<ResourceToolAction> getActions(ContentEntity selectedItem, Set<ContentPermissions> permissions, ResourceTypeRegistry registry)
     {
 		logger.debug("ResourcesAction.getActions()");
-	    Reference ref = EntityManager.newReference(selectedItem.getReference());
 	    List<ResourceToolAction> actions = new ArrayList<ResourceToolAction>();
 	    
 	    ResourceType typeDef = getResourceType(selectedItem, registry);
@@ -1764,7 +1763,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	    while(actionIt.hasNext())
 	    {
 	    	ResourceToolAction action = actionIt.next();
-	    	if(! action.available((ContentEntity)ref.getEntity()))
+	    	if(! action.available(selectedItem) )
 	    	{
 	    		actionIt.remove();
 	    	}
@@ -1894,8 +1893,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 	    while(actionIt.hasNext())
 	    {
 	    	ResourceToolAction action = actionIt.next();
-	    	ContentEntity entity = (ContentEntity) ref.getEntity();
-			if(! action.available(entity))
+			if(! action.available(selectedItem))
 	    	{
 	    		actionIt.remove();
 	    	}
