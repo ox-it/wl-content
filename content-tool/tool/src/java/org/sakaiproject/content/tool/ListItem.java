@@ -1373,14 +1373,6 @@ public class ListItem
 			
 			setPubview(false);
 		}
-		else if(ResourcesAction.PUBLIC_ACCESS.equals(access_mode))
-		{
-			if(! isPubviewInherited())
-			{
-				setPubview(true);
-				setAccessMode(AccessMode.INHERITED);
-			}
-		}
 		else if(AccessMode.INHERITED.toString().equals(access_mode))
 		{
 			captureAccessRoles(params, index);
@@ -3341,6 +3333,9 @@ public class ListItem
 					edit.clearGroupAccess();
 				}
 			} else {
+				if (AccessMode.GROUPED == edit.getAccess()) {
+					edit.clearGroupAccess();
+				}
 				setAccessRoles(edit);
 			}
 		} 
