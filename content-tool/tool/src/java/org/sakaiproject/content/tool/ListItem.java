@@ -3333,6 +3333,9 @@ public class ListItem
 					edit.clearGroupAccess();
 				}
 			} else {
+				if (AccessMode.GROUPED == edit.getAccess()) {
+					edit.clearGroupAccess();
+				}
 				setAccessRoles(edit);
 			}
 		} 
