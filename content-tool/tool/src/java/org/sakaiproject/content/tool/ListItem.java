@@ -3364,12 +3364,14 @@ public class ListItem
 
 		Set<String> rolesToAdd = new LinkedHashSet<String>(rolesToSave);
 		rolesToAdd.removeAll(currentRoles);
+		rolesToAdd.removeAll(inheritedRoleIds);
 		for (String role : rolesToAdd) {
 			entityEdit.addRoleAccess(role);
 		}
 
 		Set<String> rolesToRemove = new LinkedHashSet<String>(currentRoles);
 		rolesToRemove.removeAll(rolesToSave);
+		rolesToRemove.removeAll(inheritedRoleIds);
 		for (String role : rolesToRemove) {
 			entityEdit.removeRoleAccess(role);
 		}
