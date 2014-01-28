@@ -2005,10 +2005,21 @@ public class ListItem
     	
     	return names;
     }
-    
+
+    /**
+     * @deprecated Use #getShortAccessLabel instead
+     */
     public String getEffectiveAccessLabel()
     {
-		String label = rb.getString("access.site");
+        return getShortAccessLabel();
+    }
+
+    /**
+     * Provides a short description of the access rights, for example when listing in a table
+     * @return the description String
+     */
+    public String getShortAccessLabel() {
+        String label;
 
         if(AccessMode.GROUPED == this.getEffectiveAccess())
         {
@@ -2016,10 +2027,11 @@ public class ListItem
         } else if(this.inheritsRoles() || this.hasRoles())
         {
             label = accessLabelForRoles(false);
+        } else {
+            label = rb.getString("access.site");
         }
 
         return label;
-
     }
 
     /**
