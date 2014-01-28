@@ -2023,7 +2023,7 @@ public class ListItem
 
         if(AccessMode.GROUPED == this.getEffectiveAccess())
         {
-            label = rb.getString("access.group");
+            label = accessLabelForGroups(false);
         } else if(this.inheritsRoles() || this.hasRoles())
         {
             label = accessLabelForRoles(false);
@@ -2085,8 +2085,21 @@ public class ListItem
 
         return label;
     }
+
+    /**
+     * Provides a description of the groups that have been assigned to this ListItem
+     * @param useLongerLabel provides a long description if true and a short one if false
+     * @return the description
+     */
+    private String accessLabelForGroups(boolean useLongerLabel) {
+        if (useLongerLabel) {
+            return rb.getFormattedMessage("access.group1",  new Object[]{getGroupNamesAsString()});
+        } else {
+            return rb.getString("access.group");
+        }
+    }
     
-    public String getGroupNamesAsString()
+    private String getGroupNamesAsString()
     {
     	StringBuffer names = new StringBuffer();
     	String[] groups = getGroupNameArray(false);
