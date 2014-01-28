@@ -2122,27 +2122,15 @@ public class ListItem
     	}
     	return names.toString();
     }
-    
+
+    /**
+     * @deprecated
+     */
     public String getEffectiveGroupsLabel()
     {
-		String label = rb.getString("access.site1");
-		
-		if(this.hasRoles() || this.inheritsRoles())
-		{
-			label = accessLabelForRoles(true);
-		}
-		else if(this.isDropbox)
-		{
-			label = rb.getString("access.dropbox1");
-		}
-		else if(AccessMode.GROUPED == getEffectiveAccess())
-		{
-			label = (String) rb.getFormattedMessage("access.group1",  new Object[]{getGroupNamesAsString()});
-		}
-
-		return label;
+        return getShortAccessLabel();
     }
-	
+
 	protected int getNumberOfGroups()
     {
 		int size = 0;
