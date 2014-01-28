@@ -2027,7 +2027,14 @@ public class ListItem
         } else if(this.inheritsRoles() || this.hasRoles())
         {
             label = accessLabelForRoles(false);
-        } else {
+        }
+        else if(this.isDropbox)
+        {
+            label = rb.getString("access.dropbox");
+        }
+        else
+        {
+            // Site access
             label = rb.getString("access.site");
         }
 
