@@ -2020,13 +2020,15 @@ public class ListItem
      */
     public String getShortAccessLabel() {
         String label;
+        final boolean useLongerLabel = false;
 
         if(AccessMode.GROUPED == this.getEffectiveAccess())
         {
-            label = accessLabelForGroups(false);
-        } else if(this.inheritsRoles() || this.hasRoles())
+            label = accessLabelForGroups(useLongerLabel);
+        }
+        else if (this.inheritsRoles() || this.hasRoles())
         {
-            label = accessLabelForRoles(false);
+            label = accessLabelForRoles(useLongerLabel);
         }
         else if(this.isDropbox)
         {
