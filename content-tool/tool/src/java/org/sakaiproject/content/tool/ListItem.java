@@ -2019,8 +2019,11 @@ public class ListItem
      * @return the description String
      */
     public String getShortAccessLabel() {
+        return getAccessLabel(false);
+    }
+
+    private String getAccessLabel(final boolean useLongerLabel) {
         String label;
-        final boolean useLongerLabel = false;
 
         if(AccessMode.GROUPED == this.getEffectiveAccess())
         {
@@ -2032,12 +2035,12 @@ public class ListItem
         }
         else if(this.isDropbox)
         {
-            label = rb.getString("access.dropbox");
+            label = useLongerLabel ? rb.getString("access.dropbox1") : rb.getString("access.dropbox");
         }
         else
         {
             // Site access
-            label = rb.getString("access.site");
+            label = useLongerLabel ? rb.getString("access.site1") : rb.getString("access.site");
         }
 
         return label;
