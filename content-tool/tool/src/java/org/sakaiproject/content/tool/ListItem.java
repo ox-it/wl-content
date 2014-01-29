@@ -2023,7 +2023,8 @@ public class ListItem
      * Provides a short description of the access rights, for example when listing in a table
      * @return the description String
      */
-    public String getShortAccessLabel() {
+    public String getShortAccessLabel()
+    {
         return getAccessLabel(false);
     }
 
@@ -2031,11 +2032,13 @@ public class ListItem
      * Provides a description of the access rights which is more verbose than #getShortAccessLabel
      * @return the description String
      */
-    public String getLongAccessLabel() {
+    public String getLongAccessLabel()
+    {
         return getAccessLabel(true);
     }
 
-    private String getAccessLabel(final boolean useLongerLabel) {
+    private String getAccessLabel(final boolean useLongerLabel)
+    {
         String label;
 
         if(AccessMode.GROUPED == this.getEffectiveAccess())
@@ -2066,21 +2069,26 @@ public class ListItem
      *   e.g. "Oxford members" vs "Visible to Oxford members."
      * @return 
      */
-    public String accessLabelForRoles(boolean useLongerLabel) {
+    public String accessLabelForRoles(boolean useLongerLabel)
+    {
         String label;
         Collection<String> candidateRoleIds = new ArrayList<String>(roleIds);
         candidateRoleIds.addAll(this.inheritedRoleIds);
         String chosenId;
 
-        if (candidateRoleIds.size() == 0) {
+        if (candidateRoleIds.size() == 0)
+        {
             logger.warn("ListItem: Constructing a roles access label with no roles defined");
             return "";
         }
 
         // Prioritise public over all others
-        if (candidateRoleIds.contains(PUBVIEW_ROLE)) {
+        if (candidateRoleIds.contains(PUBVIEW_ROLE))
+        {
             chosenId = PUBVIEW_ROLE;
-        } else {
+        }
+        else
+        {
             chosenId = candidateRoleIds.iterator().next();
         }
         String chosenAccessLabel = rb.getString(String.format("access.role%s", chosenId));
@@ -2088,7 +2096,8 @@ public class ListItem
         candidateRoleIds.remove(chosenId);
 
         // Decide how to format the string based on how many roles there are
-        switch (candidateRoleIds.size()) {
+        switch (candidateRoleIds.size())
+        {
             case 0:
                 label = chosenAccessLabel;
                 break;
@@ -2104,7 +2113,8 @@ public class ListItem
                 break;
         }
 
-        if (useLongerLabel) {
+        if (useLongerLabel)
+        {
             label = rb.getFormattedMessage("access.roleLabel.long", new Object[]{label});
         }
 
@@ -2116,10 +2126,14 @@ public class ListItem
      * @param useLongerLabel provides a long description if true and a short one if false
      * @return the description
      */
-    private String accessLabelForGroups(boolean useLongerLabel) {
-        if (useLongerLabel) {
+    private String accessLabelForGroups(boolean useLongerLabel)
+    {
+        if (useLongerLabel)
+        {
             return rb.getFormattedMessage("access.group1",  new Object[]{getGroupNamesAsString()});
-        } else {
+        }
+        else
+        {
             return rb.getString("access.group");
         }
     }
