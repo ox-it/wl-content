@@ -1750,8 +1750,13 @@ public class ListItem
 		return groupRefs;
 
 	}
-	
-	public String getLongAccessLabel()
+
+	/**
+	 * When setting access on a resource the available options will change depending on what properties it inherits.
+	 *   E.g. if groups are inherited it is not possible to broaden access, so display a message to that extent.
+	 * @return the instruction string
+	 */
+	public String getAccessInstruction()
 	{
 		String label = "";
 		
