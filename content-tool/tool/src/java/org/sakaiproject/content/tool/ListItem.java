@@ -2027,6 +2027,14 @@ public class ListItem
         return getAccessLabel(false);
     }
 
+    /**
+     * Provides a description of the access rights which is more verbose than #getShortAccessLabel
+     * @return the description String
+     */
+    public String getLongAccessLabel() {
+        return getAccessLabel(true);
+    }
+
     private String getAccessLabel(final boolean useLongerLabel) {
         String label;
 
