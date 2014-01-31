@@ -1967,7 +1967,7 @@ public class ListItem
 	    return this.entity;
     }
     
-    public String[] getGroupNameArray(boolean includeItemName)
+    public String[] getGroupNameArray(boolean includeParentName)
     {
     	Collection<Group> groups = this.groups;
     	if(AccessMode.INHERITED == this.accessMode)
@@ -1976,16 +1976,17 @@ public class ListItem
     	}
     	
     	int size = groups.size();
-		if(includeItemName)
+		if(includeParentName)
 		{
 			size += 1;
 		}
     	String[] names = new String[size];
     	
     	int index = 0;
-    	if(includeItemName)
+    	if(includeParentName)
     	{
-    		names[index] = this.name;
+            ListItem parentItem = this.getParent();
+            names[index] = parentItem != null ? parentItem.name : "";
     		index++;
     	}
     	for(Group group : groups)
