@@ -2160,13 +2160,14 @@ public class ListItem
      */
     private String accessLabelForGroups(boolean useLongerLabel)
     {
+        final String groupNames = getGroupNamesAsString();
         if (useLongerLabel)
         {
-            return rb.getFormattedMessage("access.group1",  new Object[]{getGroupNamesAsString()});
+            return rb.getFormattedMessage("access.group1",  new Object[]{groupNames});
         }
         else
         {
-            return rb.getString("access.group");
+            return groupNames.isEmpty() ? rb.getString("access.group.missing") : rb.getString("access.group");
         }
     }
     
