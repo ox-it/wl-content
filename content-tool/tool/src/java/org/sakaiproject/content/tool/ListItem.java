@@ -2073,33 +2073,33 @@ public class ListItem
     public String accessLabelForRoles(boolean useLongerLabel)
     {
         String label;
-        Collection<String> candidateRoleIds = new ArrayList<String>(roleIds);
-        candidateRoleIds.addAll(this.inheritedRoleIds);
+        List<String> roleIds = new ArrayList<String>(this.roleIds);
+        roleIds.addAll(this.inheritedRoleIds);
 
-        if (candidateRoleIds.size() == 0)
+        if (roleIds.size() == 0)
         {
             logger.warn("ListItem: Constructing a roles access label with no roles defined");
             return "";
         }
 
-        candidateRoleIds = pubviewAtFrontOfList((List) candidateRoleIds);
-        String chosenAccessLabel = rb.getString(String.format("access.role%s", candidateRoleIds.iterator().next()));
+        roleIds = pubviewAtFrontOfList(roleIds);
+        String chosenAccessLabel = rb.getString(String.format("access.role%s", roleIds.get(0)));
 
 
         // Decide how to format the string based on how many roles there are
-        switch (candidateRoleIds.size())
+        switch (roleIds.size())
         {
             case 0:
                 label = chosenAccessLabel;
                 break;
             case 1:
-                String nextRoleId = candidateRoleIds.iterator().next();
+                String nextRoleId = roleIds.iterator().next();
                 String nextRoleLabel = rb.getString(String.format("access.role%s", nextRoleId)); 
                 String[] twoLabelParams = {chosenAccessLabel, nextRoleLabel};
                 label = rb.getFormattedMessage("access.roleLabel.two", twoLabelParams);
                 break;
             default:
-                String[] multiLabelParams = {chosenAccessLabel, Integer.toString(candidateRoleIds.size())};
+                String[] multiLabelParams = {chosenAccessLabel, Integer.toString(roleIds.size())};
                 label = rb.getFormattedMessage("access.roleLabel.moreThanTwo", multiLabelParams);
                 break;
         }
