@@ -2083,7 +2083,7 @@ public class ListItem
         }
 
         roleIds = pubviewAtFrontOfList(roleIds);
-        String chosenAccessLabel = rb.getString(String.format("access.role%s", roleIds.get(0)));
+        String chosenAccessLabel = getLabelForRole(roleIds.get(0));
 
 
         // Decide how to format the string based on how many roles there are
@@ -2110,6 +2110,11 @@ public class ListItem
         }
 
         return label;
+    }
+
+    /** Gets a label for a given roleId as defined in the resource bundle **/
+    private String getLabelForRole(String roleId) {
+        return rb.getString(String.format("access.role%s", roleId));
     }
 
     /**
