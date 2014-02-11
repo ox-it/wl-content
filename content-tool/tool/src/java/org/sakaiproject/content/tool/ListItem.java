@@ -2020,7 +2020,8 @@ public class ListItem
     }
 
     /**
-     * Provides a short description of the access rights, for example when listing in a table
+     * Provides a short description of the access rights, for example when listing in a table.
+     * This might not include details of all access rights for space reasons.
      * @return the description String
      */
     public String getShortAccessLabel()
