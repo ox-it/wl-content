@@ -2086,13 +2086,18 @@ public class ListItem
 
         if (useLongerLabel)
         {
+            List<String> roleLabels = new ArrayList<String>();
+            for (String roleId : roleIds) {
+                roleLabels.add(getLabelForRole(roleId));
+            }
+
             if(roleIds.size() > 6)
             {
-                label = rb.getFormattedMessage("access.roleLabel.long.X", roleIds.toArray());
+                label = rb.getFormattedMessage("access.roleLabel.long.X", roleLabels.toArray());
             }
             else
             {
-                label = rb.getFormattedMessage("access.roleLabel.long." + roleIds.size(), roleIds.toArray());
+                label = rb.getFormattedMessage("access.roleLabel.long." + roleIds.size(), roleLabels.toArray());
             }
         }
         else
