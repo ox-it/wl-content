@@ -2075,7 +2075,6 @@ public class ListItem
         String label;
         Collection<String> candidateRoleIds = new ArrayList<String>(roleIds);
         candidateRoleIds.addAll(this.inheritedRoleIds);
-        String chosenId;
 
         if (candidateRoleIds.size() == 0)
         {
@@ -2083,18 +2082,9 @@ public class ListItem
             return "";
         }
 
-        // Prioritise public over all others
-        if (candidateRoleIds.contains(PUBVIEW_ROLE))
-        {
-            chosenId = PUBVIEW_ROLE;
-        }
-        else
-        {
-            chosenId = candidateRoleIds.iterator().next();
-        }
-        String chosenAccessLabel = rb.getString(String.format("access.role%s", chosenId));
+        candidateRoleIds = pubviewAtFrontOfList((List) candidateRoleIds);
+        String chosenAccessLabel = rb.getString(String.format("access.role%s", candidateRoleIds.iterator().next()));
 
-        candidateRoleIds.remove(chosenId);
 
         // Decide how to format the string based on how many roles there are
         switch (candidateRoleIds.size())
@@ -2120,6 +2110,32 @@ public class ListItem
         }
 
         return label;
+    }
+
+    /**
+     * If pubview is in a list of roles then put it at the front of the list, if we are going to talk
+     * about any roles and we are restricted for space then it is important that the fact that the
+     * resource is publically viewable is known.
+     * @param roleIds a list of role ids
+     * @return
+     */
+    private List<String> pubviewAtFrontOfList(List<String> roleIds) {
+        // Put pubview at the front of the list
+        String chosenId;
+        if (roleIds.contains(PUBVIEW_ROLE))
+        {
+            chosenId = PUBVIEW_ROLE;
+        }
+        else
+        {
+            chosenId = roleIds.iterator().next();
+        }
+        roleIds.remove(chosenId);
+
+        List<String> reorderedRoleIds = new ArrayList<String>(this.roleIds);
+        reorderedRoleIds.add(chosenId);
+        reorderedRoleIds.addAll(roleIds);
+        return reorderedRoleIds;
     }
 
     /**
