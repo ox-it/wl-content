@@ -2086,7 +2086,14 @@ public class ListItem
 
         if (useLongerLabel)
         {
-            // Logic for longer labels here please
+            if(roleIds.size() > 6)
+            {
+                label = rb.getFormattedMessage("access.roleLabel.long.X", roleIds.toArray());
+            }
+            else
+            {
+                label = rb.getFormattedMessage("access.roleLabel.long." + roleIds.size(), roleIds.toArray());
+            }
         }
         else
         {
