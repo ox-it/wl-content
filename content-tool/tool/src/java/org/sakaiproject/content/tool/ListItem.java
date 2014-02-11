@@ -2084,27 +2084,29 @@ public class ListItem
 
         roleIds = pubviewAtFrontOfList(roleIds);
 
-        String firstLabel = getLabelForRole(roleIds.get(0));
-        // Decide how to format the string based on how many roles there are
-        switch (roleIds.size())
-        {
-            case 1:
-                label = firstLabel;
-                break;
-            case 2:
-                String secondLabel = getLabelForRole(roleIds.get(1));
-                String[] twoLabelParams = {firstLabel, secondLabel};
-                label = rb.getFormattedMessage("access.roleLabel.two", twoLabelParams);
-                break;
-            default:
-                String[] multiLabelParams = {firstLabel, Integer.toString(roleIds.size())};
-                label = rb.getFormattedMessage("access.roleLabel.moreThanTwo", multiLabelParams);
-                break;
-        }
-
         if (useLongerLabel)
         {
-            label = rb.getFormattedMessage("access.roleLabel.long", new Object[]{label});
+            // Logic for longer labels here please
+        }
+        else
+        {
+            String firstLabel = getLabelForRole(roleIds.get(0));
+            // Decide how to format the string based on how many roles there are
+            switch (roleIds.size())
+            {
+                case 1:
+                    label = firstLabel;
+                    break;
+                case 2:
+                    String secondLabel = getLabelForRole(roleIds.get(1));
+                    String[] twoLabelParams = {firstLabel, secondLabel};
+                    label = rb.getFormattedMessage("access.roleLabel.two", twoLabelParams);
+                    break;
+                default:
+                    String[] multiLabelParams = {firstLabel, Integer.toString(roleIds.size())};
+                    label = rb.getFormattedMessage("access.roleLabel.moreThanTwo", multiLabelParams);
+                    break;
+            }
         }
 
         return label;
