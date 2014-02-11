@@ -2083,23 +2083,21 @@ public class ListItem
         }
 
         roleIds = pubviewAtFrontOfList(roleIds);
-        String chosenAccessLabel = getLabelForRole(roleIds.get(0));
 
-
+        String firstLabel = getLabelForRole(roleIds.get(0));
         // Decide how to format the string based on how many roles there are
         switch (roleIds.size())
         {
-            case 0:
-                label = chosenAccessLabel;
-                break;
             case 1:
-                String nextRoleId = roleIds.iterator().next();
-                String nextRoleLabel = rb.getString(String.format("access.role%s", nextRoleId)); 
-                String[] twoLabelParams = {chosenAccessLabel, nextRoleLabel};
+                label = firstLabel;
+                break;
+            case 2:
+                String secondLabel = getLabelForRole(roleIds.get(1));
+                String[] twoLabelParams = {firstLabel, secondLabel};
                 label = rb.getFormattedMessage("access.roleLabel.two", twoLabelParams);
                 break;
             default:
-                String[] multiLabelParams = {chosenAccessLabel, Integer.toString(roleIds.size())};
+                String[] multiLabelParams = {firstLabel, Integer.toString(roleIds.size())};
                 label = rb.getFormattedMessage("access.roleLabel.moreThanTwo", multiLabelParams);
                 break;
         }
