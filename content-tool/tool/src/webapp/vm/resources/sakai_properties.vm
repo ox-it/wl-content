@@ -251,6 +251,13 @@
 		</div>
 
 		#if($model.isGroupPossible())
+			#if($model.groupsAreMissing())
+				<div class="labelindnt">
+					<p class="alertMessageInline">
+						$tlang.getString("access.groups.missing")
+					</p>
+				</div>
+			#end
 			<table id="groupTable${DOT}$i" class="listHier lines labelindnt" border="0" style="display:$listDisplay" cellspacing="0" summary="$tlang.getString("edit.group3")">
 				<caption class="skip" style="display:none">$tlang.getString("edit.access4")</caption>
 				<tr>
