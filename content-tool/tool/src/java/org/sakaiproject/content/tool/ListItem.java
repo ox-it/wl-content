@@ -2240,7 +2240,15 @@ public class ListItem
     	}
     	return refs;
     }
-	
+
+    /**
+     * This indicates whether any of the groups defined on the entity no longer exist
+     * @return true if there is a mismatch and false otherwise
+     */
+    public boolean groupsAreMissing() {
+        return entity != null && entity.getGroups().size() != groups.size();
+    }
+
 	/**
      * @return the groups
      */
@@ -2248,7 +2256,7 @@ public class ListItem
     {
     	return new ArrayList<Group>(groups);
     }
-	
+
 	/**
 	 * @return the hoverText
 	 */
