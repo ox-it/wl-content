@@ -183,7 +183,7 @@
 	
 	######### begin access section ##########
 	#if(!$model.isDropbox() && ! $model.isSiteCollection())
-		<p class="instruction">$model.longAccessLabel</p>
+		<p class="instruction">$model.getAccessInstruction()</p>
 		<div  class="labelindnt">
 			#set ($listDisplay="none")
 			#if($model.isSiteOnly())

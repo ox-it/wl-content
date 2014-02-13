@@ -479,16 +479,8 @@ $(document).ready(function() {
 
 						</td>
 					#if($item.depth > 0)
-						<td headers="access" title="$item.effectiveGroupsLabel">
-							#if($item.hasRoles() || $item.inheritsRoles())
-								$item.accessLabelForRoles(false)
-							#elseif($item.isDropbox())
-								$tlang.getString("access.dropbox")
-							#elseif($item.effectiveAccess == $GROUP_ACCESS)
-								$tlang.getString("access.group")
-							#else
-								$tlang.getString("access.site")
-							#end
+						<td headers="access" title="$item.getShortAccessLabel()">
+							$item.getShortAccessLabel()
 						</td>
 						<td headers="creator">
 							$validator.escapeHtml($item.createdBy)
@@ -732,16 +724,8 @@ $(document).ready(function() {
 
 							</td>
 							#if($item.depth > 0)
-								<td headers="access" title="$item.effectiveGroups">
-									#if($item.hasRoles() || $item.inheritsRoles())
-										$item.accessLabelForRoles(false)
-									#elseif($item.isInDropbox())
-										$tlang.getString("access.dropbox")
-									#elseif($item.effectiveAccess == $INHERITED_ACCESS || $item.effectiveAccess == $SITE_ACCESS)
-										$tlang.getString("access.site")
-									#elseif($item.effectiveAccess == $GROUP_ACCESS)
-										$tlang.getString("access.group")
-									#end
+								<td headers="access" title="$item.getShortAccessLabel()">
+									$item.getShortAccessLabel()
 								</td>
 								<td headers="creator">
 									$validator.escapeHtml($item.createdBy)

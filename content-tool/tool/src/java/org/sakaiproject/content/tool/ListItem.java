@@ -1748,8 +1748,13 @@ public class ListItem
 		return groupRefs;
 
 	}
-	
-	public String getLongAccessLabel()
+
+	/**
+	 * When setting access on a resource the available options will change depending on what properties it inherits.
+	 *   E.g. if groups are inherited it is not possible to broaden access, so display a message to that extent.
+	 * @return the instruction string
+	 */
+	public String getAccessInstruction()
 	{
 		String label = "";
 		
@@ -2003,21 +2008,57 @@ public class ListItem
     	
     	return names;
     }
-    
+
+    /**
+     * @deprecated Use #getShortAccessLabel instead
+     */
     public String getEffectiveAccessLabel()
     {
-		String label = rb.getString("access.site");
+        return getShortAccessLabel();
+    }
+
+    /**
+     * Provides a short description of the access rights, for example when listing in a table.
+     * This might not include details of all access rights for space reasons.
+     * @return the description String
+     */
+    public String getShortAccessLabel()
+    {
+        return getAccessLabel(false);
+    }
+
+    /**
+     * Provides a description of the access rights which is more verbose than #getShortAccessLabel
+     * @return the description String
+     */
+    public String getLongAccessLabel()
+    {
+        return getAccessLabel(true);
+    }
+
+    private String getAccessLabel(final boolean useLongerLabel)
+    {
+        String label;
 
         if(AccessMode.GROUPED == this.getEffectiveAccess())
         {
-            label = rb.getString("access.group");
-        } else if(this.inheritsRoles() || this.hasRoles())
+            label = accessLabelForGroups(useLongerLabel);
+        }
+        else if (this.inheritsRoles() || this.hasRoles())
         {
-            label = accessLabelForRoles(false);
+            label = accessLabelForRoles(useLongerLabel);
+        }
+        else if(this.isDropbox)
+        {
+            label = useLongerLabel ? rb.getString("access.dropbox1") : rb.getString("access.dropbox");
+        }
+        else
+        {
+            // Site access
+            label = useLongerLabel ? rb.getString("access.site1") : rb.getString("access.site");
         }
 
         return label;
-
     }
 
     /**
@@ -2027,52 +2068,109 @@ public class ListItem
      *   e.g. "Oxford members" vs "Visible to Oxford members."
      * @return 
      */
-    public String accessLabelForRoles(boolean useLongerLabel) {
+    public String accessLabelForRoles(boolean useLongerLabel)
+    {
         String label;
-        Collection<String> candidateRoleIds = new ArrayList<String>(roleIds);
-        candidateRoleIds.addAll(this.inheritedRoleIds);
-        String chosenId;
+        List<String> roleIds = new ArrayList<String>(this.roleIds);
+        roleIds.addAll(this.inheritedRoleIds);
 
-        if (candidateRoleIds.size() == 0) {
+        if (roleIds.size() == 0)
+        {
             logger.warn("ListItem: Constructing a roles access label with no roles defined");
             return "";
         }
 
-        // Prioritise public over all others
-        if (candidateRoleIds.contains(PUBVIEW_ROLE)) {
-            chosenId = PUBVIEW_ROLE;
-        } else {
-            chosenId = candidateRoleIds.iterator().next();
+        roleIds = pubviewAtFrontOfList(roleIds);
+
+        if (useLongerLabel)
+        {
+            List<String> roleLabels = new ArrayList<String>();
+            for (String roleId : roleIds) {
+                roleLabels.add(getLabelForRole(roleId));
+            }
+
+            if(roleIds.size() > 6)
+            {
+                label = rb.getFormattedMessage("access.roleLabel.long.X", roleLabels.toArray());
+            }
+            else
+            {
+                label = rb.getFormattedMessage("access.roleLabel.long." + roleIds.size(), roleLabels.toArray());
+            }
         }
-        String chosenAccessLabel = rb.getString(String.format("access.role%s", chosenId));
-
-        candidateRoleIds.remove(chosenId);
-
-        // Decide how to format the string based on how many roles there are
-        switch (candidateRoleIds.size()) {
-            case 0:
-                label = chosenAccessLabel;
-                break;
-            case 1:
-                String nextRoleId = candidateRoleIds.iterator().next();
-                String nextRoleLabel = rb.getString(String.format("access.role%s", nextRoleId)); 
-                String[] twoLabelParams = {chosenAccessLabel, nextRoleLabel};
-                label = rb.getFormattedMessage("access.roleLabel.two", twoLabelParams);
-                break;
-            default:
-                String[] multiLabelParams = {chosenAccessLabel, Integer.toString(candidateRoleIds.size())};
-                label = rb.getFormattedMessage("access.roleLabel.moreThanTwo", multiLabelParams);
-                break;
-        }
-
-        if (useLongerLabel) {
-            label = rb.getFormattedMessage("access.roleLabel.long", new Object[]{label});
+        else
+        {
+            String firstLabel = getLabelForRole(roleIds.get(0));
+            // Decide how to format the string based on how many roles there are
+            switch (roleIds.size())
+            {
+                case 1:
+                    label = firstLabel;
+                    break;
+                case 2:
+                    String secondLabel = getLabelForRole(roleIds.get(1));
+                    String[] twoLabelParams = {firstLabel, secondLabel};
+                    label = rb.getFormattedMessage("access.roleLabel.two", twoLabelParams);
+                    break;
+                default:
+                    String[] multiLabelParams = {firstLabel, Integer.toString(roleIds.size())};
+                    label = rb.getFormattedMessage("access.roleLabel.moreThanTwo", multiLabelParams);
+                    break;
+            }
         }
 
         return label;
     }
+
+    /** Gets a label for a given roleId as defined in the resource bundle **/
+    private String getLabelForRole(String roleId) {
+        return rb.getString(String.format("access.role%s", roleId));
+    }
+
+    /**
+     * If pubview is in a list of roles then put it at the front of the list, if we are going to talk
+     * about any roles and we are restricted for space then it is important that the fact that the
+     * resource is publically viewable is known.
+     * @param roleIds a list of role ids
+     * @return
+     */
+    private List<String> pubviewAtFrontOfList(List<String> roleIds) {
+        // Put pubview at the front of the list
+        String chosenId;
+        if (roleIds.contains(PUBVIEW_ROLE))
+        {
+            chosenId = PUBVIEW_ROLE;
+        }
+        else
+        {
+            chosenId = roleIds.iterator().next();
+        }
+        roleIds.remove(chosenId);
+
+        List<String> reorderedRoleIds = new ArrayList<String>(this.roleIds);
+        reorderedRoleIds.add(chosenId);
+        reorderedRoleIds.addAll(roleIds);
+        return reorderedRoleIds;
+    }
+
+    /**
+     * Provides a description of the groups that have been assigned to this ListItem
+     * @param useLongerLabel provides a long description if true and a short one if false
+     * @return the description
+     */
+    private String accessLabelForGroups(boolean useLongerLabel)
+    {
+        if (useLongerLabel)
+        {
+            return rb.getFormattedMessage("access.group1",  new Object[]{getGroupNamesAsString()});
+        }
+        else
+        {
+            return rb.getString("access.group");
+        }
+    }
     
-    public String getGroupNamesAsString()
+    private String getGroupNamesAsString()
     {
     	StringBuffer names = new StringBuffer();
     	String[] groups = getGroupNameArray(false);
@@ -2086,27 +2184,15 @@ public class ListItem
     	}
     	return names.toString();
     }
-    
+
+    /**
+     * @deprecated
+     */
     public String getEffectiveGroupsLabel()
     {
-		String label = rb.getString("access.site1");
-		
-		if(this.hasRoles() || this.inheritsRoles())
-		{
-			label = accessLabelForRoles(true);
-		}
-		else if(this.isDropbox)
-		{
-			label = rb.getString("access.dropbox1");
-		}
-		else if(AccessMode.GROUPED == getEffectiveAccess())
-		{
-			label = (String) rb.getFormattedMessage("access.group1",  new Object[]{getGroupNamesAsString()});
-		}
-
-		return label;
+        return getShortAccessLabel();
     }
-	
+
 	protected int getNumberOfGroups()
     {
 		int size = 0;
@@ -3358,12 +3444,14 @@ public class ListItem
 
 		Set<String> rolesToAdd = new LinkedHashSet<String>(rolesToSave);
 		rolesToAdd.removeAll(currentRoles);
+		rolesToAdd.removeAll(inheritedRoleIds);
 		for (String role : rolesToAdd) {
 			entityEdit.addRoleAccess(role);
 		}
 
 		Set<String> rolesToRemove = new LinkedHashSet<String>(currentRoles);
 		rolesToRemove.removeAll(rolesToSave);
+		rolesToRemove.removeAll(inheritedRoleIds);
 		for (String role : rolesToRemove) {
 			entityEdit.removeRoleAccess(role);
 		}
