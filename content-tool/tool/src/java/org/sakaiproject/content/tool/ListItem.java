@@ -2160,13 +2160,14 @@ public class ListItem
      */
     private String accessLabelForGroups(boolean useLongerLabel)
     {
+        final String groupNames = getGroupNamesAsString();
         if (useLongerLabel)
         {
-            return rb.getFormattedMessage("access.group1",  new Object[]{getGroupNamesAsString()});
+            return rb.getFormattedMessage("access.group1",  new Object[]{groupNames});
         }
         else
         {
-            return rb.getString("access.group");
+            return groupNames.isEmpty() ? rb.getString("access.group.missing") : rb.getString("access.group");
         }
     }
     
@@ -2239,7 +2240,15 @@ public class ListItem
     	}
     	return refs;
     }
-	
+
+    /**
+     * This indicates whether any of the groups defined on the entity no longer exist
+     * @return true if there is a mismatch and false otherwise
+     */
+    public boolean groupsAreMissing() {
+        return entity != null && entity.getGroups().size() != groups.size();
+    }
+
 	/**
      * @return the groups
      */
@@ -2247,7 +2256,7 @@ public class ListItem
     {
     	return new ArrayList<Group>(groups);
     }
-	
+
 	/**
 	 * @return the hoverText
 	 */
