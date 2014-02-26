@@ -2147,7 +2147,7 @@ public class ListItem
         }
         roleIds.remove(chosenId);
 
-        List<String> reorderedRoleIds = new ArrayList<String>(this.roleIds);
+        List<String> reorderedRoleIds = new ArrayList<String>();
         reorderedRoleIds.add(chosenId);
         reorderedRoleIds.addAll(roleIds);
         return reorderedRoleIds;
