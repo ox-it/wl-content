@@ -4314,15 +4314,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 				item.setName(trb.getFormattedMessage("title.resources", args));
 
 				// Compressing the root folder is disabled because it does not work.
-				List<ResourceToolAction> actions = new ArrayList(item.getOtherActions());
-				for (int i = 0; i < actions.size(); i++) {
-					if(actions.get(i).getId().equals(ResourceToolAction.COMPRESS_ZIP_FOLDER)) {
-						actions.remove(i);
-						break;
-					}
-				}
-				item.setOtherActions(actions);
-
+				disableZipAction(item);
 			}
 			
 			
@@ -4498,6 +4490,18 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		return TEMPLATE_NEW_LIST;
 
 	}	// buildListContext
+
+	/** In some situations compressing a folder won't work so this method disables the option */
+	private void disableZipAction(ListItem item) {
+		List<ResourceToolAction> actions = new ArrayList(item.getOtherActions());
+		for (int i = 0; i < actions.size(); i++) {
+			if(actions.get(i).getId().equals(ResourceToolAction.COMPRESS_ZIP_FOLDER)) {
+				actions.remove(i);
+				break;
+			}
+		}
+		item.setOtherActions(actions);
+	}
 
 	/**
 	* Build the context for normal display
