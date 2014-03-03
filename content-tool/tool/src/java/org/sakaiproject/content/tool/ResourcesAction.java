@@ -4305,6 +4305,9 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 				item.setName(trb.getFormattedMessage("title.dropbox", args));
 				
 				showHotDropboxWidget = true;
+
+				// Compressing the root folder is disabled because it does not work.
+				disableZipAction(item);
 			}
 			else if(contentService.COLLECTION_SITE.equals(containingCollectionId))
 			{
