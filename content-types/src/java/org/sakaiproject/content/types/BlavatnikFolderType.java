@@ -21,20 +21,7 @@
 
 package org.sakaiproject.content.types;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.sakaiproject.authz.api.PermissionsHelper;
 import org.sakaiproject.component.cover.ComponentManager;
@@ -328,10 +315,11 @@ public class BlavatnikFolderType extends BaseResourceType implements ExpandableR
 
     		toolSession.setAttribute(PermissionsHelper.TARGET_REF, reference.getReference());
 
-    		// use the folder's context (as a site) for roles
-    		String siteRef = org.sakaiproject.site.cover.SiteService.siteReference(
-    				reference.getContext());
-    		toolSession.setAttribute(PermissionsHelper.ROLES_REF, siteRef);
+    		// use the folder's context (as a site and as a resource) for roles
+    		Collection<String> rolesRefs = new ArrayList<String>();
+    		rolesRefs.add(org.sakaiproject.site.cover.SiteService.siteReference(reference.getContext()));
+    		rolesRefs.add(reference.getReference());
+    		toolSession.setAttribute(PermissionsHelper.ROLES_REF, rolesRefs);
 
     		// ... with this description
     		String title = reference.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME);
