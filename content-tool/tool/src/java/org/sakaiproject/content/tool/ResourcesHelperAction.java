@@ -97,6 +97,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	 
 	/** Resource bundle using current language locale */
 	private static ResourceLoader rb = new ResourceLoader("types");
+	private static ResourceLoader metaLang = new ResourceLoader("metadata");
 	private static ResourceLoader contentResourceBundle = new ResourceLoader("content");
 	
 	protected  static final String ACCESS_HTML_TEMPLATE = "resources/sakai_access_html";
@@ -236,7 +237,8 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		logger.debug(this + ".buildMainPanelContext()");
 		// context.put("sysout", System.out);
 		context.put("tlang", rb);
-		
+		context.put("metaLang", metaLang);
+
 		context.put("validator", new Validator());
 		context.put("copyright_alert_url", COPYRIGHT_ALERT_URL);
 		context.put("DOT", ListItem.DOT);
@@ -385,6 +387,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	protected String buildNewUrlsContext(VelocityPortlet portlet, Context context, RunData data, SessionState state)
 	 {
 		logger.debug(this + ".buildNewUrlsContext()");
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
 
 		MultiFileUploadPipe pipe = (MultiFileUploadPipe) toolSession.getAttribute(ResourceToolAction.ACTION_PIPE);
@@ -410,7 +413,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		ListItem parent = new ListItem(pipe.getContentEntity());
 		parent.setPubviewPossible(! preventPublicDisplay);
 		ListItem model = new ListItem(pipe, parent, defaultRetractDate);
-		model.metadataGroupsIntoContext(context);
+		model.initMetadataGroups();
 		// model.setPubviewPossible(! preventPublicDisplay);
 				
 		context.put("model", model);
@@ -459,6 +462,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	private String buildNewFoldersContext(VelocityPortlet portlet, Context context, RunData data, SessionState state)
 	{
 		logger.debug(this + ".buildNewFoldersContext()");
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
 
 		MultiFileUploadPipe pipe = (MultiFileUploadPipe) toolSession.getAttribute(ResourceToolAction.ACTION_PIPE);
@@ -484,7 +488,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		ListItem parent = new ListItem(pipe.getContentEntity());
 		parent.setPubviewPossible(! preventPublicDisplay);
 		ListItem model = new ListItem(pipe, parent, defaultRetractDate);
-		model.metadataGroupsIntoContext(context);
+		model.initMetadataGroups();
 		// model.setPubviewPossible(! preventPublicDisplay);
 		
 		context.put("model", model);
@@ -637,6 +641,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	{
 		logger.debug(this + ".buildUploadFilesContext()");
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
+		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		
 		String max_file_size_mb = (String) state.getAttribute(STATE_FILE_UPLOAD_MAX_SIZE);
 		if(max_file_size_mb == null)
@@ -699,7 +704,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		ListItem parent = new ListItem(pipe.getContentEntity());
 		parent.setPubviewPossible(! preventPublicDisplay);
 		ListItem model = new ListItem(pipe, parent, defaultRetractDate);
-		model.metadataGroupsIntoContext(context);
+		model.initMetadataGroups();
 		// model.setPubviewPossible(! preventPublicDisplay);
 				
 		context.put("model", model);
@@ -1019,7 +1024,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 			}
 			if(ListItem.isOptionalPropertiesEnabled())
 			{
-				newFolder.initMetadataGroups(null);
+				newFolder.initMetadataGroups();
 			}
 
 			// capture properties
@@ -1289,7 +1294,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 			
 			if(ListItem.isOptionalPropertiesEnabled())
 			{
-				newFile.initMetadataGroups(null);
+				newFile.initMetadataGroups();
 			}
 			
 			// capture properties
@@ -1580,7 +1585,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 
 				if(ListItem.isOptionalPropertiesEnabled())
 				{
-					newFile.initMetadataGroups(null);
+					newFile.initMetadataGroups();
 				}
 
 				// capture properties

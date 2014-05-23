@@ -22,48 +22,33 @@
 package org.sakaiproject.content.tool;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.antivirus.api.VirusFoundException;
 import org.sakaiproject.authz.cover.SecurityService;
-import org.sakaiproject.cheftool.Context;
 import org.sakaiproject.component.cover.ComponentManager;
-import org.sakaiproject.conditions.api.ConditionService;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.conditions.api.ConditionService;
 import org.sakaiproject.content.api.ContentCollection;
 import org.sakaiproject.content.api.ContentCollectionEdit;
 import org.sakaiproject.content.api.ContentEntity;
+import org.sakaiproject.content.api.ContentHostingHandlerResolver;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.api.ContentResourceEdit;
 import org.sakaiproject.content.api.ContentResourceFilter;
 import org.sakaiproject.content.api.ExpandableResourceType;
 import org.sakaiproject.content.api.GroupAwareEdit;
 import org.sakaiproject.content.api.GroupAwareEntity;
+import org.sakaiproject.content.api.GroupAwareEntity.AccessMode;
 import org.sakaiproject.content.api.ResourceToolAction;
 import org.sakaiproject.content.api.ResourceToolActionPipe;
 import org.sakaiproject.content.api.ResourceType;
 import org.sakaiproject.content.api.ResourceTypeRegistry;
-import org.sakaiproject.content.api.ContentHostingHandlerResolver;
-import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.content.api.ServiceLevelAction;
-import org.sakaiproject.content.api.GroupAwareEntity.AccessMode;
+import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.content.cover.ContentTypeImageService;
 import org.sakaiproject.content.tool.ResourcesAction.ContentPermissions;
 import org.sakaiproject.entity.api.Entity;
@@ -94,6 +79,9 @@ import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.Validator;
+import uk.ac.ox.oucs.content.metadata.cover.ContentMetadataService;
+import uk.ac.ox.oucs.content.metadata.logic.MetadataService;
+import uk.ac.ox.oucs.content.metadata.model.MetadataType;
 
 /**
  * ListItem
@@ -136,6 +124,12 @@ public class ListItem
 	public static final long ONE_WEEK = 7L * ONE_DAY;
 	
 	public static final int EXPANDABLE_FOLDER_NAV_SIZE_LIMIT = ServerConfigurationService.getInt("sakai.content.resourceLimit", 0);  //SAK-21955
+
+	/**
+	 * Services
+	 */
+	private static final MetadataService metadataService = (MetadataService) ComponentManager.get(MetadataService.class.getCanonicalName());
+	private static final org.sakaiproject.tool.api.ToolManager toolManager = (org.sakaiproject.tool.api.ToolManager) ComponentManager.get(org.sakaiproject.tool.api.ToolManager.class.getCanonicalName());
 
 	/** 
 	 ** Comparator for sorting Group objects
@@ -459,7 +453,8 @@ public class ListItem
 
 	protected int notification = NotificationService.NOTI_NONE;
 
-	protected List<MetadataGroup> metadataGroups;
+	protected List<MetadataType> metadataGroups;
+	protected Map<String, Object> metadataValues;
 
 	private int constructor;
 
@@ -809,11 +804,7 @@ public class ListItem
 			
 			Collections.sort( site_groups, groupComparator );
 		}
-//		if(isOptionalPropertiesEnabled())
-//		{
-//			initMetadataGroups(props);
-//		}
-				
+
 		setSiteGroups(site_groups);
 		
 		this.accessMode = entity.getAccess();
@@ -1001,7 +992,6 @@ public class ListItem
 			contentService = (org.sakaiproject.content.api.ContentHostingService) ComponentManager.get(org.sakaiproject.content.api.ContentHostingService.class);
 		}
 		this.entity = null;
-		//this.initMetadataGroups(null);
 		this.containingCollectionId = parent.getId();
 		ResourceTypeRegistry registry = (ResourceTypeRegistry) ComponentManager.get("org.sakaiproject.content.api.ResourceTypeRegistry");
 		this.resourceType = pipe.getAction().getTypeId();
@@ -1648,7 +1638,7 @@ public class ListItem
 		{
 			captureHtmlChange(params, index);
 		}
-		if(this.metadataGroups != null && ! this.metadataGroups.isEmpty())
+		if(this.metadataGroups != null && !this.metadataGroups.isEmpty())
 		{
 			this.captureOptionalPropertyValues(params, index);
 		}
@@ -3630,366 +3620,245 @@ public class ListItem
 	/**
 	 * initialize the metadata context
 	 */
-	public void initMetadataGroups(ResourceProperties properties)
+	public void initMetadataGroups()
 	{
-		if(isOptionalPropertiesEnabled() && typeSupportsOptionalProperties())
+		//TODO get only metadata related to the current entity type
+		metadataGroups = metadataService.getMetadataAvailable(toolManager.getCurrentPlacement().getContext(), "");
+		metadataValues = new HashMap<String, Object>(metadataGroups.size());
+		if (this.entity != null)
 		{
-			if(this.metadataGroups == null)
+			for (MetadataType metadataGroup : metadataGroups)
 			{
-				metadataGroups =  new ArrayList<MetadataGroup>();
+				Object metadataValue = metadataGroup.getConverter().fromProperties(wrapResourcePropertiesInMap(this.entity.getProperties()));
+				metadataValues.put(metadataGroup.getUniqueName(), metadataValue);
 			}
-			boolean optionalPropertiesDefined = false;
-			String opt_prop_name = "opt_props";
-			
-			for(MetadataGroup group : this.metadataGroups)
+		} else
+		{
+			for (MetadataType metadataGroup : metadataGroups)
 			{
-				if(group == null)
-				{
-					continue;
-				}
-				if(opt_prop_name.equals(group.getName()))
-				{
-					optionalPropertiesDefined = true;
-					break;
-				}
+				metadataValues.put(metadataGroup.getUniqueName(), metadataGroup.getDefaultValue());
 			}
-			// define DublinCore
-			if( !optionalPropertiesDefined )
-			{
-				MetadataGroup dc = new MetadataGroup("opt_props");
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_TITLE));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_DESCRIPTION));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_ALTERNATIVE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_CREATOR));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_PUBLISHER));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_SUBJECT));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_CREATED));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_ISSUED));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_MODIFIED));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_TABLEOFCONTENTS));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_ABSTRACT));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_CONTRIBUTOR));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_TYPE));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_FORMAT));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_IDENTIFIER));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_SOURCE));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_LANGUAGE));
-				// dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_COVERAGE));
-				// dc.add(ResourcesMetadata.PROPERTY_DC_RIGHTS);
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_AUDIENCE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_DC_EDULEVEL));
-				
-				//LOM metadata fields
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_ROLE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_COVERAGE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_STATUS));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_DURATION));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_ENGAGEMENT_TYPE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_LEARNING_RESOURCE_TYPE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_INTERACTIVITY_LEVEL));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_CONTEXT_LEVEL));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_DIFFICULTY));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_LEARNING_TIME));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_ASSUMED_KNOWLEDGE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_TECHNICAL_REQUIREMENTS));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_INSTALL_REMARKS));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_OTHER_REQUIREMENTS));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_GRANULARITY_LEVEL));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_STRUCTURE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_RELATION));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_REVIEWER));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_REVIEW_DATE));
-				dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_LOM_REVIEW_COMMENTS));
-			
-
-				/* Filesystem and file-like mount points */
-				//dc.add(new ResourcesMetadata(ResourcesMetadata.PROPERTY_FSMOUNT_ACTIVE));
-					
-				metadataGroups.add(dc);
-			}
-
-			//Map metadata = new HashMap();
-			if(this.metadataGroups != null && ! this.metadataGroups.isEmpty())
-			{
-				for(MetadataGroup metadata_group : this.metadataGroups)
-				{
-					if(metadata_group == null)
-					{
-						continue;
-					}
-					for(ResourcesMetadata prop : (List<ResourcesMetadata>) metadata_group)
-					{
-						if(prop == null)
-						{
-							continue;
-						}
-						String name = prop.getFullname();
-						String widget = prop.getWidget();
-						if(widget.equals(ResourcesMetadata.WIDGET_DATE) || widget.equals(ResourcesMetadata.WIDGET_DATETIME) || widget.equals(ResourcesMetadata.WIDGET_TIME))
-						{
-							Time time = null;
-							if(properties == null)
-							{
-								// use "now" as default in that case
-								time = TimeService.newTime();
-							}
-							else
-							{
-								try
-								{
-									time = properties.getTimeProperty(name);
-								}
-								catch(Exception e)
-								{
-									// use "now" as default in that case
-									time = TimeService.newTime();
-								}
-							}
-							prop.setValue(name, time);
-						}
-						
-						else if (widget.equals(ResourcesMetadata.WIDGET_DURATION)) {
-							if(properties != null) {
-								String rawValue = properties.getPropertyFormatted(name);
-								if(StringUtils.isNotBlank(rawValue)) {
-																		
-									//split and preserve all tokens, even missing ones
-									//this ensures we have the values in the correct spot of the array
-									//eg 0--0- is [0,"",0,""]
-									String [] values = StringUtils.splitPreserveAllTokens(rawValue, "-");
-									
-									prop.setValue(name, Arrays.asList(values));
-								}
-							}
-						}
-						else
-						{
-							if(properties != null)
-							{
-								String value = properties.getPropertyFormatted(name);
-								try
-								{
-									Time time = properties.getTimeProperty(name);
-									value = time.toStringLocalDate();
-								}
-								catch(Exception ignore)
-								{
-								}
-								prop.setValue(name, value);
-							}
-						}
-					}
-				}
-			}
-			/*
-			// define DublinCore
-			if(!metadataGroups.contains(new MetadataGroup("Test of Datatypes")))
-			{
-				MetadataGroup dc = new MetadataGroup("Test of Datatypes");
-				dc.add(ResourcesMetadata.PROPERTY_DC_TITLE);
-				dc.add(ResourcesMetadata.PROPERTY_DC_DESCRIPTION);
-				dc.add(ResourcesMetadata.PROPERTY_DC_ANYURI);
-				dc.add(ResourcesMetadata.PROPERTY_DC_DOUBLE);
-				dc.add(ResourcesMetadata.PROPERTY_DC_DATETIME);
-				dc.add(ResourcesMetadata.PROPERTY_DC_TIME);
-				dc.add(ResourcesMetadata.PROPERTY_DC_DATE);
-				dc.add(ResourcesMetadata.PROPERTY_DC_BOOLEAN);
-				dc.add(ResourcesMetadata.PROPERTY_DC_INTEGER);
-				metadataGroups.add(dc);
-				state.setAttribute(STATE_METADATA_GROUPS, metadataGroups);
-			}
-			*/
 		}
 	}
-	
+
 	/**
-	 * Add variables and constants to the velocity context to render an editor
-	 * for inputing and modifying optional metadata properties about a resource.
+	 * Provides a huge wrapper around ResourceProperties to use it as a Map
+	 *
+	 * @param resourceProperties ResourceProperties to wrap
+	 * @return the wrapped value
 	 */
-	protected void metadataGroupsIntoContext(Context context)
+	private Map<String, Object> wrapResourcePropertiesInMap(final ResourceProperties resourceProperties)
 	{
-
-		context.put("STRING", ResourcesMetadata.WIDGET_STRING);
-		context.put("TEXTAREA", ResourcesMetadata.WIDGET_TEXTAREA);
-		context.put("BOOLEAN", ResourcesMetadata.WIDGET_BOOLEAN);
-		context.put("INTEGER", ResourcesMetadata.WIDGET_INTEGER);
-		context.put("DOUBLE", ResourcesMetadata.WIDGET_DOUBLE);
-		context.put("DATE", ResourcesMetadata.WIDGET_DATE);
-		context.put("TIME", ResourcesMetadata.WIDGET_TIME);
-		context.put("DATETIME", ResourcesMetadata.WIDGET_DATETIME);
-		context.put("ANYURI", ResourcesMetadata.WIDGET_ANYURI);
-		context.put("WYSIWYG", ResourcesMetadata.WIDGET_WYSIWYG);
-		
-		context.put("DURATION", ResourcesMetadata.WIDGET_DURATION);
-		
-		context.put("DROPDOWN", ResourcesMetadata.WIDGET_DROPDOWN); 
-
-		context.put("today", TimeService.newTime());
-		
-		if(this.metadataGroups == null && isOptionalPropertiesEnabled() && typeSupportsOptionalProperties())
+		return new AbstractMap<String, Object>()
 		{
-			ResourceProperties props = null;
-			if(this.entity != null)
+			public boolean isEmpty()
 			{
-				props = this.entity.getProperties();
+				return !resourceProperties.getPropertyNames().hasNext();
 			}
-			this.initMetadataGroups(props);
-		}
-		
-//		if(metadataGroups != null && !metadataGroups.isEmpty())
-//		{
-//			context.put("metadataGroups", metadataGroups);
-//		}
 
-	}	// metadataGroupsIntoContext
+			public boolean containsKey(Object key)
+			{
+				return resourceProperties.get((String) key) != null;
+			}
+
+			public Object get(Object key)
+			{
+				return resourceProperties.get((String) key);
+			}
+
+			@Override
+			public Set<Entry<String, Object>> entrySet()
+			{
+				return new AbstractSet<Entry<String, Object>>()
+				{
+					@Override
+					public Iterator<Entry<String, Object>> iterator()
+					{
+						return new Iterator<Entry<String, Object>>()
+						{
+							private final Iterator<String> propertiesNames = resourceProperties.getPropertyNames();
+
+							public boolean hasNext()
+							{
+								return propertiesNames.hasNext();
+							}
+
+							public Entry<String, Object> next()
+							{
+								return new Entry<String, Object>()
+								{
+									private final String key = propertiesNames.next();
+
+									public String getKey()
+									{
+										return key;
+									}
+
+									public Object getValue()
+									{
+										return resourceProperties.get(key);
+									}
+
+									public Object setValue(Object value)
+									{
+										throw new UnsupportedOperationException();
+									}
+								};
+							}
+
+							public void remove()
+							{
+								throw new UnsupportedOperationException();
+							}
+						};
+					}
+
+					@Override
+					public int size()
+					{
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
 
 	protected void captureOptionalPropertyValues(ParameterParser params, String index)
 	{
-		if(this.metadataGroups == null)
+		metadataValues = new HashMap<String, Object>(metadataGroups.size());
+		for (MetadataType metadataGroup : metadataGroups)
 		{
-			return;
+			Object metadataValue = metadataGroup.getConverter().fromHttpForm(wrapParametersInMap(params), index);
+			metadataValues.put(metadataGroup.getUniqueName(), metadataValue);
 		}
-		
-		for(MetadataGroup group : this.metadataGroups)
-		{
-			if(group == null)
-			{
-				continue;
-			}
-			
-			Iterator<ResourcesMetadata> it = group.iterator();
-			while(it.hasNext())
-			{
-				ResourcesMetadata prop = it.next();
-				String propname = prop.getFullname() + index;
-	
-				if(ResourcesMetadata.WIDGET_NESTED.equals(prop.getWidget()))
-				{
-					// do nothing
-				}
-				else if(ResourcesMetadata.WIDGET_BOOLEAN.equals(prop.getWidget()))
-				{
-					String value = params.getString(propname);
-					if(value == null || Boolean.FALSE.toString().equals(value))
-					{
-						prop.setValue(0, Boolean.FALSE.toString());
-					}
-					else
-					{
-						prop.setValue(0, Boolean.TRUE.toString());
-					}
-				}
-				else if(ResourcesMetadata.WIDGET_DATE.equals(prop.getWidget()) || ResourcesMetadata.WIDGET_DATETIME.equals(prop.getWidget()) || ResourcesMetadata.WIDGET_TIME.equals(prop.getWidget()))
-				{
-					int year = 0;
-					int month = 0;
-					int day = 0;
-					int hour = 0;
-					int minute = 0;
-					int second = 0;
-					int millisecond = 0;
-					String ampm = "";
-	
-					if(prop.getWidget().equals(ResourcesMetadata.WIDGET_DATE) ||
-						prop.getWidget().equals(ResourcesMetadata.WIDGET_DATETIME))
-					{
-						year = params.getInt(prop.getFullname() + "_year" + index, year);
-						month = params.getInt(prop.getFullname() + "_month" + index, month);
-						day = params.getInt(prop.getFullname() + "_day" + index, day);
-					}
-					if(prop.getWidget().equals(ResourcesMetadata.WIDGET_TIME) ||
-						prop.getWidget().equals(ResourcesMetadata.WIDGET_DATETIME))
-					{
-						hour = params.getInt(prop.getFullname() + "_hour" + index, hour);
-						minute = params.getInt(prop.getFullname() + "_minute" + index, minute);
-						second = params.getInt(prop.getFullname() + "_second" + index, second);
-						millisecond = params.getInt(prop.getFullname() + "_millisecond" + index, millisecond);
-						ampm = params.getString(prop.getFullname() + "_ampm" + index);
-	
-						if("pm".equalsIgnoreCase(ampm))
-						{
-							if(hour < 12)
-							{
-								hour += 12;
-							}
-						}
-						else if(hour == 12)
-						{
-							hour = 0;
-						}
-					}
-					if(hour > 23)
-					{
-						hour = hour % 24;
-						day++;
-					}
-					
-					Time value = TimeService.newTimeLocal(year, month, day, hour, minute, second, millisecond);
-					
-					prop.setValue(0, value);
-				}
-				else if (ResourcesMetadata.WIDGET_DURATION.equals(prop.getWidget())) {
-					int first = params.getInt(prop.getFullname() + "_first" + index, 0);
-					String firstQual = params.getString(prop.getFullname() + "_first_qual" + index);
-					int second = params.getInt(prop.getFullname() + "_second" + index, 0);
-					String secondQual = params.getString(prop.getFullname() + "_second_qual" + index);
-				
-					//set this as a string, specially formatted
-					String formattedValue = first + "-" + firstQual + "-" + second + "-" + secondQual;
-											
-					prop.setValue(0, formattedValue);
-				}
-				else if (ResourcesMetadata.WIDGET_DROPDOWN.equals(prop.getWidget())) {
-					
-					//no index required so just get the prop and store it
-					String value = params.getString(prop.getFullname());
-					
-					prop.setValue(0, value);
-				}
-				else if(ResourcesMetadata.WIDGET_ANYURI.equals(prop.getWidget()))
-				{
-					String value = params.getString(propname);
-					if(value != null && ! value.trim().equals(""))
-					{
-						Reference ref = EntityManager.newReference(ContentHostingService.getReference(value));
-						prop.setValue(0, ref);
-					}
-				}
-				else
-				{
-					String value = params.getString(propname);
-					if(value != null)
-					{
-						prop.setValue(0, value);
-					}
-				}
-			}
-		}
+	}
 
-	}	// capturePropertyValues
-	
-	protected void setMetadataPropertiesOnEntity(ResourcePropertiesEdit props) 
+	/**
+	 * Provides a huge wrapper around parameterParser to use it as a Map
+	 *
+	 * @param params ParameterParser to wrap
+	 * @return the wrapped value
+	 */
+	private Map<String, ?> wrapParametersInMap(final ParameterParser params)
 	{
-		if(this.metadataGroups == null || this.metadataGroups.isEmpty())
+		return new AbstractMap<String, Object>()
+		{
+			public boolean isEmpty()
+			{
+				return !params.getNames().hasNext();
+			}
+
+			public boolean containsKey(Object key)
+			{
+				return params.get((String) key) != null;
+			}
+
+			public Object get(Object key)
+			{
+				String[] value = params.getStrings((String) key);
+				if (value == null || value.length == 0)
+					return null;
+				else if (value.length > 1)
+				{
+					return value;
+				} else
+					return value[0];
+			}
+
+			@Override
+			public Set<Entry<String, Object>> entrySet()
+			{
+				return new AbstractSet<Entry<String, Object>>()
+				{
+					@Override
+					public Iterator<Entry<String, Object>> iterator()
+					{
+						return new Iterator<Entry<String, Object>>()
+						{
+							private final Iterator<String> parametersNames = params.getNames();
+
+							public boolean hasNext()
+							{
+								return parametersNames.hasNext();
+							}
+
+							public Entry<String, Object> next()
+							{
+								return new Entry<String, Object>()
+								{
+									private final String key = parametersNames.next();
+
+									public String getKey()
+									{
+										return key;
+									}
+
+									public Object getValue()
+									{
+										String[] value = params.getStrings(key);
+										if (value == null || value.length == 0)
+											return null;
+										else if (value.length > 1)
+										{
+											return value;
+										} else
+											return value[0];
+									}
+
+									public Object setValue(Object value)
+									{
+										throw new UnsupportedOperationException();
+									}
+								};
+							}
+
+							public void remove()
+							{
+								throw new UnsupportedOperationException();
+							}
+						};
+					}
+
+					@Override
+					public int size()
+					{
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
+
+	/**
+	 * Add the metadata content in the entity properties
+	 * <p/>
+	 * Converts and validate the user given values before adding then to the entity
+	 * INFO: For the suppress warning, see the content of the method
+	 *
+	 * @param props Entity properties
+	 */
+	@SuppressWarnings("unchecked")
+	protected void setMetadataPropertiesOnEntity(ResourcePropertiesEdit props)
+	{
+		if (this.metadataValues == null)
 		{
 			return;
 		}
-		
-		for(MetadataGroup metadataGroup : this.metadataGroups)
-		{
-			if(metadataGroup == null)
-			{
-				continue;
-			}
 
-			for(ResourcesMetadata prop : (List<ResourcesMetadata>) metadataGroup)
-			{
-				if(prop == null || prop.getValue(0) == null)
-				{
-					continue;
+		for (MetadataType metadataType : this.metadataGroups)
+		{
+			/*
+			 * There is no way to be sure of the metadata type of the entry, so a "cast" is required.
+			 * In this case we can't cast to "?" so here goes some unchecked operations.
+			 */
+			metadataType.getValidator().validate(metadataValues.get(metadataType.getUniqueName()));
+			Map<String, ?> values =  metadataType.getConverter().toProperties(metadataValues.get(metadataType.getUniqueName()));
+			for(Map.Entry<String, ?> entry : values.entrySet()) {
+				if (entry.getValue() == null) {
+					props.removeProperty(entry.getKey());
+				} else {
+					props.addProperty(entry.getKey(), (String) entry.getValue());
 				}
-				
-				props.addProperty(prop.getFullname(), prop.getValue(0).toString());
 			}
 		}
 	}
@@ -4007,23 +3876,15 @@ public class ListItem
     	return optionalPropertiesEnabled;
     }
 
-	/**
-     * @return the metadataGroups
-     */
-    public List<MetadataGroup> getMetadataGroups()
-    {
-    	if(this.metadataGroups == null && isOptionalPropertiesEnabled() && typeSupportsOptionalProperties())
-    	{
-    		
-    		ResourceProperties properties = null;
-    		if(this.entity != null)
-    		{
-    			properties = this.entity.getProperties();
-    		}
-			this.initMetadataGroups(properties );
-    	}
-    	return metadataGroups;
-    }
+	public List<MetadataType> getMetadataGroups()
+	{
+		return metadataGroups;
+	}
+
+	public Map<String, Object> getMetadataValues()
+	{
+		return metadataValues;
+	}
 
 	private boolean typeSupportsOptionalProperties()
     {

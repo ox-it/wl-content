@@ -17,10 +17,10 @@
   <inceptionYear>2003</inceptionYear>
   <packaging>war</packaging>
   <dependencies>
-  <dependency>
-  	<groupId>org.sakaiproject.content</groupId>
-  	<artifactId>content-bundles</artifactId>
-  </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.content</groupId>
+      <artifactId>content-bundles</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.sakaiproject.kernel</groupId>
       <artifactId>sakai-kernel-util</artifactId>
@@ -53,6 +53,11 @@
     <dependency>
       <groupId>org.sakaiproject.velocity</groupId>
       <artifactId>sakai-velocity-tool</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.content</groupId>
+      <artifactId>content-metadata-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jdom</groupId>
@@ -103,7 +108,7 @@
           <include>**/*.properties</include>
         </includes>
       </resource>
-     </resources>
-<!-- java source -->
+    </resources>
+    <!-- java source -->
   </build>
 </project>
