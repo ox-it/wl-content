@@ -381,10 +381,11 @@ $(document).ready(function() {
 							<input type="hidden" name="itemCanRevise" id="itemCanRevise" value="$item.canRevise" />
 						#end
 					</td>
-					<td headers="title" style="text-indent:$width" class="specialLink">
-					#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end 
+					<td headers="title" class="specialLink">
+					#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end
 						<h$headerDepth> 
 							#if ($item.canRead())
+						        <span class="indent">#if(${item.depth}!=0)#foreach($temp in [1..$!{item.depth}])&nbsp;#end#end</span>
 								#if($item.isCollection())
 									<span class="skip">$newNote</span><span class="$iconDecor">
 									#if($item.isEmpty() || $item.isTooBig() || $item.depth < 1 || $item.isTooBigNav())
@@ -664,10 +665,11 @@ $(document).ready(function() {
 									#foreach($key in $item.multipleItemActions.keySet())$counter.increment("$key") $counter.increment("selectall")#if($selectedItems.contains($item.id))$counter.increment("${key}selected")#end#end
 								#end
 							</td>
-							<td headers="title" style="text-indent:$width" class="specialLink">
-						#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end 
+					        <td headers="title" class="specialLink">
+						#if($item.isHot("$!dropboxHighlight")) #set($iconDecor="recentItem") #set($newNote="new") #else  #set($iconDecor="nil")  #set($newNote="")#end
 								<h$headerDepth> 
 									#if ($item.canRead())
+						                <span class="indent">#if(${item.depth}!=0)#foreach($temp in [1..${item.depth}])&nbsp;#end#end</span>
 										#if($item.isCollection())
 										<span class="skip">$newNote</span><span class="$iconDecor">	
 											#if($item.isEmpty() || $item.isTooBig())
