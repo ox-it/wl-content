@@ -4124,10 +4124,25 @@ public class ListItem
 			metadataType.getValidator().validate(metadataValues.get(metadataType.getUniqueName()));
 			Map<String, ?> values =  metadataType.getConverter().toProperties(metadataValues.get(metadataType.getUniqueName()));
 			for(Map.Entry<String, ?> entry : values.entrySet()) {
-				if (entry.getValue() == null) {
-					props.removeProperty(entry.getKey());
+				if (entry.getValue() instanceof String) {
+					// Handle string values.
+					if (entry.getValue() == null) {
+						props.removeProperty(entry.getKey());
+					} else {
+						props.addProperty(entry.getKey(), (String) entry.getValue());
+					}
+				} else if (entry.getValue() instanceof Collection) {
+					// Handle collection values.
+					if (entry.getValue() == null || ((Collection<String>)entry.getValue()).isEmpty()) {
+						props.removeProperty(entry.getKey());
+					} else {
+						for (String value : (Collection<String>) entry.getValue()) {
+							props.addPropertyToList(entry.getKey(), value);
+						}
+					}
 				} else {
-					props.addProperty(entry.getKey(), (String) entry.getValue());
+					// Warn about other types.
+					logger.warn("Unable to save metadata with key: "+ entry.getKey()+ " value: "+ entry.getValue());
 				}
 			}
 		}
