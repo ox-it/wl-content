@@ -131,8 +131,18 @@
     #if($dragAndDrop)
         <div id="dragDropWrapper">
         <div id="fileUploaderDesc" class="instruction">
-            <p>$tlang.getString("label.dragDescription") <strong><a href="#" id="tradUploadSwitcher">$tlang.getString("link.switch.to.upload")</a></strong></p>
+            <p>$tlang.getString("label.dragDescription")</p>
+            #if($instr_uploads)
+                <p>$instr_uploads</p>
+            #end
+            #if ($additionalInstructions)
+                <p>$additionalInstructions</p>
+            #end
         </div>
+        <div class="instruction">
+            <strong><a href="#" id="tradUploadSwitcher">$tlang.getString("link.switch.to.upload")</a></strong>
+        </div>
+
         <form name="dropzone-form" action="#toolLink("ResourcesHelperAction" "doPost")&flow=save" class="dropzone" id="file-uploader">
         	<input type="hidden" name="sakai_csrf_token" value="$sakai_csrf_token" />
             <div class="dz-default dz-message">$tlang.getString("label.dragZoneMessage")</div>
