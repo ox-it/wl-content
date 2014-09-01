@@ -4124,16 +4124,14 @@ public class ListItem
 			metadataType.getValidator().validate(metadataValues.get(metadataType.getUniqueName()));
 			Map<String, ?> values =  metadataType.getConverter().toProperties(metadataValues.get(metadataType.getUniqueName()));
 			for(Map.Entry<String, ?> entry : values.entrySet()) {
-				if (entry.getValue() instanceof String) {
+				if (entry.getValue() == null) {
+					props.removeProperty(entry.getKey());
+				} else if (entry.getValue() instanceof String) {
 					// Handle string values.
-					if (entry.getValue() == null) {
-						props.removeProperty(entry.getKey());
-					} else {
-						props.addProperty(entry.getKey(), (String) entry.getValue());
-					}
+					props.addProperty(entry.getKey(), (String) entry.getValue());
 				} else if (entry.getValue() instanceof Collection) {
 					// Handle collection values.
-					if (entry.getValue() == null || ((Collection<String>)entry.getValue()).isEmpty()) {
+					if (((Collection<String>) entry.getValue()).isEmpty()) {
 						props.removeProperty(entry.getKey());
 					} else {
 						for (String value : (Collection<String>) entry.getValue()) {
