@@ -150,7 +150,7 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 	
 	/** state attribute for the maximum size for file upload */
 	static final String STATE_FILE_UPLOAD_MAX_SIZE = PREFIX + "file_upload_max_size";
-	
+
 	/** The user copyright string */
 	private static final String	STATE_MY_COPYRIGHT = PREFIX + "mycopyright";
 	
@@ -653,7 +653,10 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		
 		String upload_limit = rb.getFormattedMessage("upload.limit", new String[]{ max_file_size_mb });
 		context.put("upload_limit", upload_limit);
-		
+
+		String uploadWarning = rb.getFormattedMessage("label.dragDescription",new String[]{rb.getFormattedMessage("label.version")});
+		context.put("label_dragDescription",uploadWarning);
+
 		String uploadMax = ServerConfigurationService.getString("content.upload.max");
 		String instr_uploads= rb.getFormattedMessage("instr.uploads", new String[]{ uploadMax});
 		context.put("instr_uploads", instr_uploads);

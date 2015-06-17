@@ -131,7 +131,9 @@
     #if($dragAndDrop)
         <div id="dragDropWrapper">
         <div id="fileUploaderDesc" class="instruction">
-            <p>$tlang.getString("label.dragDescription")</p>
+            #if($label_dragDescription)
+                <p>$label_dragDescription</p>
+            #end
             #if($instr_uploads)
                 <p>$instr_uploads</p>
             #end
