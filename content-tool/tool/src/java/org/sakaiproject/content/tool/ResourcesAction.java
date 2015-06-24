@@ -6316,7 +6316,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 			ResourceToolActionPipe pipe = registry.newPipe(intitializationId, action);
 			pipe.setContentEntity(entity);
 			pipe.setHelperId(iAction.getHelperId());
-
+			
 			toolSession.setAttribute(ResourceToolAction.ACTION_PIPE, pipe);
 
 			ResourceProperties props = entity.getProperties();
@@ -7767,7 +7767,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 			}
 			addAlert(state, msg);
 		}
-
+		
 		ResourceToolAction action = pipe.getAction();
 
 		// use ActionType for this 
