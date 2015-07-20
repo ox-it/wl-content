@@ -654,8 +654,8 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		String upload_limit = rb.getFormattedMessage("upload.limit", new String[]{ max_file_size_mb });
 		context.put("upload_limit", upload_limit);
 
-		String uploadWarning = rb.getFormattedMessage("label.dragDescription",new String[]{rb.getFormattedMessage("label.version")});
-		context.put("label_dragDescription",uploadWarning);
+		String uploadWarning = rb.getFormattedMessage("label.overwrite.warning",new String[]{rb.getFormattedMessage("label.version")});
+		context.put("label_overwrite_warning",uploadWarning);
 
 		String uploadMax = ServerConfigurationService.getString("content.upload.max");
 		String instr_uploads= rb.getFormattedMessage("instr.uploads", new String[]{ uploadMax});
