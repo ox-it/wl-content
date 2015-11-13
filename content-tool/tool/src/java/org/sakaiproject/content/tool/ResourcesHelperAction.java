@@ -1883,6 +1883,8 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		String fullPath = request.getParameter("fullPath");
 		String action = request.getParameter("sakai_action");
 		logger.debug("Received action: "+action+" for file: "+fullPath);
+		// set up rundata, in case we're called from RSF
+		checkRunData(request);
 		
 		if(fullPath != null)
 		{
@@ -1904,7 +1906,10 @@ public class ResourcesHelperAction extends VelocityPortletPaneledAction
 		{
 			if (action!=null)
 			{
-				super.doPost(request, response);
+				JetspeedRunData rundata = (JetspeedRunData) request.getAttribute(ATTR_RUNDATA);
+				if (checkCSRFToken(request,rundata,action)) {
+					super.doPost(request, response);
+				}
 			}
 			else
 			{
