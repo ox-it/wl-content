@@ -132,11 +132,6 @@
         <div id="dragDropWrapper">
         <div id="fileUploaderDesc" class="instruction">
             <p>$tlang.getString("label.dragDescription")</p>
-            #if($label_overwrite_warning)
-                <div class="alertMessage">
-                    <span>$label_overwrite_warning</span>
-                </div>
-            #end
             #if($instr_uploads)
                 <p>$instr_uploads</p>
             #end
@@ -147,14 +142,14 @@
         <div class="instruction">
             <strong><a href="#" id="tradUploadSwitcher">$tlang.getString("link.switch.to.upload")</a></strong>
         </div>
-
+        <div>
+            <input type="checkbox" name="overwrite" id="overwrite" checked="checked" value="true">$tlang.getString("overwrite.text")
+        </div>
         <form name="dropzone-form" action="#toolLink("ResourcesHelperAction" "doPost")&flow=save" class="dropzone" id="file-uploader">
         	<input type="hidden" name="sakai_csrf_token" value="$sakai_csrf_token" />
             <div class="dz-default dz-message">$tlang.getString("label.dragZoneMessage")</div>
         </form>
-               <div>
-                   <input type="checkbox" name="overwrite" id="overwrite" checked="checked" value="true">$tlang.getString("overwrite.text")
-               </div>
+
 		<p class="act">
 			<input type="button" name="finish" id="finish" disabled=true
 			onclick="javascript:document.getElementById('addContentForm').action='#toolLink("ResourcesHelperAction" "doFinishUpload")';" 
